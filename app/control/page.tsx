@@ -7,6 +7,7 @@ import { DeviceSelector } from "@/components/device-selector"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useDeviceIds } from "@/hooks/use-telemetry"
+import { useDemoMode } from "@/contexts/demo-mode"
 import { sendDeviceCommand } from "@/lib/actions"
 import { CommandPayload, DeviceInfo, DeviceCommand } from "@/lib/types"
 import { Terminal, CheckCircle2, Clock, Send } from "lucide-react"
@@ -17,7 +18,11 @@ import useSWR from "swr"
 export default function ControlPage() {
   const [selectedDevice, setSelectedDevice] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
-  const { deviceIds } = useDeviceIds()
+  const [demoCommands, setDemoCommands] = useState<DeviceCommand[]>([])
+  const { deviceIds: realDeviceIds } = useDeviceIds()
+  const { isDemoMode, demoDeviceIds } = useDemoMode()
+  
+  const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
 
   // Auto-select first device
   useEffect(() => {
@@ -54,6 +59,28 @@ export default function ControlPage() {
   const handleSendCommand = async (command: CommandPayload) => {
     if (!selectedDevice) return
     setIsLoading(true)
+    
+    if (isDemoMode) {
+      // Simulate command in demo mode
+      await new Promise(resolve => setTimeout(resolve, 500))
+      const newCommand: DeviceCommand = {
+        id: `demo-cmd-${Date.now()}`,
+        device_id: selectedDevice,
+        command: command,
+        processed: false,
+        created_at: new Date().toISOString(),
+      }
+      setDemoCommands(prev => [newCommand, ...prev])
+      // Mark as processed after a delay
+      setTimeout(() => {
+        setDemoCommands(prev => 
+          prev.map(cmd => cmd.id === newCommand.id ? { ...cmd, processed: true } : cmd)
+        )
+      }, 2000)
+      setIsLoading(false)
+      return
+    }
+    
     try {
       const result = await sendDeviceCommand(selectedDevice, command)
       if (result.success) {
@@ -65,6 +92,8 @@ export default function ControlPage() {
       setIsLoading(false)
     }
   }
+  
+  const displayCommands = isDemoMode ? demoCommands : recentCommands
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,14 +149,14 @@ export default function ControlPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {!recentCommands || recentCommands.length === 0 ? (
+                {!displayCommands || displayCommands.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                     <Clock className="h-8 w-8 mb-2 opacity-50" />
                     <p className="text-sm">No commands sent yet</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {recentCommands.map((cmd) => (
+                    {displayCommands.map((cmd) => (
                       <div
                         key={cmd.id}
                         className="flex items-start gap-3 p-3 rounded-lg border bg-card"

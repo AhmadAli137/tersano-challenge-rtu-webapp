@@ -8,6 +8,7 @@ import { ReadingsTable } from "@/components/readings-table"
 import { TimeRangeSelect } from "@/components/time-range-select"
 import { DeviceSelector } from "@/components/device-selector"
 import { useTelemetry, useDeviceIds } from "@/hooks/use-telemetry"
+import { useDemoMode } from "@/contexts/demo-mode"
 import { TimeRange, DeviceInfo } from "@/lib/types"
 import { Thermometer, Droplets, Gauge, Battery, Clock, Activity } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
@@ -15,8 +16,14 @@ import { formatDistanceToNow } from "date-fns"
 export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>("1h")
   const [selectedDevice, setSelectedDevice] = useState<string>("")
-  const { deviceIds } = useDeviceIds()
-  const { readings, latestReading, isLoading } = useTelemetry(selectedDevice, timeRange)
+  const { deviceIds: realDeviceIds } = useDeviceIds()
+  const { readings: realReadings, latestReading: realLatestReading, isLoading } = useTelemetry(selectedDevice, timeRange)
+  const { isDemoMode, demoReadings, demoDeviceIds } = useDemoMode()
+
+  // Use demo data when in demo mode
+  const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
+  const readings = isDemoMode ? demoReadings : realReadings
+  const latestReading = isDemoMode ? demoReadings[demoReadings.length - 1] : realLatestReading
 
   // Auto-select first device
   useEffect(() => {
@@ -74,6 +81,7 @@ export default function DashboardPage() {
               value={latestReading?.temperature_c?.toFixed(1) ?? "--"}
               unit="°C"
               icon={Thermometer}
+              neonColor="cyan"
               trend={avgTemp && latestReading?.temperature_c ? (latestReading.temperature_c > avgTemp ? "up" : "down") : undefined}
               trendValue={avgTemp ? `Avg: ${avgTemp.toFixed(1)}°C` : undefined}
             />
@@ -82,6 +90,7 @@ export default function DashboardPage() {
               value={latestReading?.humidity_pct?.toFixed(1) ?? "--"}
               unit="%"
               icon={Droplets}
+              neonColor="purple"
               trend={avgHumidity && latestReading?.humidity_pct ? (latestReading.humidity_pct > avgHumidity ? "up" : "down") : undefined}
               trendValue={avgHumidity ? `Avg: ${avgHumidity.toFixed(1)}%` : undefined}
             />
@@ -90,12 +99,14 @@ export default function DashboardPage() {
               value={latestReading?.pressure_hpa?.toFixed(0) ?? "--"}
               unit="hPa"
               icon={Gauge}
+              neonColor="orange"
             />
             <StatCard
               title="Battery"
               value={latestReading?.battery_v?.toFixed(2) ?? "--"}
               unit="V"
               icon={Battery}
+              neonColor="green"
               trend={latestReading?.battery_v ? (latestReading.battery_v > 3.3 ? "up" : "down") : undefined}
               trendValue={latestReading?.battery_v && latestReading.battery_v <= 3.3 ? "Low battery" : undefined}
             />
@@ -107,11 +118,13 @@ export default function DashboardPage() {
               title="Device Uptime"
               value={uptimeStr}
               icon={Clock}
+              neonColor="pink"
             />
             <StatCard
               title="Total Readings"
               value={readings.length}
               icon={Activity}
+              neonColor="cyan"
               trendValue={`In last ${timeRange}`}
               trend="neutral"
             />
@@ -119,6 +132,7 @@ export default function DashboardPage() {
               title="Last Update"
               value={latestReading ? formatDistanceToNow(new Date(latestReading.created_at), { addSuffix: true }) : "--"}
               icon={Activity}
+              neonColor="green"
             />
           </div>
 

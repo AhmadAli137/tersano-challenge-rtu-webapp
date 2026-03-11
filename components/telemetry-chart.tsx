@@ -11,6 +11,9 @@ import {
   YAxis,
 } from "recharts"
 import { TelemetryRow } from "@/lib/types"
+import { useDemoMode } from "@/contexts/demo-mode"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
 
 interface TelemetryChartProps {
   data: TelemetryRow[]
@@ -29,6 +32,8 @@ export function TelemetryChart({
   color = "var(--color-primary)",
   unit = "",
 }: TelemetryChartProps) {
+  const { isDemoMode } = useDemoMode()
+  
   const chartData = data.map((reading) => ({
     time: format(new Date(reading.created_at), "HH:mm:ss"),
     value: reading[dataKey] ?? 0,
@@ -36,7 +41,7 @@ export function TelemetryChart({
   }))
 
   return (
-    <Card>
+    <Card className={cn(isDemoMode && "border-primary/30")}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-medium">{title}</CardTitle>
         {description && (

@@ -6,14 +6,19 @@ import { EventsList } from "@/components/events-list"
 import { DeviceSelector } from "@/components/device-selector"
 import { useEvents } from "@/hooks/use-events"
 import { useDeviceIds } from "@/hooks/use-telemetry"
+import { useDemoMode } from "@/contexts/demo-mode"
 import { DeviceInfo } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { RefreshCw } from "lucide-react"
 
 export default function EventsPage() {
   const [selectedDevice, setSelectedDevice] = useState<string>("")
-  const { deviceIds } = useDeviceIds()
-  const { events, isLoading, refresh } = useEvents(selectedDevice || undefined)
+  const { deviceIds: realDeviceIds } = useDeviceIds()
+  const { events: realEvents, isLoading, refresh } = useEvents(selectedDevice || undefined)
+  const { isDemoMode, demoDeviceIds, demoEvents } = useDemoMode()
+  
+  const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
+  const events = isDemoMode ? demoEvents : realEvents
 
   // Auto-select first device or show all
   useEffect(() => {

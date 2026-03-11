@@ -36,6 +36,9 @@ export interface DeviceStatus {
   created_at: string
 }
 
+// Alias for DeviceStatus used in events
+export type DeviceEvent = DeviceStatus
+
 export type TimeRange = '15m' | '1h' | '6h' | '24h'
 
 export interface DeviceInfo {

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DeviceStatus } from "@/lib/types"
+import { useDemoMode } from "@/contexts/demo-mode"
+import { cn } from "@/lib/utils"
 import { format, formatDistanceToNow } from "date-fns"
 import { Activity, AlertTriangle, CheckCircle, Info, Power, RefreshCw, Wifi, WifiOff } from "lucide-react"
 
@@ -36,6 +38,17 @@ const eventColors: Record<string, string> = {
   default: "bg-muted text-muted-foreground",
 }
 
+const neonEventColors: Record<string, string> = {
+  boot: "bg-neon-purple/20 text-neon-purple",
+  online: "bg-neon-green/20 text-neon-green",
+  offline: "bg-neon-pink/20 text-neon-pink",
+  error: "bg-neon-pink/20 text-neon-pink",
+  warning: "bg-neon-orange/20 text-neon-orange",
+  calibrated: "bg-neon-cyan/20 text-neon-cyan",
+  reset: "bg-neon-orange/20 text-neon-orange",
+  default: "bg-neon-cyan/20 text-neon-cyan",
+}
+
 function getEventIcon(event: string) {
   const normalizedEvent = event.toLowerCase()
   for (const [key, Icon] of Object.entries(eventIcons)) {
@@ -44,12 +57,13 @@ function getEventIcon(event: string) {
   return eventIcons.default
 }
 
-function getEventColor(event: string) {
+function getEventColor(event: string, isNeon = false) {
   const normalizedEvent = event.toLowerCase()
-  for (const [key, color] of Object.entries(eventColors)) {
+  const colors = isNeon ? neonEventColors : eventColors
+  for (const [key, color] of Object.entries(colors)) {
     if (normalizedEvent.includes(key)) return color
   }
-  return eventColors.default
+  return colors.default
 }
 
 export function EventsList({
@@ -58,8 +72,10 @@ export function EventsList({
   description,
   maxHeight = "400px",
 }: EventsListProps) {
+  const { isDemoMode } = useDemoMode()
+  
   return (
-    <Card>
+    <Card className={cn(isDemoMode && "border-primary/30")}>
       <CardHeader>
         <CardTitle className="text-base font-medium flex items-center gap-2">
           <Activity className="h-4 w-4 text-primary" />
@@ -78,7 +94,7 @@ export function EventsList({
             <div className="space-y-3">
               {events.map((event) => {
                 const Icon = getEventIcon(event.event)
-                const colorClass = getEventColor(event.event)
+                const colorClass = getEventColor(event.event, isDemoMode)
                 return (
                   <div
                     key={event.id}
