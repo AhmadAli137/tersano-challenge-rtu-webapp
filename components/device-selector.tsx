@@ -26,14 +26,16 @@ export function DeviceSelector({ devices, value, onChange }: DeviceSelectorProps
         </div>
       </SelectTrigger>
       <SelectContent>
-        {devices.map((device) => (
-          <SelectItem key={device.id} value={device.id}>
-            <div className="flex items-center gap-2">
-              <span className={`h-2 w-2 rounded-full ${device.isOnline ? "bg-green-500" : "bg-red-500"}`} />
-              <span>{device.name || device.id}</span>
-            </div>
-          </SelectItem>
-        ))}
+        {devices
+          .filter((device) => device.id && device.id.trim() !== "")
+          .map((device) => (
+            <SelectItem key={device.id} value={device.id}>
+              <div className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${device.isOnline ? "bg-green-500" : "bg-red-500"}`} />
+                <span>{device.name || device.id}</span>
+              </div>
+            </SelectItem>
+          ))}
       </SelectContent>
     </Select>
   )
