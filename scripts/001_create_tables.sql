@@ -42,8 +42,3 @@ CREATE TABLE IF NOT EXISTS device_status (
 
 CREATE INDEX IF NOT EXISTS idx_status_device_created 
   ON device_status(device_id, created_at DESC);
-
--- Enable realtime for all tables
-ALTER PUBLICATION supabase_realtime ADD TABLE telemetry;
-ALTER PUBLICATION supabase_realtime ADD TABLE device_commands;
-ALTER PUBLICATION supabase_realtime ADD TABLE device_status;
