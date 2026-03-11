@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
-import { Send, Timer, Volume2 } from "lucide-react"
+import { useDemoMode } from "@/contexts/demo-mode"
+import { cn } from "@/lib/utils"
+import { Send, Timer, Volume2, Code } from "lucide-react"
 import { CommandPayload } from "@/lib/types"
 
 interface ControlFormProps {
@@ -18,6 +20,7 @@ interface ControlFormProps {
 }
 
 export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormProps) {
+  const { isDemoMode } = useDemoMode()
   const [samplingInterval, setSamplingInterval] = useState(5000)
   const [buzzerOn, setBuzzerOn] = useState(false)
   const [buzzerFrequency, setBuzzerFrequency] = useState(1000)
@@ -54,10 +57,10 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className={cn(isDemoMode && "border-neon-cyan/30")}>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Timer className="h-5 w-5 text-primary" />
+            <Timer className={cn("h-5 w-5", isDemoMode ? "text-neon-cyan" : "text-primary")} />
             <CardTitle className="text-base">Sampling Interval</CardTitle>
           </div>
           <CardDescription>
@@ -88,7 +91,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
           <Button
             onClick={handleSamplingSubmit}
             disabled={isLoading}
-            className="w-full"
+            className={cn("w-full", isDemoMode && "bg-neon-cyan text-background hover:bg-neon-cyan/90")}
           >
             <Send className="h-4 w-4 mr-2" />
             Send Command
@@ -96,10 +99,10 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={cn(isDemoMode && "border-neon-purple/30")}>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Volume2 className="h-5 w-5 text-primary" />
+            <Volume2 className={cn("h-5 w-5", isDemoMode ? "text-neon-purple" : "text-primary")} />
             <CardTitle className="text-base">Buzzer Control</CardTitle>
           </div>
           <CardDescription>
@@ -136,7 +139,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
           <Button
             onClick={handleBuzzerSubmit}
             disabled={isLoading}
-            className="w-full"
+            className={cn("w-full", isDemoMode && "bg-neon-purple text-background hover:bg-neon-purple/90")}
           >
             <Send className="h-4 w-4 mr-2" />
             Send Command
@@ -144,9 +147,12 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={cn(isDemoMode && "border-neon-orange/30")}>
         <CardHeader>
-          <CardTitle className="text-base">Custom Command</CardTitle>
+          <div className="flex items-center gap-2">
+            <Code className={cn("h-5 w-5", isDemoMode ? "text-neon-orange" : "text-primary")} />
+            <CardTitle className="text-base">Custom Command</CardTitle>
+          </div>
           <CardDescription>
             Send a custom JSON command to device {deviceId}
           </CardDescription>
@@ -166,7 +172,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
             onClick={handleCustomSubmit}
             disabled={isLoading || !customCommand.trim()}
             variant="secondary"
-            className="w-full"
+            className={cn("w-full", isDemoMode && "bg-neon-orange/20 text-neon-orange border-neon-orange/30 hover:bg-neon-orange/30")}
           >
             <Send className="h-4 w-4 mr-2" />
             Send Custom Command

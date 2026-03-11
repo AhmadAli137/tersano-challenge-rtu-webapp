@@ -40,8 +40,19 @@ export function TelemetryChart({
     fullTime: reading.created_at,
   }))
 
+  // Get neon color based on the dataKey
+  const getNeonBorderColor = () => {
+    switch (dataKey) {
+      case "temperature_c": return "border-neon-cyan/30"
+      case "humidity_pct": return "border-neon-purple/30"
+      case "pressure_hpa": return "border-neon-orange/30"
+      case "battery_v": return "border-neon-green/30"
+      default: return "border-primary/30"
+    }
+  }
+
   return (
-    <Card className={cn(isDemoMode && "border-primary/30")}>
+    <Card className={cn(isDemoMode && getNeonBorderColor())}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-medium">{title}</CardTitle>
         {description && (

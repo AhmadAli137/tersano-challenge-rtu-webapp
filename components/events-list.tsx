@@ -75,10 +75,10 @@ export function EventsList({
   const { isDemoMode } = useDemoMode()
   
   return (
-    <Card className={cn(isDemoMode && "border-primary/30")}>
+    <Card className={cn(isDemoMode && "border-neon-pink/30")}>
       <CardHeader>
         <CardTitle className="text-base font-medium flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" />
+          <Activity className={cn("h-4 w-4", isDemoMode ? "text-neon-pink" : "text-primary")} />
           {title}
         </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}

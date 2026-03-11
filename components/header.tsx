@@ -41,8 +41,10 @@ export function Header() {
             )}>Tersano RTU</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
-            {navigation.map((item) => {
+            {navigation.map((item, index) => {
               const isActive = pathname === item.href
+              const neonColors = ["text-neon-cyan", "text-neon-purple", "text-neon-pink"]
+              const neonBgColors = ["bg-neon-cyan/10", "bg-neon-purple/10", "bg-neon-pink/10"]
               return (
                 <Link
                   key={item.name}
@@ -50,7 +52,9 @@ export function Header() {
                   className={cn(
                     "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-primary/10 text-primary"
+                      ? isDemoMode 
+                        ? `${neonBgColors[index]} ${neonColors[index]}`
+                        : "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >

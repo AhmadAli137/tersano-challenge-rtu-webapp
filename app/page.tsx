@@ -143,7 +143,7 @@ export default function DashboardPage() {
               dataKey="temperature_c"
               title="Temperature"
               description="Temperature readings over time"
-              color="hsl(var(--chart-1))"
+              color="var(--neon-cyan)"
               unit="°C"
             />
             <TelemetryChart
@@ -151,7 +151,7 @@ export default function DashboardPage() {
               dataKey="humidity_pct"
               title="Humidity"
               description="Humidity readings over time"
-              color="hsl(var(--chart-2))"
+              color="var(--neon-purple)"
               unit="%"
             />
             <TelemetryChart
@@ -159,7 +159,7 @@ export default function DashboardPage() {
               dataKey="pressure_hpa"
               title="Pressure"
               description="Atmospheric pressure readings"
-              color="hsl(var(--chart-3))"
+              color="var(--neon-orange)"
               unit=" hPa"
             />
             <TelemetryChart
@@ -167,7 +167,7 @@ export default function DashboardPage() {
               dataKey="battery_v"
               title="Battery Voltage"
               description="Battery level over time"
-              color="hsl(var(--chart-4))"
+              color="var(--neon-green)"
               unit="V"
             />
           </div>
