@@ -20,80 +20,79 @@ export function Header() {
 
   return (
     <header className={cn(
-      "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-      isDemoMode ? "border-neon-cyan border-glow-cyan" : "border-border"
+      "sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl",
+      isDemoMode ? "border-neon-cyan/40" : "border-border/50"
     )}>
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-lg transition-all",
-              isDemoMode ? "bg-neon-cyan glow-cyan" : "bg-primary"
+              "flex h-8 w-8 items-center justify-center rounded-md transition-all",
+              isDemoMode ? "bg-neon-cyan/15 ring-1 ring-neon-cyan/30" : "bg-foreground"
             )}>
               <Radio className={cn(
-                "h-5 w-5",
-                isDemoMode ? "text-background" : "text-primary-foreground"
+                "h-4 w-4",
+                isDemoMode ? "text-neon-cyan" : "text-background"
               )} />
             </div>
             <span className={cn(
-              "text-lg font-semibold tracking-tight",
-              isDemoMode && "text-neon-cyan text-glow-cyan"
+              "text-sm font-semibold tracking-tight",
+              isDemoMode && "text-neon-cyan"
             )}>Tersano RTU</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center">
             {navigation.map((item, index) => {
               const isActive = pathname === item.href
               const neonColors = ["text-neon-cyan", "text-neon-purple", "text-neon-pink"]
-              const neonBgColors = ["bg-neon-cyan/10", "bg-neon-purple/10", "bg-neon-pink/10"]
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors",
                     isActive
                       ? isDemoMode 
-                        ? `${neonBgColors[index]} ${neonColors[index]}`
-                        : "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? neonColors[index]
+                        : "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-3.5 w-3.5" />
                   {item.name}
                 </Link>
               )
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <div className={cn(
+            "hidden sm:flex items-center gap-1.5 text-xs px-2 py-1 rounded-md",
+            isDemoMode ? "text-neon-green bg-neon-green/10" : "text-muted-foreground"
+          )}>
+            <span className="relative flex h-1.5 w-1.5">
+              <span className={cn(
+                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                isDemoMode ? "bg-neon-green" : "bg-success"
+              )}></span>
+              <span className={cn(
+                "relative inline-flex rounded-full h-1.5 w-1.5",
+                isDemoMode ? "bg-neon-green" : "bg-success"
+              )}></span>
+            </span>
+            <span>{isDemoMode ? "Demo" : "Live"}</span>
+          </div>
           <Button
-            variant={isDemoMode ? "default" : "outline"}
+            variant="ghost"
             size="sm"
             onClick={toggleDemoMode}
             className={cn(
-              "gap-2 transition-all",
-              isDemoMode && "bg-neon-purple text-background glow-purple hover:bg-neon-purple/90"
+              "h-8 gap-1.5 text-xs",
+              isDemoMode && "text-neon-purple bg-neon-purple/10 hover:bg-neon-purple/15"
             )}
           >
-            <FlaskConical className="h-4 w-4" />
-            <span className="hidden sm:inline">{isDemoMode ? "Demo Active" : "Demo Mode"}</span>
+            <FlaskConical className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{isDemoMode ? "Exit Demo" : "Demo"}</span>
           </Button>
-          <div className={cn(
-            "hidden sm:flex items-center gap-2 text-sm",
-            isDemoMode ? "text-neon-green" : "text-muted-foreground"
-          )}>
-            <span className="relative flex h-2 w-2">
-              <span className={cn(
-                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                isDemoMode ? "bg-neon-green" : "bg-green-400"
-              )}></span>
-              <span className={cn(
-                "relative inline-flex rounded-full h-2 w-2",
-                isDemoMode ? "bg-neon-green" : "bg-green-500"
-              )}></span>
-            </span>
-            <span className={isDemoMode ? "text-glow-green" : ""}>{isDemoMode ? "Demo" : "Live"}</span>
-          </div>
           <ThemeToggle />
         </div>
       </div>

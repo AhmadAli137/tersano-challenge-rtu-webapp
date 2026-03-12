@@ -98,14 +98,14 @@ export default function ControlPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6">
-        <div className="flex flex-col gap-6">
+      <main className="container py-8">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Control Panel</h1>
-              <p className="text-muted-foreground">
-                Send commands and configure your IoT devices
+              <h1 className="text-xl font-semibold tracking-tight">Control Panel</h1>
+              <p className="text-sm text-muted-foreground">
+                Send commands and configure devices
               </p>
             </div>
             <DeviceSelector
@@ -116,7 +116,7 @@ export default function ControlPage() {
           </div>
 
           {/* Main Content */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {/* Control Form */}
             <div>
               {selectedDevice ? (
@@ -138,13 +138,13 @@ export default function ControlPage() {
             </div>
 
             {/* Command History */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base font-medium flex items-center gap-2">
-                  <Send className="h-4 w-4 text-primary" />
+            <Card className="border-border/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Send className="h-3.5 w-3.5 text-muted-foreground" />
                   Command History
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs">
                   Recent commands sent to {selectedDevice || "device"}
                 </CardDescription>
               </CardHeader>

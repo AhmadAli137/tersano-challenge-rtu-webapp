@@ -26,23 +26,23 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
   const { isDemoMode } = useDemoMode()
   
   return (
-    <Card className={cn(isDemoMode && "border-primary/30")}>
-      <CardHeader>
-        <CardTitle className="text-base font-medium">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+    <Card className="border-border/50">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[140px]">Time</TableHead>
-                <TableHead>Seq</TableHead>
-                <TableHead>Temp</TableHead>
-                <TableHead>Humidity</TableHead>
-                <TableHead>Pressure</TableHead>
-                <TableHead>Battery</TableHead>
-                <TableHead>Status</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[100px] text-xs">Time</TableHead>
+                <TableHead className="text-xs">Seq</TableHead>
+                <TableHead className="text-xs">Temp</TableHead>
+                <TableHead className="text-xs">Humidity</TableHead>
+                <TableHead className="text-xs">Pressure</TableHead>
+                <TableHead className="text-xs">Battery</TableHead>
+                <TableHead className="text-xs">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

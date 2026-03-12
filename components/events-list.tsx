@@ -75,13 +75,13 @@ export function EventsList({
   const { isDemoMode } = useDemoMode()
   
   return (
-    <Card className={cn(isDemoMode && "border-neon-pink/30")}>
-      <CardHeader>
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <Activity className={cn("h-4 w-4", isDemoMode ? "text-neon-pink" : "text-primary")} />
+    <Card className="border-border/50">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Activity className={cn("h-3.5 w-3.5", isDemoMode ? "text-neon-pink" : "text-muted-foreground")} />
           {title}
         </CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <ScrollArea style={{ height: maxHeight }}>
@@ -98,10 +98,10 @@ export function EventsList({
                 return (
                   <div
                     key={event.id}
-                    className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                    className="flex items-start gap-3 p-2.5 rounded-md border border-border/50 bg-card hover:bg-muted/30 transition-colors"
                   >
-                    <div className={`rounded-full p-2 ${colorClass}`}>
-                      <Icon className="h-4 w-4" />
+                    <div className={`rounded-md p-1.5 ${colorClass}`}>
+                      <Icon className="h-3.5 w-3.5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">

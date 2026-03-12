@@ -54,17 +54,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6">
-        <div className="flex flex-col gap-6">
+      <main className="container py-8">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">
-                Real-time telemetry monitoring for your IoT devices
+              <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
+              <p className="text-sm text-muted-foreground">
+                Real-time telemetry monitoring
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <DeviceSelector
                 devices={devices}
                 value={selectedDevice}
@@ -75,7 +75,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Temperature"
               value={latestReading?.temperature_c?.toFixed(1) ?? "--"}
@@ -113,7 +113,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Secondary Stats */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               title="Device Uptime"
               value={uptimeStr}
@@ -137,7 +137,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-3 lg:grid-cols-2">
             <TelemetryChart
               data={readings}
               dataKey="temperature_c"

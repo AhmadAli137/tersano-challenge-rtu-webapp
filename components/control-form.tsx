@@ -56,15 +56,15 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
   }
 
   return (
-    <div className="space-y-6">
-      <Card className={cn(isDemoMode && "border-neon-cyan/30")}>
-        <CardHeader>
+    <div className="space-y-4">
+      <Card className="border-border/50">
+        <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Timer className={cn("h-5 w-5", isDemoMode ? "text-neon-cyan" : "text-primary")} />
-            <CardTitle className="text-base">Sampling Interval</CardTitle>
+            <Timer className={cn("h-3.5 w-3.5", isDemoMode ? "text-neon-cyan" : "text-muted-foreground")} />
+            <CardTitle className="text-sm font-medium">Sampling Interval</CardTitle>
           </div>
-          <CardDescription>
-            Configure how often the device sends telemetry data
+          <CardDescription className="text-xs">
+            Configure telemetry frequency
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -91,22 +91,23 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
           <Button
             onClick={handleSamplingSubmit}
             disabled={isLoading}
-            className={cn("w-full", isDemoMode && "bg-neon-cyan text-background hover:bg-neon-cyan/90")}
+            size="sm"
+            className={cn("w-full", isDemoMode && "bg-neon-cyan/15 text-neon-cyan hover:bg-neon-cyan/25")}
           >
-            <Send className="h-4 w-4 mr-2" />
-            Send Command
+            <Send className="h-3.5 w-3.5 mr-1.5" />
+            Send
           </Button>
         </CardContent>
       </Card>
 
-      <Card className={cn(isDemoMode && "border-neon-purple/30")}>
-        <CardHeader>
+      <Card className="border-border/50">
+        <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Volume2 className={cn("h-5 w-5", isDemoMode ? "text-neon-purple" : "text-primary")} />
-            <CardTitle className="text-base">Buzzer Control</CardTitle>
+            <Volume2 className={cn("h-3.5 w-3.5", isDemoMode ? "text-neon-purple" : "text-muted-foreground")} />
+            <CardTitle className="text-sm font-medium">Buzzer Control</CardTitle>
           </div>
-          <CardDescription>
-            Control the device buzzer for alerts
+          <CardDescription className="text-xs">
+            Control device alerts
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -139,22 +140,23 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
           <Button
             onClick={handleBuzzerSubmit}
             disabled={isLoading}
-            className={cn("w-full", isDemoMode && "bg-neon-purple text-background hover:bg-neon-purple/90")}
+            size="sm"
+            className={cn("w-full", isDemoMode && "bg-neon-purple/15 text-neon-purple hover:bg-neon-purple/25")}
           >
-            <Send className="h-4 w-4 mr-2" />
-            Send Command
+            <Send className="h-3.5 w-3.5 mr-1.5" />
+            Send
           </Button>
         </CardContent>
       </Card>
 
-      <Card className={cn(isDemoMode && "border-neon-orange/30")}>
-        <CardHeader>
+      <Card className="border-border/50">
+        <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Code className={cn("h-5 w-5", isDemoMode ? "text-neon-orange" : "text-primary")} />
-            <CardTitle className="text-base">Custom Command</CardTitle>
+            <Code className={cn("h-3.5 w-3.5", isDemoMode ? "text-neon-orange" : "text-muted-foreground")} />
+            <CardTitle className="text-sm font-medium">Custom Command</CardTitle>
           </div>
-          <CardDescription>
-            Send a custom JSON command to device {deviceId}
+          <CardDescription className="text-xs">
+            Send custom JSON to {deviceId}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -172,10 +174,11 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
             onClick={handleCustomSubmit}
             disabled={isLoading || !customCommand.trim()}
             variant="secondary"
-            className={cn("w-full", isDemoMode && "bg-neon-orange/20 text-neon-orange border-neon-orange/30 hover:bg-neon-orange/30")}
+            size="sm"
+            className={cn("w-full", isDemoMode && "bg-neon-orange/15 text-neon-orange hover:bg-neon-orange/25")}
           >
-            <Send className="h-4 w-4 mr-2" />
-            Send Custom Command
+            <Send className="h-3.5 w-3.5 mr-1.5" />
+            Send
           </Button>
         </CardContent>
       </Card>

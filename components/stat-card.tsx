@@ -19,12 +19,20 @@ interface StatCardProps {
   neonColor?: NeonColor
 }
 
-const neonColorClasses: Record<NeonColor, { bg: string; text: string; glow: string }> = {
-  cyan: { bg: "bg-neon-cyan/20", text: "text-neon-cyan", glow: "glow-cyan" },
-  purple: { bg: "bg-neon-purple/20", text: "text-neon-purple", glow: "glow-purple" },
-  pink: { bg: "bg-neon-pink/20", text: "text-neon-pink", glow: "glow-pink" },
-  green: { bg: "bg-neon-green/20", text: "text-neon-green", glow: "glow-green" },
-  orange: { bg: "bg-neon-orange/20", text: "text-neon-orange", glow: "glow-orange" },
+const neonColorClasses: Record<NeonColor, { bg: string; text: string; border: string }> = {
+  cyan: { bg: "bg-neon-cyan/10", text: "text-neon-cyan", border: "border-neon-cyan/20" },
+  purple: { bg: "bg-neon-purple/10", text: "text-neon-purple", border: "border-neon-purple/20" },
+  pink: { bg: "bg-neon-pink/10", text: "text-neon-pink", border: "border-neon-pink/20" },
+  green: { bg: "bg-neon-green/10", text: "text-neon-green", border: "border-neon-green/20" },
+  orange: { bg: "bg-neon-orange/10", text: "text-neon-orange", border: "border-neon-orange/20" },
+}
+
+const normalColorClasses: Record<NeonColor, { bg: string; text: string }> = {
+  cyan: { bg: "bg-chart-1/10", text: "text-chart-1" },
+  purple: { bg: "bg-chart-2/10", text: "text-chart-2" },
+  pink: { bg: "bg-chart-5/10", text: "text-chart-5" },
+  green: { bg: "bg-chart-4/10", text: "text-chart-4" },
+  orange: { bg: "bg-chart-3/10", text: "text-chart-3" },
 }
 
 export function StatCard({
@@ -39,37 +47,38 @@ export function StatCard({
   neonColor = "cyan",
 }: StatCardProps) {
   const { isDemoMode } = useDemoMode()
-  const colorClasses = neonColorClasses[neonColor]
+  const neonClasses = neonColorClasses[neonColor]
+  const normalClasses = normalColorClasses[neonColor]
 
   return (
     <Card className={cn(
-      "relative overflow-hidden transition-all",
-      isDemoMode && `border-${neonColor === "cyan" ? "neon-cyan" : neonColor === "purple" ? "neon-purple" : neonColor === "pink" ? "neon-pink" : neonColor === "green" ? "neon-green" : "neon-orange"}/30`,
+      "relative overflow-hidden border-border/50",
+      isDemoMode && neonClasses.border,
       className
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {title}
         </CardTitle>
         <div className={cn(
-          "rounded-md p-2 transition-all",
-          isDemoMode ? colorClasses.bg : "bg-primary/10",
+          "rounded-md p-1.5",
+          isDemoMode ? neonClasses.bg : normalClasses.bg,
           iconClassName
         )}>
           <Icon className={cn(
-            "h-4 w-4 transition-colors",
-            isDemoMode ? colorClasses.text : "text-primary"
+            "h-3.5 w-3.5",
+            isDemoMode ? neonClasses.text : normalClasses.text
           )} />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         <div className="flex items-baseline gap-1">
           <span className={cn(
-            "text-2xl font-bold tracking-tight font-mono tabular-nums",
-            isDemoMode && colorClasses.text
+            "text-2xl font-semibold tracking-tight font-mono tabular-nums",
+            isDemoMode && neonClasses.text
           )}>{value}</span>
           {unit && (
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground">
               {unit}
             </span>
           )}
@@ -77,9 +86,9 @@ export function StatCard({
         {trend && trendValue && (
           <p
             className={cn(
-              "mt-1 text-xs",
-              trend === "up" && (isDemoMode ? "text-neon-green" : "text-green-600 dark:text-green-400"),
-              trend === "down" && (isDemoMode ? "text-neon-pink" : "text-red-600 dark:text-red-400"),
+              "mt-1.5 text-xs",
+              trend === "up" && (isDemoMode ? "text-neon-green" : "text-success"),
+              trend === "down" && (isDemoMode ? "text-neon-pink" : "text-destructive"),
               trend === "neutral" && "text-muted-foreground"
             )}
           >

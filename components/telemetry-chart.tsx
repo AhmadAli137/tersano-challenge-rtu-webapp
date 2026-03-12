@@ -40,27 +40,28 @@ export function TelemetryChart({
     fullTime: reading.created_at,
   }))
 
-  // Get neon color based on the dataKey
-  const getNeonBorderColor = () => {
+  // Get border color based on the dataKey
+  const getBorderColor = () => {
+    if (!isDemoMode) return "border-border/50"
     switch (dataKey) {
-      case "temperature_c": return "border-neon-cyan/30"
-      case "humidity_pct": return "border-neon-purple/30"
-      case "pressure_hpa": return "border-neon-orange/30"
-      case "battery_v": return "border-neon-green/30"
-      default: return "border-primary/30"
+      case "temperature_c": return "border-neon-cyan/20"
+      case "humidity_pct": return "border-neon-purple/20"
+      case "pressure_hpa": return "border-neon-orange/20"
+      case "battery_v": return "border-neon-green/20"
+      default: return "border-border/50"
     }
   }
 
   return (
-    <Card className={cn(isDemoMode && getNeonBorderColor())}>
+    <Card className={cn("border-border/50", isDemoMode && getBorderColor())}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {description && (
-          <CardDescription>{description}</CardDescription>
+          <CardDescription className="text-xs">{description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="h-[200px] w-full">
+      <CardContent className="pt-0 pb-3">
+        <div className="h-[180px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
@@ -72,19 +73,17 @@ export function TelemetryChart({
                   <stop offset="100%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
               <XAxis
                 dataKey="time"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
                 tickLine={false}
                 axisLine={false}
-                className="text-muted-foreground"
               />
               <YAxis
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
                 tickLine={false}
                 axisLine={false}
-                className="text-muted-foreground"
                 tickFormatter={(value) => `${value}${unit}`}
               />
               <Tooltip

@@ -40,17 +40,17 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-6">
-        <div className="flex flex-col gap-6">
+      <main className="container py-8">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Device Events</h1>
-              <p className="text-muted-foreground">
-                Monitor device status changes and system events
+              <h1 className="text-xl font-semibold tracking-tight">Device Events</h1>
+              <p className="text-sm text-muted-foreground">
+                Monitor device status and system events
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <DeviceSelector
                 devices={devices}
                 value={selectedDevice}
