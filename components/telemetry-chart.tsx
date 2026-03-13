@@ -1,11 +1,11 @@
 "use client"
 
+import { useRef, useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Area,
   AreaChart,
   CartesianGrid,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -31,6 +31,21 @@ export function TelemetryChart({
   color = "var(--color-primary)",
   unit = "",
 }: TelemetryChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [chartWidth, setChartWidth] = useState(400)
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setChartWidth(containerRef.current.offsetWidth)
+      }
+    }
+    
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
   const chartData = data.map((reading) => ({
     time: format(new Date(reading.created_at), "HH:mm:ss"),
     value: reading[dataKey] ?? 0,
@@ -57,9 +72,11 @@ export function TelemetryChart({
         )}
       </CardHeader>
       <CardContent className="pt-0 pb-3">
-        <div style={{ width: '100%', height: 180 }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div ref={containerRef} className="w-full">
+          {chartWidth > 0 && (
             <AreaChart
+              width={chartWidth}
+              height={180}
               data={chartData}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
             >
@@ -107,7 +124,7 @@ export function TelemetryChart({
                 fill={`url(#gradient-${dataKey})`}
               />
             </AreaChart>
-          </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>
