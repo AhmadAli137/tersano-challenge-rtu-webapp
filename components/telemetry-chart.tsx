@@ -49,7 +49,7 @@ export function TelemetryChart({
   }, [])
 
   const chartData = data.map((reading) => ({
-    time: format(new Date(reading.created_at), "HH:mm:ss"),
+    time: format(new Date(reading.created_at), "h:mm:ss a"),
     value: reading[dataKey] ?? 0,
     fullTime: reading.created_at,
   }))

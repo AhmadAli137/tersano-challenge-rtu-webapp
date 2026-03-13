@@ -53,7 +53,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                 readings.map((reading) => (
                   <TableRow key={reading.id}>
                     <TableCell className="font-mono text-xs">
-                      {format(new Date(reading.created_at), "HH:mm:ss")}
+                      {format(new Date(reading.created_at), "h:mm:ss a")}
                     </TableCell>
                     <TableCell className="font-mono text-xs">{reading.seq}</TableCell>
                     <TableCell>
