@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header isLive={isDeviceLive} />
       <main className="container py-8">
         <div className="flex flex-col gap-8">
           {/* Page Header */}

@@ -14,7 +14,11 @@ const navigation = [
   { name: "Device Events", href: "/events", icon: Activity },
 ]
 
-export function Header() {
+interface HeaderProps {
+  isLive?: boolean
+}
+
+export function Header({ isLive = false }: HeaderProps) {
   const pathname = usePathname()
   const { isDemoMode, toggleDemoMode } = useDemoMode()
 
@@ -67,19 +71,29 @@ export function Header() {
         <div className="flex items-center gap-2">
           <div className={cn(
             "hidden sm:flex items-center gap-1.5 text-xs px-2 py-1 rounded-md",
-            isDemoMode ? "text-neon-green bg-neon-green/10" : "text-muted-foreground"
+            isDemoMode 
+              ? "text-neon-green bg-neon-green/10" 
+              : isLive 
+                ? "text-success bg-success/10" 
+                : "text-muted-foreground bg-muted/50"
           )}>
             <span className="relative flex h-1.5 w-1.5">
-              <span className={cn(
-                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                isDemoMode ? "bg-neon-green" : "bg-success"
-              )}></span>
-              <span className={cn(
-                "relative inline-flex rounded-full h-1.5 w-1.5",
-                isDemoMode ? "bg-neon-green" : "bg-success"
-              )}></span>
+              {(isDemoMode || isLive) ? (
+                <>
+                  <span className={cn(
+                    "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                    isDemoMode ? "bg-neon-green" : "bg-success"
+                  )}></span>
+                  <span className={cn(
+                    "relative inline-flex rounded-full h-1.5 w-1.5",
+                    isDemoMode ? "bg-neon-green" : "bg-success"
+                  )}></span>
+                </>
+              ) : (
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-muted-foreground"></span>
+              )}
             </span>
-            <span>{isDemoMode ? "Demo" : "Live"}</span>
+            <span>{isDemoMode ? "Demo" : isLive ? "Live" : "Offline"}</span>
           </div>
           <Button
             variant="ghost"

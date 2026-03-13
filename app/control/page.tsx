@@ -6,7 +6,7 @@ import { ControlForm } from "@/components/control-form"
 import { DeviceSelector } from "@/components/device-selector"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useDeviceIds } from "@/hooks/use-telemetry"
+import { useDeviceIds, useDeviceStatus } from "@/hooks/use-telemetry"
 import { useDemoMode } from "@/contexts/demo-mode"
 import { sendDeviceCommand } from "@/lib/actions"
 import { CommandPayload, DeviceInfo, DeviceCommand } from "@/lib/types"
@@ -20,7 +20,10 @@ export default function ControlPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [demoCommands, setDemoCommands] = useState<DeviceCommand[]>([])
   const { deviceIds: realDeviceIds } = useDeviceIds()
+  const { isLive: realIsLive } = useDeviceStatus(selectedDevice || null)
   const { isDemoMode, demoDeviceIds } = useDemoMode()
+  
+  const isDeviceLive = isDemoMode ? true : realIsLive
   
   const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
 
@@ -97,7 +100,7 @@ export default function ControlPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header isLive={isDeviceLive} />
       <main className="container py-8">
         <div className="flex flex-col gap-8">
           {/* Page Header */}
