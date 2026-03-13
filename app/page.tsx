@@ -41,7 +41,17 @@ export default function DashboardPage() {
       <main className="container py-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex items-center justify-end pb-2 border-b border-border/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-tersano-teal via-neon-purple to-neon-pink bg-clip-text text-transparent">
+                  Remote Telemetry Unit
+                </span>
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Real-time environmental monitoring
+              </p>
+            </div>
             <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
           </div>
 

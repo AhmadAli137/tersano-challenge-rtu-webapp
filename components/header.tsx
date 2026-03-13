@@ -35,7 +35,7 @@ export function Header() {
     )}>
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center">
             <div className="relative h-10 w-10 overflow-hidden rounded-full shadow-sm">
               <Image
                 src="/tersano-logo.png"
@@ -44,10 +44,6 @@ export function Header() {
                 className="object-cover"
               />
             </div>
-            <span className={cn(
-              "hidden sm:inline text-base font-semibold tracking-tight",
-              (isDemoMode || isLive) ? "text-tersano-teal" : "text-foreground"
-            )}>Tersano RTU</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {navigation.map((item) => {
