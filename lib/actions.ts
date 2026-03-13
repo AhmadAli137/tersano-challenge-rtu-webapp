@@ -69,7 +69,7 @@ export async function getDeviceEvents(
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from("device_status")
+    .from("status")
     .select("*")
     .eq("device_id", deviceId)
     .order("created_at", { ascending: false })
@@ -87,7 +87,7 @@ export async function getAllEvents(limit: number = 100): Promise<DeviceStatus[]>
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from("device_status")
+    .from("status")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(limit)
@@ -106,7 +106,7 @@ export async function sendDeviceCommand(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient()
 
-  const { error } = await supabase.from("device_commands").insert({
+  const { error } = await supabase.from("commands").insert({
     device_id: deviceId,
     command: command,
     processed: false,
@@ -141,7 +141,7 @@ export async function getPendingCommands(deviceId: string) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from("device_commands")
+    .from("commands")
     .select("*")
     .eq("device_id", deviceId)
     .eq("processed", false)
