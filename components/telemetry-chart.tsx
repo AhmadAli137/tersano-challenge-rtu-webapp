@@ -11,7 +11,6 @@ import {
   YAxis,
 } from "recharts"
 import { TelemetryRow } from "@/lib/types"
-import { useDemoMode } from "@/contexts/demo-mode"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 
@@ -22,7 +21,6 @@ interface TelemetryChartProps {
   description?: string
   color?: string
   unit?: string
-  isLive?: boolean
 }
 
 export function TelemetryChart({
@@ -32,11 +30,7 @@ export function TelemetryChart({
   description,
   color = "var(--color-primary)",
   unit = "",
-  isLive,
 }: TelemetryChartProps) {
-  const { isDemoMode } = useDemoMode()
-  const useNeonStyle = isLive || isDemoMode
-  
   const chartData = data.map((reading) => ({
     time: format(new Date(reading.created_at), "HH:mm:ss"),
     value: reading[dataKey] ?? 0,
@@ -45,18 +39,17 @@ export function TelemetryChart({
 
   // Get border color based on the dataKey
   const getBorderColor = () => {
-    if (!useNeonStyle) return "border-border/50"
     switch (dataKey) {
-      case "temperature_c": return "border-neon-cyan/20"
-      case "humidity_pct": return "border-neon-purple/20"
-      case "pressure_hpa": return "border-neon-orange/20"
-      case "battery_v": return "border-neon-green/20"
+      case "temperature_c": return "border-tersano-teal/30"
+      case "humidity_pct": return "border-neon-purple/30"
+      case "pressure_hpa": return "border-neon-orange/30"
+      case "battery_v": return "border-neon-green/30"
       default: return "border-border/50"
     }
   }
 
   return (
-    <Card className={cn("border-border/50", useNeonStyle && getBorderColor())}>
+    <Card className={cn(getBorderColor())}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {description && (

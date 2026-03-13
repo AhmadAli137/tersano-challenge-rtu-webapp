@@ -11,7 +11,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TelemetryRow } from "@/lib/types"
-import { useDemoMode } from "@/contexts/demo-mode"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CheckCircle2, XCircle } from "lucide-react"
@@ -20,13 +19,9 @@ interface ReadingsTableProps {
   readings: TelemetryRow[]
   title?: string
   description?: string
-  isLive?: boolean
 }
 
-export function ReadingsTable({ readings, title = "Recent Readings", description, isLive }: ReadingsTableProps) {
-  const { isDemoMode } = useDemoMode()
-  const useNeonStyle = isLive || isDemoMode
-  
+export function ReadingsTable({ readings, title = "Recent Readings", description }: ReadingsTableProps) {
   return (
     <Card className="border-border/50">
       <CardHeader className="pb-3">
@@ -63,7 +58,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                     <TableCell className="font-mono text-xs">{reading.seq}</TableCell>
                     <TableCell>
                       {reading.temperature_c !== null ? (
-                        <span className={cn("font-medium font-mono", useNeonStyle && "text-neon-cyan")}>
+                        <span className="font-medium font-mono text-tersano-teal">
                           {reading.temperature_c.toFixed(1)}°C
                         </span>
                       ) : (
@@ -72,7 +67,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                     </TableCell>
                     <TableCell>
                       {reading.humidity_pct !== null ? (
-                        <span className={cn("font-medium font-mono", useNeonStyle && "text-neon-purple")}>
+                        <span className="font-medium font-mono text-neon-purple">
                           {reading.humidity_pct.toFixed(1)}%
                         </span>
                       ) : (
@@ -81,7 +76,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                     </TableCell>
                     <TableCell>
                       {reading.pressure_hpa !== null ? (
-                        <span className={cn("font-medium font-mono", useNeonStyle && "text-neon-orange")}>
+                        <span className="font-medium font-mono text-neon-orange">
                           {reading.pressure_hpa.toFixed(0)} hPa
                         </span>
                       ) : (
@@ -94,7 +89,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                           variant={reading.battery_v > 3.3 ? "default" : "destructive"} 
                           className={cn(
                             "font-mono",
-                            useNeonStyle && reading.battery_v > 3.3 && "bg-neon-green/20 text-neon-green border-neon-green/30"
+                            reading.battery_v > 3.3 && "bg-neon-green/20 text-neon-green border-neon-green/30"
                           )}
                         >
                           {reading.battery_v.toFixed(2)}V
@@ -105,9 +100,9 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                     </TableCell>
                     <TableCell>
                       {reading.sensor_ok ? (
-                        <CheckCircle2 className={cn("h-4 w-4", useNeonStyle ? "text-neon-green" : "text-success")} />
+                        <CheckCircle2 className="h-4 w-4 text-neon-green" />
                       ) : (
-                        <XCircle className={cn("h-4 w-4", useNeonStyle ? "text-neon-pink" : "text-destructive")} />
+                        <XCircle className="h-4 w-4 text-neon-pink" />
                       )}
                     </TableCell>
                   </TableRow>
