@@ -1,6 +1,6 @@
 "use client"
 
-import { Header } from "@/components/header"
+import { HeaderWrapper } from "@/components/header-wrapper"
 import { EventsList } from "@/components/events-list"
 import { useEvents } from "@/hooks/use-events"
 import { useDemoMode } from "@/contexts/demo-mode"
@@ -17,7 +17,7 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      <Header />
+      <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
