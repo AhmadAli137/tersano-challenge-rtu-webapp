@@ -57,7 +57,8 @@ export function TelemetryChart({
         )}
       </CardHeader>
       <CardContent className="pt-0 pb-3">
-          <ResponsiveContainer width="100%" height={180} minWidth={0}>
+        <div style={{ width: '100%', height: 180 }}>
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
@@ -107,6 +108,7 @@ export function TelemetryChart({
               />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   )
