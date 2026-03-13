@@ -36,12 +36,12 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-lg bg-white p-1 shadow-sm ring-1 ring-border/50">
+            <div className="relative h-9 w-9 overflow-hidden rounded-full shadow-sm">
               <Image
-                src="/tersano-logo.jpg"
+                src="/tersano-logo.png"
                 alt="Tersano"
                 fill
-                className="object-contain"
+                className="object-cover"
               />
             </div>
             <div className="hidden sm:flex flex-col">
