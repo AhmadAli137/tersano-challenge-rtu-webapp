@@ -138,13 +138,13 @@ export async function getDeviceIds(): Promise<string[]> {
 }
 
 // Check if a device is "live" based on recent telemetry
-// A device is considered live if it has sent data within the threshold (default 5 minutes)
+// A device is considered live if it has sent data within the threshold (default 10 seconds)
 export async function isDeviceLive(
   deviceId: string,
-  thresholdMinutes: number = 5
+  thresholdSeconds: number = 10
 ): Promise<boolean> {
   const supabase = await createClient()
-  const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000)
+  const threshold = new Date(Date.now() - thresholdSeconds * 1000)
 
   const { data, error } = await supabase
     .from("telemetry")
@@ -182,8 +182,8 @@ export async function getDeviceStatus(deviceId: string): Promise<{
   }
 
   const lastSeenDate = new Date(data.created_at)
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-  const isLive = lastSeenDate > fiveMinutesAgo
+  const tenSecondsAgo = new Date(Date.now() - 10 * 1000)
+  const isLive = lastSeenDate > tenSecondsAgo
 
   return {
     isLive,

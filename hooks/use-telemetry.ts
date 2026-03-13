@@ -35,13 +35,13 @@ export function useDeviceIds() {
   }
 }
 
-// Hook to check if a device is live (has sent data in last 5 minutes)
+// Hook to check if a device is live (has sent data in last 10 seconds)
 export function useDeviceStatus(deviceId: string | null) {
   const { data, error, isLoading } = useSWR(
     deviceId ? [`device-status`, deviceId] : null,
     () => getDeviceStatus(deviceId!),
     {
-      refreshInterval: 10000, // Check every 10 seconds
+      refreshInterval: 5000, // Check every 5 seconds for responsive liveness
       revalidateOnFocus: true,
     }
   )
