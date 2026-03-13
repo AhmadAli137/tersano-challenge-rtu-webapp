@@ -20,20 +20,20 @@ interface StatCardProps {
   isLive?: boolean
 }
 
-const neonColorClasses: Record<NeonColor, { bg: string; text: string; border: string }> = {
-  cyan: { bg: "bg-neon-cyan/10", text: "text-neon-cyan", border: "border-neon-cyan/20" },
-  purple: { bg: "bg-neon-purple/10", text: "text-neon-purple", border: "border-neon-purple/20" },
-  pink: { bg: "bg-neon-pink/10", text: "text-neon-pink", border: "border-neon-pink/20" },
-  green: { bg: "bg-neon-green/10", text: "text-neon-green", border: "border-neon-green/20" },
-  orange: { bg: "bg-neon-orange/10", text: "text-neon-orange", border: "border-neon-orange/20" },
+const neonColorClasses: Record<NeonColor, { bg: string; text: string; border: string; gradient: string }> = {
+  cyan: { bg: "bg-tersano-teal/10", text: "text-tersano-teal", border: "border-tersano-teal/30", gradient: "from-tersano-teal/5 to-transparent" },
+  purple: { bg: "bg-neon-purple/10", text: "text-neon-purple", border: "border-neon-purple/30", gradient: "from-neon-purple/5 to-transparent" },
+  pink: { bg: "bg-neon-pink/10", text: "text-neon-pink", border: "border-neon-pink/30", gradient: "from-neon-pink/5 to-transparent" },
+  green: { bg: "bg-neon-green/10", text: "text-neon-green", border: "border-neon-green/30", gradient: "from-neon-green/5 to-transparent" },
+  orange: { bg: "bg-neon-orange/10", text: "text-neon-orange", border: "border-neon-orange/30", gradient: "from-neon-orange/5 to-transparent" },
 }
 
 const normalColorClasses: Record<NeonColor, { bg: string; text: string }> = {
-  cyan: { bg: "bg-chart-1/10", text: "text-chart-1" },
-  purple: { bg: "bg-chart-2/10", text: "text-chart-2" },
-  pink: { bg: "bg-chart-5/10", text: "text-chart-5" },
-  green: { bg: "bg-chart-4/10", text: "text-chart-4" },
-  orange: { bg: "bg-chart-3/10", text: "text-chart-3" },
+  cyan: { bg: "bg-muted/50", text: "text-muted-foreground" },
+  purple: { bg: "bg-muted/50", text: "text-muted-foreground" },
+  pink: { bg: "bg-muted/50", text: "text-muted-foreground" },
+  green: { bg: "bg-muted/50", text: "text-muted-foreground" },
+  orange: { bg: "bg-muted/50", text: "text-muted-foreground" },
 }
 
 export function StatCard({
@@ -56,33 +56,37 @@ export function StatCard({
 
   return (
     <Card className={cn(
-      "relative overflow-hidden border-border/50",
-      useNeonStyle && neonClasses.border,
+      "relative overflow-hidden transition-all duration-200",
+      useNeonStyle ? neonClasses.border : "border-border/50",
+      useNeonStyle && "shadow-sm",
       className
     )}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      {useNeonStyle && (
+        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", neonClasses.gradient)} />
+      )}
+      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           {title}
         </CardTitle>
         <div className={cn(
-          "rounded-md p-1.5",
+          "rounded-lg p-2",
           useNeonStyle ? neonClasses.bg : normalClasses.bg,
           iconClassName
         )}>
           <Icon className={cn(
-            "h-3.5 w-3.5",
+            "h-4 w-4",
             useNeonStyle ? neonClasses.text : normalClasses.text
           )} />
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex items-baseline gap-1">
+      <CardContent className="relative pt-0">
+        <div className="flex items-baseline gap-1.5">
           <span className={cn(
-            "text-2xl font-semibold tracking-tight font-mono tabular-nums",
+            "text-3xl font-semibold tracking-tight font-mono tabular-nums",
             useNeonStyle && neonClasses.text
           )}>{value}</span>
           {unit && (
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground">
               {unit}
             </span>
           )}
@@ -90,7 +94,7 @@ export function StatCard({
         {trend && trendValue && (
           <p
             className={cn(
-              "mt-1.5 text-xs",
+              "mt-2 text-xs font-medium",
               trend === "up" && (useNeonStyle ? "text-neon-green" : "text-success"),
               trend === "down" && (useNeonStyle ? "text-neon-pink" : "text-destructive"),
               trend === "neutral" && "text-muted-foreground"

@@ -99,23 +99,25 @@ export default function ControlPage() {
   const displayCommands = isDemoMode ? demoCommands : recentCommands
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <Header isLive={isDeviceLive} />
       <main className="container py-8">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Control Panel</h1>
-              <p className="text-sm text-muted-foreground">
-                Send commands and configure devices
-              </p>
+          <div className="flex flex-col gap-6 pb-2 border-b border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-semibold tracking-tight">Control Panel</h1>
+                <p className="text-sm text-muted-foreground">
+                  Send commands and configure devices
+                </p>
+              </div>
+              <DeviceSelector
+                devices={devices}
+                value={selectedDevice}
+                onChange={setSelectedDevice}
+              />
             </div>
-            <DeviceSelector
-              devices={devices}
-              value={selectedDevice}
-              onChange={setSelectedDevice}
-            />
           </div>
 
           {/* Main Content */}

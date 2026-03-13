@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: 'Tersano RTU | IoT Telemetry Dashboard',
-  description: 'Real-time IoT telemetry monitoring and control panel for Tersano RTU devices',
+  title: 'Tersano Remote Telemetry Unit (RTU)',
+  description: 'Real-time IoT telemetry monitoring and control panel for Tersano Remote Telemetry Units',
 }
 
 export default function RootLayout({

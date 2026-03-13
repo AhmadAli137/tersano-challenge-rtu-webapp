@@ -41,32 +41,35 @@ export default function EventsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <Header isLive={isDeviceLive} />
       <main className="container py-8">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Device Events</h1>
-              <p className="text-sm text-muted-foreground">
-                Monitor device status and system events
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <DeviceSelector
-                devices={devices}
-                value={selectedDevice}
-                onChange={setSelectedDevice}
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => refresh()}
-                disabled={isLoading}
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-              </Button>
+          <div className="flex flex-col gap-6 pb-2 border-b border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-semibold tracking-tight">Device Events</h1>
+                <p className="text-sm text-muted-foreground">
+                  Monitor device status and system events
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <DeviceSelector
+                  devices={devices}
+                  value={selectedDevice}
+                  onChange={setSelectedDevice}
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-lg"
+                  onClick={() => refresh()}
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                </Button>
+              </div>
             </div>
           </div>
 

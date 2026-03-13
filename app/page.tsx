@@ -57,30 +57,35 @@ export default function DashboardPage() {
     : "--"
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <Header isLive={isDeviceLive} />
       <main className="container py-8">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">
-                Real-time telemetry monitoring
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <DeviceSelector
-                devices={devices}
-                value={selectedDevice}
-                onChange={setSelectedDevice}
-              />
-              <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
+          <div className="flex flex-col gap-6 pb-2 border-b border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-semibold tracking-tight text-balance">
+                  Tersano Remote Telemetry Unit
+                  <span className="text-tersano-teal ml-2">(RTU)</span>
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Real-time monitoring and control for IoT devices
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <DeviceSelector
+                  devices={devices}
+                  value={selectedDevice}
+                  onChange={setSelectedDevice}
+                />
+                <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
+              </div>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Primary Stats Grid */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Temperature"
               value={latestReading?.temperature_c?.toFixed(1) ?? "--"}
@@ -122,7 +127,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Secondary Stats */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               title="Device Uptime"
               value={uptimeStr}
@@ -149,7 +154,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid gap-3 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <TelemetryChart
               data={readings}
               dataKey="temperature_c"
