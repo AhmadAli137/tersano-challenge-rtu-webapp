@@ -35,7 +35,7 @@ export function Header() {
     )}>
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="relative h-10 w-10 overflow-hidden rounded-full shadow-sm">
               <Image
                 src="/tersano-logo.png"
@@ -44,6 +44,10 @@ export function Header() {
                 className="object-cover"
               />
             </div>
+            <span className={cn(
+              "hidden sm:inline text-base font-semibold tracking-tight",
+              (isDemoMode || isLive) ? "text-tersano-teal" : "text-foreground"
+            )}>Tersano RTU</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {navigation.map((item) => {
@@ -97,10 +101,6 @@ export function Header() {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground/50"></span>
                   )}
                 </span>
-                <Radio className={cn(
-                  "h-4 w-4",
-                  isDemoMode ? "text-neon-purple" : isLive ? "text-tersano-teal" : "text-muted-foreground"
-                )} />
                 <SelectValue placeholder="Select device" />
               </div>
             </SelectTrigger>
@@ -109,15 +109,7 @@ export function Header() {
                 .filter((device) => device.id && device.id.trim() !== "")
                 .map((device) => (
                   <SelectItem key={device.id} value={device.id}>
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "h-2 w-2 rounded-full",
-                        device.isOnline 
-                          ? isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
-                          : "bg-muted-foreground/50"
-                      )} />
-                      <span>{device.name || device.id}</span>
-                    </div>
+                    {device.name || device.id}
                   </SelectItem>
                 ))}
             </SelectContent>
