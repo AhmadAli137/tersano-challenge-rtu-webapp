@@ -44,13 +44,10 @@ export function Header() {
                 className="object-cover"
               />
             </div>
-            <div className="hidden sm:flex flex-col">
-              <span className={cn(
-                "text-base font-semibold tracking-tight leading-none",
-                (isDemoMode || isLive) ? "text-tersano-teal" : "text-foreground"
-              )}>Tersano RTU</span>
-              <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">Remote Telemetry Unit</span>
-            </div>
+            <span className={cn(
+              "hidden sm:inline text-base font-semibold tracking-tight",
+              (isDemoMode || isLive) ? "text-tersano-teal" : "text-foreground"
+            )}>Tersano RTU</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {navigation.map((item) => {
