@@ -137,8 +137,8 @@ export async function getDeviceIds(): Promise<string[]> {
   return [...new Set(data.map((row) => row.device_id))]
 }
 
-// Check if a device is "live" based on recent status events (heartbeat)
-// A device is considered live if it has sent a status event within the threshold (default 60 seconds)
+// Check if a device is "live" based on recent heartbeat events
+// A device is considered live if it has sent a heartbeat within the threshold (default 60 seconds)
 export async function isDeviceLive(
   deviceId: string,
   thresholdSeconds: number = 60
@@ -150,6 +150,7 @@ export async function isDeviceLive(
     .from("status")
     .select("created_at")
     .eq("device_id", deviceId)
+    .eq("event", "heartbeat")
     .gte("created_at", threshold.toISOString())
     .limit(1)
 
@@ -162,7 +163,7 @@ export async function isDeviceLive(
 }
 
 // Get device status including liveness
-// A device is considered "live" if it has sent a status event within the last 60 seconds
+// A device is considered "live" if it has sent a heartbeat event within the last 60 seconds
 export async function getDeviceStatus(deviceId: string): Promise<{
   isLive: boolean
   lastSeen: string | null
@@ -170,11 +171,12 @@ export async function getDeviceStatus(deviceId: string): Promise<{
 }> {
   const supabase = await createClient()
 
-  // Check last status event for liveness (heartbeat)
+  // Check last heartbeat event for liveness
   const { data: statusData } = await supabase
     .from("status")
     .select("created_at")
     .eq("device_id", deviceId)
+    .eq("event", "heartbeat")
     .order("created_at", { ascending: false })
     .limit(1)
     .single()
