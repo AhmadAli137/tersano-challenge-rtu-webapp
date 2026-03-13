@@ -106,7 +106,7 @@ export async function sendDeviceCommand(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient()
 
-  const { error } = await supabase.from("commands").insert({
+  const { error } = await supabase.from("device_commands").insert({
     device_id: deviceId,
     command: command,
     processed: false,
