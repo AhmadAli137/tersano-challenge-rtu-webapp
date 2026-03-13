@@ -32,9 +32,11 @@ export function TelemetryChart({
   unit = "",
 }: TelemetryChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [chartWidth, setChartWidth] = useState(400)
+  const [chartWidth, setChartWidth] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const updateWidth = () => {
       if (containerRef.current) {
         setChartWidth(containerRef.current.offsetWidth)
@@ -72,8 +74,8 @@ export function TelemetryChart({
         )}
       </CardHeader>
       <CardContent className="pt-0 pb-3">
-        <div ref={containerRef} className="w-full">
-          {chartWidth > 0 && (
+        <div ref={containerRef} className="w-full" style={{ minHeight: 180 }}>
+          {mounted && chartWidth > 0 && (
             <AreaChart
               width={chartWidth}
               height={180}
