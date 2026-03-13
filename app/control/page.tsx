@@ -39,7 +39,7 @@ export default function ControlPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <Header />
-      <main className="container py-8">
+      <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
