@@ -17,6 +17,7 @@ interface StatCardProps {
   className?: string
   iconClassName?: string
   neonColor?: NeonColor
+  isLive?: boolean
 }
 
 const neonColorClasses: Record<NeonColor, { bg: string; text: string; border: string }> = {
@@ -45,15 +46,18 @@ export function StatCard({
   className,
   iconClassName,
   neonColor = "cyan",
+  isLive,
 }: StatCardProps) {
   const { isDemoMode } = useDemoMode()
+  // Use neon styling when live OR in demo mode
+  const useNeonStyle = isLive || isDemoMode
   const neonClasses = neonColorClasses[neonColor]
   const normalClasses = normalColorClasses[neonColor]
 
   return (
     <Card className={cn(
       "relative overflow-hidden border-border/50",
-      isDemoMode && neonClasses.border,
+      useNeonStyle && neonClasses.border,
       className
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -62,12 +66,12 @@ export function StatCard({
         </CardTitle>
         <div className={cn(
           "rounded-md p-1.5",
-          isDemoMode ? neonClasses.bg : normalClasses.bg,
+          useNeonStyle ? neonClasses.bg : normalClasses.bg,
           iconClassName
         )}>
           <Icon className={cn(
             "h-3.5 w-3.5",
-            isDemoMode ? neonClasses.text : normalClasses.text
+            useNeonStyle ? neonClasses.text : normalClasses.text
           )} />
         </div>
       </CardHeader>
@@ -75,7 +79,7 @@ export function StatCard({
         <div className="flex items-baseline gap-1">
           <span className={cn(
             "text-2xl font-semibold tracking-tight font-mono tabular-nums",
-            isDemoMode && neonClasses.text
+            useNeonStyle && neonClasses.text
           )}>{value}</span>
           {unit && (
             <span className="text-xs font-medium text-muted-foreground">
@@ -87,8 +91,8 @@ export function StatCard({
           <p
             className={cn(
               "mt-1.5 text-xs",
-              trend === "up" && (isDemoMode ? "text-neon-green" : "text-success"),
-              trend === "down" && (isDemoMode ? "text-neon-pink" : "text-destructive"),
+              trend === "up" && (useNeonStyle ? "text-neon-green" : "text-success"),
+              trend === "down" && (useNeonStyle ? "text-neon-pink" : "text-destructive"),
               trend === "neutral" && "text-muted-foreground"
             )}
           >

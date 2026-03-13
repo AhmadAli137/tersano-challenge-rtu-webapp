@@ -87,6 +87,7 @@ export default function DashboardPage() {
               unit="°C"
               icon={Thermometer}
               neonColor="cyan"
+              isLive={isDeviceLive}
               trend={avgTemp && latestReading?.temperature_c ? (latestReading.temperature_c > avgTemp ? "up" : "down") : undefined}
               trendValue={avgTemp ? `Avg: ${avgTemp.toFixed(1)}°C` : undefined}
             />
@@ -96,6 +97,7 @@ export default function DashboardPage() {
               unit="%"
               icon={Droplets}
               neonColor="purple"
+              isLive={isDeviceLive}
               trend={avgHumidity && latestReading?.humidity_pct ? (latestReading.humidity_pct > avgHumidity ? "up" : "down") : undefined}
               trendValue={avgHumidity ? `Avg: ${avgHumidity.toFixed(1)}%` : undefined}
             />
@@ -105,6 +107,7 @@ export default function DashboardPage() {
               unit="hPa"
               icon={Gauge}
               neonColor="orange"
+              isLive={isDeviceLive}
             />
             <StatCard
               title="Battery"
@@ -112,6 +115,7 @@ export default function DashboardPage() {
               unit="V"
               icon={Battery}
               neonColor="green"
+              isLive={isDeviceLive}
               trend={latestReading?.battery_v ? (latestReading.battery_v > 3.3 ? "up" : "down") : undefined}
               trendValue={latestReading?.battery_v && latestReading.battery_v <= 3.3 ? "Low battery" : undefined}
             />
@@ -124,12 +128,14 @@ export default function DashboardPage() {
               value={uptimeStr}
               icon={Clock}
               neonColor="pink"
+              isLive={isDeviceLive}
             />
             <StatCard
               title="Total Readings"
               value={readings.length}
               icon={Activity}
               neonColor="cyan"
+              isLive={isDeviceLive}
               trendValue={`In last ${timeRange}`}
               trend="neutral"
             />
@@ -138,6 +144,7 @@ export default function DashboardPage() {
               value={latestReading ? formatDistanceToNow(new Date(latestReading.created_at), { addSuffix: true }) : "--"}
               icon={Activity}
               neonColor="green"
+              isLive={isDeviceLive}
             />
           </div>
 
@@ -150,6 +157,7 @@ export default function DashboardPage() {
               description="Temperature readings over time"
               color="var(--neon-cyan)"
               unit="°C"
+              isLive={isDeviceLive}
             />
             <TelemetryChart
               data={readings}
@@ -158,6 +166,7 @@ export default function DashboardPage() {
               description="Humidity readings over time"
               color="var(--neon-purple)"
               unit="%"
+              isLive={isDeviceLive}
             />
             <TelemetryChart
               data={readings}
@@ -166,6 +175,7 @@ export default function DashboardPage() {
               description="Atmospheric pressure readings"
               color="var(--neon-orange)"
               unit=" hPa"
+              isLive={isDeviceLive}
             />
             <TelemetryChart
               data={readings}
@@ -174,6 +184,7 @@ export default function DashboardPage() {
               description="Battery level over time"
               color="var(--neon-green)"
               unit="V"
+              isLive={isDeviceLive}
             />
           </div>
 
@@ -182,6 +193,7 @@ export default function DashboardPage() {
             readings={[...readings].reverse().slice(0, 20)}
             title="Recent Readings"
             description={`Latest telemetry data from ${selectedDevice || "device"}`}
+            isLive={isDeviceLive}
           />
         </div>
       </main>

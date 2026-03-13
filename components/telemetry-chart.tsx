@@ -22,6 +22,7 @@ interface TelemetryChartProps {
   description?: string
   color?: string
   unit?: string
+  isLive?: boolean
 }
 
 export function TelemetryChart({
@@ -31,8 +32,10 @@ export function TelemetryChart({
   description,
   color = "var(--color-primary)",
   unit = "",
+  isLive,
 }: TelemetryChartProps) {
   const { isDemoMode } = useDemoMode()
+  const useNeonStyle = isLive || isDemoMode
   
   const chartData = data.map((reading) => ({
     time: format(new Date(reading.created_at), "HH:mm:ss"),
@@ -42,7 +45,7 @@ export function TelemetryChart({
 
   // Get border color based on the dataKey
   const getBorderColor = () => {
-    if (!isDemoMode) return "border-border/50"
+    if (!useNeonStyle) return "border-border/50"
     switch (dataKey) {
       case "temperature_c": return "border-neon-cyan/20"
       case "humidity_pct": return "border-neon-purple/20"
@@ -53,7 +56,7 @@ export function TelemetryChart({
   }
 
   return (
-    <Card className={cn("border-border/50", isDemoMode && getBorderColor())}>
+    <Card className={cn("border-border/50", useNeonStyle && getBorderColor())}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {description && (
