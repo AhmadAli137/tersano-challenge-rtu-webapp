@@ -1,48 +1,27 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Header } from "@/components/header"
 import { StatCard } from "@/components/stat-card"
 import { TelemetryChart } from "@/components/telemetry-chart"
 import { ReadingsTable } from "@/components/readings-table"
 import { TimeRangeSelect } from "@/components/time-range-select"
-import { DeviceSelector } from "@/components/device-selector"
-import { useTelemetry, useDeviceIds, useDeviceStatus } from "@/hooks/use-telemetry"
+import { useTelemetry } from "@/hooks/use-telemetry"
 import { useDemoMode } from "@/contexts/demo-mode"
-import { TimeRange, DeviceInfo } from "@/lib/types"
+import { useDevice } from "@/contexts/device-context"
+import { TimeRange } from "@/lib/types"
 import { Thermometer, Droplets, Gauge, Battery, Clock, Activity } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
 export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>("1h")
-  const [selectedDevice, setSelectedDevice] = useState<string>("")
-  const { deviceIds: realDeviceIds } = useDeviceIds()
-  const { readings: realReadings, latestReading: realLatestReading, isLoading } = useTelemetry(selectedDevice, timeRange)
-  const { isLive: realIsLive, lastSeen: realLastSeen } = useDeviceStatus(selectedDevice || null)
-  const { isDemoMode, demoReadings, demoDeviceIds } = useDemoMode()
+  const { selectedDevice } = useDevice()
+  const { readings: realReadings, latestReading: realLatestReading } = useTelemetry(selectedDevice, timeRange)
+  const { isDemoMode, demoReadings } = useDemoMode()
 
   // Use demo data when in demo mode
-  const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
   const readings = isDemoMode ? demoReadings : realReadings
   const latestReading = isDemoMode ? demoReadings[demoReadings.length - 1] : realLatestReading
-
-  // Auto-select first device
-  useEffect(() => {
-    if (deviceIds.length > 0 && !selectedDevice) {
-      setSelectedDevice(deviceIds[0])
-    }
-  }, [deviceIds, selectedDevice])
-
-  // Determine if device is live (sent data in last 5 minutes)
-  const isDeviceLive = isDemoMode ? true : realIsLive
-  const lastSeen = isDemoMode ? new Date().toISOString() : realLastSeen
-
-  const devices: DeviceInfo[] = deviceIds.map((id) => ({
-    id,
-    name: id,
-    isOnline: id === selectedDevice ? isDeviceLive : false,
-    lastSeen: id === selectedDevice ? lastSeen : null,
-  }))
 
   const avgTemp = readings.length > 0
     ? readings.reduce((sum, r) => sum + (r.temperature_c ?? 0), 0) / readings.filter(r => r.temperature_c !== null).length
@@ -58,30 +37,21 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      <Header isLive={isDeviceLive} />
+      <Header />
       <main className="container py-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col gap-6 pb-2 border-b border-border/50">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div className="space-y-1">
-                <h1 className="text-2xl font-semibold tracking-tight text-balance">
-                  Tersano Remote Telemetry Unit
-                  <span className="text-tersano-teal ml-2">(RTU)</span>
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Real-time monitoring and control for IoT devices
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <DeviceSelector
-                  devices={devices}
-                  value={selectedDevice}
-                  onChange={setSelectedDevice}
-                />
-                <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pb-2 border-b border-border/50">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight text-balance">
+                Tersano Remote Telemetry Unit
+                <span className="text-tersano-teal ml-2">(RTU)</span>
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Real-time monitoring and control for IoT devices
+              </p>
             </div>
+            <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
           </div>
 
           {/* Primary Stats Grid */}

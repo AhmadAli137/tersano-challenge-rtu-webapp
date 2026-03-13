@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DemoModeProvider } from '@/contexts/demo-mode'
+import { DeviceProvider } from '@/contexts/device-context'
 import './globals.css'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -28,7 +29,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <DemoModeProvider>
-            {children}
+            <DeviceProvider>
+              {children}
+            </DeviceProvider>
           </DemoModeProvider>
         </ThemeProvider>
         <Analytics />

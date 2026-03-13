@@ -1,45 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Header } from "@/components/header"
 import { ControlForm } from "@/components/control-form"
-import { DeviceSelector } from "@/components/device-selector"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useDeviceIds, useDeviceStatus } from "@/hooks/use-telemetry"
 import { useDemoMode } from "@/contexts/demo-mode"
+import { useDevice } from "@/contexts/device-context"
 import { sendDeviceCommand } from "@/lib/actions"
-import { CommandPayload, DeviceInfo, DeviceCommand } from "@/lib/types"
+import { CommandPayload, DeviceCommand } from "@/lib/types"
 import { Terminal, CheckCircle2, Clock, Send } from "lucide-react"
 import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
 import useSWR from "swr"
 
 export default function ControlPage() {
-  const [selectedDevice, setSelectedDevice] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [demoCommands, setDemoCommands] = useState<DeviceCommand[]>([])
-  const { deviceIds: realDeviceIds } = useDeviceIds()
-  const { isLive: realIsLive } = useDeviceStatus(selectedDevice || null)
-  const { isDemoMode, demoDeviceIds } = useDemoMode()
-  
-  const isDeviceLive = isDemoMode ? true : realIsLive
-  
-  const deviceIds = isDemoMode ? demoDeviceIds : realDeviceIds
-
-  // Auto-select first device
-  useEffect(() => {
-    if (deviceIds.length > 0 && !selectedDevice) {
-      setSelectedDevice(deviceIds[0])
-    }
-  }, [deviceIds, selectedDevice])
-
-  const devices: DeviceInfo[] = deviceIds.map((id) => ({
-    id,
-    name: id,
-    isOnline: true,
-    lastSeen: null,
-  }))
+  const { selectedDevice } = useDevice()
+  const { isDemoMode } = useDemoMode()
 
   // Fetch recent commands
   const { data: recentCommands, mutate: refreshCommands } = useSWR(
@@ -100,23 +79,16 @@ export default function ControlPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      <Header isLive={isDeviceLive} />
+      <Header />
       <main className="container py-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col gap-6 pb-2 border-b border-border/50">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div className="space-y-1">
-                <h1 className="text-2xl font-semibold tracking-tight">Control Panel</h1>
-                <p className="text-sm text-muted-foreground">
-                  Send commands and configure devices
-                </p>
-              </div>
-              <DeviceSelector
-                devices={devices}
-                value={selectedDevice}
-                onChange={setSelectedDevice}
-              />
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pb-2 border-b border-border/50">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight">Control Panel</h1>
+              <p className="text-sm text-muted-foreground">
+                Send commands and configure devices
+              </p>
             </div>
           </div>
 

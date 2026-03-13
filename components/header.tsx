@@ -3,10 +3,18 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Activity, Gauge, Terminal, FlaskConical } from "lucide-react"
+import { Activity, Gauge, Terminal, FlaskConical, Radio, ChevronDown } from "lucide-react"
 import { ThemeToggle } from "./theme-toggle"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useDemoMode } from "@/contexts/demo-mode"
+import { useDevice } from "@/contexts/device-context"
 import { cn } from "@/lib/utils"
 
 const navigation = [
@@ -15,13 +23,10 @@ const navigation = [
   { name: "Events", href: "/events", icon: Activity },
 ]
 
-interface HeaderProps {
-  isLive?: boolean
-}
-
-export function Header({ isLive = false }: HeaderProps) {
+export function Header() {
   const pathname = usePathname()
   const { isDemoMode, toggleDemoMode } = useDemoMode()
+  const { selectedDevice, setSelectedDevice, devices, isLive } = useDevice()
 
   return (
     <header className={cn(
@@ -68,33 +73,63 @@ export function Header({ isLive = false }: HeaderProps) {
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-2">
-          <div className={cn(
-            "hidden sm:flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border transition-all",
-            isDemoMode 
-              ? "text-neon-purple bg-neon-purple/10 border-neon-purple/30" 
-              : isLive 
-                ? "text-tersano-teal bg-tersano-teal/10 border-tersano-teal/30" 
-                : "text-muted-foreground bg-muted/30 border-border"
-          )}>
-            <span className="relative flex h-2 w-2">
-              {(isDemoMode || isLive) ? (
-                <>
-                  <span className={cn(
-                    "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                    isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
-                  )}></span>
-                  <span className={cn(
-                    "relative inline-flex rounded-full h-2 w-2",
-                    isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
-                  )}></span>
-                </>
-              ) : (
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground/50"></span>
+        <div className="flex items-center gap-3">
+          {/* Device Selector with Live Status */}
+          <Select value={selectedDevice} onValueChange={setSelectedDevice}>
+            <SelectTrigger 
+              className={cn(
+                "w-[200px] h-10 rounded-full border transition-all",
+                isDemoMode 
+                  ? "border-neon-purple/50 bg-neon-purple/5" 
+                  : isLive 
+                    ? "border-tersano-teal/50 bg-tersano-teal/5" 
+                    : "border-border"
               )}
-            </span>
-            <span>{isDemoMode ? "Demo Mode" : isLive ? "Live" : "Offline"}</span>
-          </div>
+            >
+              <div className="flex items-center gap-2">
+                {/* Live indicator */}
+                <span className="relative flex h-2 w-2">
+                  {(isDemoMode || isLive) ? (
+                    <>
+                      <span className={cn(
+                        "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                        isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
+                      )}></span>
+                      <span className={cn(
+                        "relative inline-flex rounded-full h-2 w-2",
+                        isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
+                      )}></span>
+                    </>
+                  ) : (
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground/50"></span>
+                  )}
+                </span>
+                <Radio className={cn(
+                  "h-4 w-4",
+                  isDemoMode ? "text-neon-purple" : isLive ? "text-tersano-teal" : "text-muted-foreground"
+                )} />
+                <SelectValue placeholder="Select device" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {devices
+                .filter((device) => device.id && device.id.trim() !== "")
+                .map((device) => (
+                  <SelectItem key={device.id} value={device.id}>
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "h-2 w-2 rounded-full",
+                        device.isOnline 
+                          ? isDemoMode ? "bg-neon-purple" : "bg-tersano-teal"
+                          : "bg-muted-foreground/50"
+                      )} />
+                      <span>{device.name || device.id}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+
           <Button
             variant="ghost"
             size="sm"
