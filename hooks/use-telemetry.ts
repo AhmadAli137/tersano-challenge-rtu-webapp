@@ -24,10 +24,8 @@ async function fetchTelemetry(
   deviceId: string,
   timeRange: TimeRange
 ): Promise<TelemetryRow[]> {
-  console.log("[v0] fetchTelemetry: Starting for device:", deviceId, "timeRange:", timeRange)
   const supabase = createClient()
   const since = getTimeRangeDate(timeRange)
-  console.log("[v0] fetchTelemetry: Since date:", since.toISOString())
 
   const { data, error } = await supabase
     .from("telemetry")
@@ -37,12 +35,7 @@ async function fetchTelemetry(
     .order("created_at", { ascending: true })
     .limit(500)
 
-  console.log("[v0] fetchTelemetry: Result - data count:", data?.length, "error:", error)
-  
-  if (error) {
-    console.error("[v0] fetchTelemetry: Error:", error)
-    throw error
-  }
+  if (error) throw error
   return data as TelemetryRow[]
 }
 
@@ -96,34 +89,20 @@ export function useTelemetry(deviceId: string, timeRange: TimeRange) {
 
 export function useDeviceIds() {
   const fetcher = async () => {
-    console.log("[v0] useDeviceIds: Starting fetch...")
     const supabase = createClient()
-    console.log("[v0] useDeviceIds: Supabase client created")
-    
     const { data, error } = await supabase
       .from("telemetry")
       .select("device_id")
       .order("created_at", { ascending: false })
       .limit(1000)
 
-    console.log("[v0] useDeviceIds: Query result - data:", data, "error:", error)
-    
-    if (error) {
-      console.error("[v0] useDeviceIds: Error fetching:", error)
-      throw error
-    }
-    
-    const uniqueIds = [...new Set(data.map((row) => row.device_id))]
-    console.log("[v0] useDeviceIds: Unique IDs:", uniqueIds)
-    return uniqueIds
+    if (error) throw error
+    return [...new Set(data.map((row) => row.device_id))]
   }
 
   const { data, error, isLoading } = useSWR("device-ids", fetcher, {
     refreshInterval: 30000,
-    onError: (err) => console.error("[v0] useDeviceIds SWR error:", err),
   })
-
-  console.log("[v0] useDeviceIds: SWR state - data:", data, "error:", error, "isLoading:", isLoading)
 
   return {
     deviceIds: data ?? [],
