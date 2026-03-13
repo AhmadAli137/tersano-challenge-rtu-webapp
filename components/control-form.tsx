@@ -54,8 +54,8 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
     const newBlinkState = !isBlinking
     setIsBlinking(newBlinkState)
     await onSendCommand({
-      type: "set_rgb_blink",
-      blink: newBlinkState,
+      type: "toggle_led_blink",
+      enabled: newBlinkState,
     })
   }
 
