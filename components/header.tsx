@@ -1,9 +1,10 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Activity, Gauge, Terminal, FlaskConical, Radio, ChevronDown } from "lucide-react"
+import { Activity, Gauge, Terminal, FlaskConical } from "lucide-react"
 import { ThemeToggle } from "./theme-toggle"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,13 +28,19 @@ export function Header() {
   const pathname = usePathname()
   const { isDemoMode, toggleDemoMode } = useDemoMode()
   const { selectedDevice, setSelectedDevice, devices, isLive } = useDevice()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
+    <>
     <header className={cn(
       "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
       (isDemoMode || isLive) ? "border-tersano-teal/40" : "border-border/50"
-    )}>
-      <div className="container flex h-16 items-center justify-between">
+    )} suppressHydrationWarning>
+      <div className="container px-4 flex h-14 md:h-16 items-center justify-between" suppressHydrationWarning>
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="relative h-10 w-10 overflow-hidden rounded-full shadow-sm">
@@ -70,12 +77,12 @@ export function Header() {
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {/* Device Selector with Live Status */}
           <Select value={selectedDevice} onValueChange={setSelectedDevice}>
             <SelectTrigger 
               className={cn(
-                "w-[200px] h-10 rounded-full border transition-all",
+                "w-[140px] md:w-[200px] h-9 md:h-10 rounded-full border transition-all text-xs md:text-sm",
                 isDemoMode 
                   ? "border-neon-purple/50 bg-neon-purple/5" 
                   : isLive 
@@ -120,18 +127,48 @@ export function Header() {
             size="sm"
             onClick={toggleDemoMode}
             className={cn(
-              "h-9 gap-2 text-xs font-medium rounded-lg",
+              "h-8 md:h-9 gap-1.5 md:gap-2 text-xs font-medium rounded-lg px-2 md:px-3",
               isDemoMode 
                 ? "text-neon-purple bg-neon-purple/10 hover:bg-neon-purple/15" 
                 : "hover:bg-muted/50"
             )}
           >
-            <FlaskConical className="h-4 w-4" />
+            <FlaskConical className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="hidden sm:inline">{isDemoMode ? "Exit Demo" : "Demo"}</span>
           </Button>
           <ThemeToggle />
         </div>
       </div>
     </header>
+
+    {/* Mobile Bottom Navigation - only render on client to avoid hydration issues */}
+    {mounted && (
+      <nav className={cn(
+        "md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
+        (isDemoMode || isLive) ? "border-tersano-teal/40" : "border-border/50"
+      )}>
+        <div className="flex items-center justify-around h-16 px-4">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center gap-1 px-4 py-2 text-xs font-medium rounded-lg transition-all min-w-[64px]",
+                  isActive
+                    ? "text-tersano-teal"
+                    : "text-muted-foreground"
+                )}
+              >
+                <item.icon className={cn("h-5 w-5", isActive && "text-tersano-teal")} />
+                {item.name}
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    )}
+    </>
   )
 }
