@@ -74,8 +74,8 @@ export function TelemetryChart({
         )}
       </CardHeader>
       <CardContent className="pt-0 pb-3">
-        <div ref={containerRef} className="w-full" style={{ minHeight: 180 }}>
-          {mounted && chartWidth > 0 && (
+        <div ref={containerRef} className="w-full h-[180px]" suppressHydrationWarning>
+          {mounted && chartWidth > 0 ? (
             <AreaChart
               width={chartWidth}
               height={180}
@@ -126,6 +126,8 @@ export function TelemetryChart({
                 fill={`url(#gradient-${dataKey})`}
               />
             </AreaChart>
+          ) : (
+            <div className="h-full w-full animate-pulse bg-muted/30 rounded" />
           )}
         </div>
       </CardContent>
