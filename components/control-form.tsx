@@ -30,12 +30,17 @@ const buzzerTones = [
   { name: "Success", frequency: 1500, duration: 300 },
 ]
 
-// Sampling rate options
+// Sampling rate options with RGB indicator colors
 const samplingRates = [
-  { label: "1 second", value: 1000 },
-  { label: "5 seconds", value: 5000 },
-  { label: "10 seconds", value: 10000 },
+  { label: "1 second", value: 1000, color: "#EC4899", colorName: "magenta", speed: "Fast" },
+  { label: "5 seconds", value: 5000, color: "#22C55E", colorName: "green", speed: "Default" },
+  { label: "10 seconds", value: 10000, color: "#3B82F6", colorName: "blue", speed: "Slow" },
 ]
+
+const getSamplingRateColor = (value: number) => {
+  const rate = samplingRates.find(r => r.value === value)
+  return rate || samplingRates[1]
+}
 
 export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormProps) {
   const [samplingRate, setSamplingRate] = useState(samplingRates[1].value)
@@ -70,17 +75,34 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Sampling Rate */}
-      <Card className="border-neon-orange/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-orange/5 to-transparent pointer-events-none" />
+      <Card className="border-border/50 relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br to-transparent pointer-events-none transition-colors duration-300" 
+          style={{ backgroundColor: `${getSamplingRateColor(samplingRate).color}08` }}
+        />
         <CardContent className="p-5 relative">
           <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-xl p-2.5 bg-neon-orange/20">
-              <Timer className="h-5 w-5 text-neon-orange" />
+            <div 
+              className="rounded-xl p-2.5 transition-all duration-300"
+              style={{ 
+                backgroundColor: `${getSamplingRateColor(samplingRate).color}20`,
+                boxShadow: `0 0 12px ${getSamplingRateColor(samplingRate).color}30`
+              }}
+            >
+              <Timer className="h-5 w-5 transition-colors duration-300" style={{ color: getSamplingRateColor(samplingRate).color }} />
             </div>
             <div>
               <h3 className="font-semibold text-sm">Sampling Rate</h3>
-              <p className="text-xs text-muted-foreground">Telemetry frequency</p>
+              <p className="text-xs text-muted-foreground">{getSamplingRateColor(samplingRate).speed}</p>
             </div>
+            {/* RGB Indicator */}
+            <div 
+              className="ml-auto h-3 w-3 rounded-full transition-all duration-300"
+              style={{ 
+                backgroundColor: getSamplingRateColor(samplingRate).color,
+                boxShadow: `0 0 8px ${getSamplingRateColor(samplingRate).color}`
+              }}
+            />
           </div>
           <Select value={samplingRate.toString()} onValueChange={handleSamplingChange} disabled={isLoading}>
             <SelectTrigger className="w-full">
@@ -89,7 +111,13 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
             <SelectContent>
               {samplingRates.map((rate) => (
                 <SelectItem key={rate.value} value={rate.value.toString()}>
-                  {rate.label}
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="h-2 w-2 rounded-full" 
+                      style={{ backgroundColor: rate.color }}
+                    />
+                    {rate.label}
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
