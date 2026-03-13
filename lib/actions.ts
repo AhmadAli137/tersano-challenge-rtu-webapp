@@ -121,21 +121,32 @@ export async function sendDeviceCommand(
 }
 
 export async function getDeviceIds(): Promise<string[]> {
-  const supabase = await createClient()
+  console.log("[v0] getDeviceIds called")
+  
+  try {
+    const supabase = await createClient()
+    console.log("[v0] Supabase client created successfully")
 
-  const { data, error } = await supabase
-    .from("telemetry")
-    .select("device_id")
-    .order("created_at", { ascending: false })
-    .limit(1000)
+    const { data, error } = await supabase
+      .from("telemetry")
+      .select("device_id")
+      .order("created_at", { ascending: false })
+      .limit(1000)
 
-  if (error) {
-    console.error("Error fetching device IDs:", error)
+    console.log("[v0] Query result - data:", data?.length, "rows, error:", error)
+
+    if (error) {
+      console.error("[v0] Error fetching device IDs:", error)
+      return []
+    }
+
+    const uniqueIds = [...new Set(data.map((row) => row.device_id))]
+    console.log("[v0] Unique device IDs found:", uniqueIds)
+    return uniqueIds
+  } catch (err) {
+    console.error("[v0] Exception in getDeviceIds:", err)
     return []
   }
-
-  const uniqueIds = [...new Set(data.map((row) => row.device_id))]
-  return uniqueIds
 }
 
 export async function getPendingCommands(deviceId: string) {
