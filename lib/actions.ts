@@ -21,7 +21,7 @@ function getTimeRangeDate(range: TimeRange): Date {
 export async function getTelemetryReadings(
   deviceId: string,
   timeRange: TimeRange = "1h",
-  limit: number = 100
+  limit: number = 5000
 ): Promise<TelemetryRow[]> {
   const supabase = await createClient()
   const since = getTimeRangeDate(timeRange)
