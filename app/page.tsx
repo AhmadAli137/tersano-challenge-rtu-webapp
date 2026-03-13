@@ -25,9 +25,17 @@ export default function DashboardPage() {
   const readings = isDemoMode ? demoReadings : realReadings
   const latestReading = isDemoMode ? demoReadings[demoReadings.length - 1] : realLatestReading
 
+  // Debug logging
+  console.log("[v0] Device IDs:", deviceIds)
+  console.log("[v0] Selected device:", selectedDevice)
+  console.log("[v0] Readings count:", readings.length)
+  console.log("[v0] Latest reading:", latestReading)
+  console.log("[v0] Is demo mode:", isDemoMode)
+
   // Auto-select first device
   useEffect(() => {
     if (deviceIds.length > 0 && !selectedDevice) {
+      console.log("[v0] Auto-selecting first device:", deviceIds[0])
       setSelectedDevice(deviceIds[0])
     }
   }, [deviceIds, selectedDevice])
