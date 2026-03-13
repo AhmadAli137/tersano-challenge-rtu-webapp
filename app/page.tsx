@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Header } from "@/components/header"
+import { HeaderWrapper } from "@/components/header-wrapper"
 import { StatCard } from "@/components/stat-card"
 import { TelemetryChart } from "@/components/telemetry-chart"
 import { ReadingsTable } from "@/components/readings-table"
@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      <Header />
+      <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
