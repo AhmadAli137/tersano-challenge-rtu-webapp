@@ -137,6 +137,61 @@ export async function getDeviceIds(): Promise<string[]> {
   return [...new Set(data.map((row) => row.device_id))]
 }
 
+// Check if a device is "live" based on recent telemetry
+// A device is considered live if it has sent data within the threshold (default 5 minutes)
+export async function isDeviceLive(
+  deviceId: string,
+  thresholdMinutes: number = 5
+): Promise<boolean> {
+  const supabase = await createClient()
+  const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000)
+
+  const { data, error } = await supabase
+    .from("telemetry")
+    .select("created_at")
+    .eq("device_id", deviceId)
+    .gte("created_at", threshold.toISOString())
+    .limit(1)
+
+  if (error) {
+    console.error("Error checking device liveness:", error)
+    return false
+  }
+
+  return data.length > 0
+}
+
+// Get device status including liveness
+export async function getDeviceStatus(deviceId: string): Promise<{
+  isLive: boolean
+  lastSeen: string | null
+  latestTelemetry: TelemetryRow | null
+}> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("telemetry")
+    .select("*")
+    .eq("device_id", deviceId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single()
+
+  if (error || !data) {
+    return { isLive: false, lastSeen: null, latestTelemetry: null }
+  }
+
+  const lastSeenDate = new Date(data.created_at)
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+  const isLive = lastSeenDate > fiveMinutesAgo
+
+  return {
+    isLive,
+    lastSeen: data.created_at,
+    latestTelemetry: data as TelemetryRow,
+  }
+}
+
 export async function getPendingCommands(deviceId: string) {
   const supabase = await createClient()
 

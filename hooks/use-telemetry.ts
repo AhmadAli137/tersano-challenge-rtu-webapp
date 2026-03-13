@@ -2,7 +2,7 @@
 
 import useSWR from "swr"
 import { TelemetryRow, TimeRange } from "@/lib/types"
-import { getTelemetryReadings, getDeviceIds } from "@/lib/actions"
+import { getTelemetryReadings, getDeviceIds, getDeviceStatus } from "@/lib/actions"
 
 export function useTelemetry(deviceId: string, timeRange: TimeRange) {
   const { data, error, isLoading, mutate } = useSWR(
@@ -30,6 +30,26 @@ export function useDeviceIds() {
 
   return {
     deviceIds: data ?? [],
+    isLoading,
+    error,
+  }
+}
+
+// Hook to check if a device is live (has sent data in last 5 minutes)
+export function useDeviceStatus(deviceId: string | null) {
+  const { data, error, isLoading } = useSWR(
+    deviceId ? [`device-status`, deviceId] : null,
+    () => getDeviceStatus(deviceId!),
+    {
+      refreshInterval: 10000, // Check every 10 seconds
+      revalidateOnFocus: true,
+    }
+  )
+
+  return {
+    isLive: data?.isLive ?? false,
+    lastSeen: data?.lastSeen ?? null,
+    latestTelemetry: data?.latestTelemetry ?? null,
     isLoading,
     error,
   }

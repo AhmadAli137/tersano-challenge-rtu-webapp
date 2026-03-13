@@ -7,7 +7,7 @@ import { TelemetryChart } from "@/components/telemetry-chart"
 import { ReadingsTable } from "@/components/readings-table"
 import { TimeRangeSelect } from "@/components/time-range-select"
 import { DeviceSelector } from "@/components/device-selector"
-import { useTelemetry, useDeviceIds } from "@/hooks/use-telemetry"
+import { useTelemetry, useDeviceIds, useDeviceStatus } from "@/hooks/use-telemetry"
 import { useDemoMode } from "@/contexts/demo-mode"
 import { TimeRange, DeviceInfo } from "@/lib/types"
 import { Thermometer, Droplets, Gauge, Battery, Clock, Activity } from "lucide-react"
@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [selectedDevice, setSelectedDevice] = useState<string>("")
   const { deviceIds: realDeviceIds } = useDeviceIds()
   const { readings: realReadings, latestReading: realLatestReading, isLoading } = useTelemetry(selectedDevice, timeRange)
+  const { isLive: realIsLive, lastSeen: realLastSeen } = useDeviceStatus(selectedDevice || null)
   const { isDemoMode, demoReadings, demoDeviceIds } = useDemoMode()
 
   // Use demo data when in demo mode
@@ -32,11 +33,15 @@ export default function DashboardPage() {
     }
   }, [deviceIds, selectedDevice])
 
+  // Determine if device is live (sent data in last 5 minutes)
+  const isDeviceLive = isDemoMode ? true : realIsLive
+  const lastSeen = isDemoMode ? new Date().toISOString() : realLastSeen
+
   const devices: DeviceInfo[] = deviceIds.map((id) => ({
     id,
     name: id,
-    isOnline: latestReading?.device_id === id,
-    lastSeen: latestReading?.created_at ?? null,
+    isOnline: id === selectedDevice ? isDeviceLive : false,
+    lastSeen: id === selectedDevice ? lastSeen : null,
   }))
 
   const avgTemp = readings.length > 0
