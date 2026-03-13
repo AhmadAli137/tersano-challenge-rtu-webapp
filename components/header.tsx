@@ -36,7 +36,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-full shadow-sm">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full shadow-sm">
               <Image
                 src="/tersano-logo.png"
                 alt="Tersano"
@@ -46,10 +46,10 @@ export function Header() {
             </div>
             <div className="hidden sm:flex flex-col">
               <span className={cn(
-                "text-sm font-semibold tracking-tight leading-none",
+                "text-base font-semibold tracking-tight leading-none",
                 (isDemoMode || isLive) ? "text-tersano-teal" : "text-foreground"
               )}>Tersano RTU</span>
-              <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">Remote Telemetry Unit</span>
+              <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">Remote Telemetry Unit</span>
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-1">

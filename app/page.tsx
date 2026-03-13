@@ -41,16 +41,7 @@ export default function DashboardPage() {
       <main className="container py-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pb-2 border-b border-border/50">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-balance">
-                Tersano Remote Telemetry Unit
-                <span className="text-tersano-teal ml-2">(RTU)</span>
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Real-time monitoring and control for IoT devices
-              </p>
-            </div>
+          <div className="flex items-center justify-end pb-2 border-b border-border/50">
             <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
           </div>
 
