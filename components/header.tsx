@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -27,14 +28,19 @@ export function Header() {
   const pathname = usePathname()
   const { isDemoMode, toggleDemoMode } = useDemoMode()
   const { selectedDevice, setSelectedDevice, devices, isLive } = useDevice()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <>
     <header className={cn(
       "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
       (isDemoMode || isLive) ? "border-tersano-teal/40" : "border-border/50"
-    )}>
-      <div className="container px-4 flex h-14 md:h-16 items-center justify-between">
+    )} suppressHydrationWarning>
+      <div className="container px-4 flex h-14 md:h-16 items-center justify-between" suppressHydrationWarning>
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="relative h-10 w-10 overflow-hidden rounded-full shadow-sm">
@@ -135,32 +141,34 @@ export function Header() {
       </div>
     </header>
 
-    {/* Mobile Bottom Navigation */}
-    <nav className={cn(
-      "md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
-      (isDemoMode || isLive) ? "border-tersano-teal/40" : "border-border/50"
-    )}>
-      <div className="flex items-center justify-around h-16 px-4">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center gap-1 px-4 py-2 text-xs font-medium rounded-lg transition-all min-w-[64px]",
-                isActive
-                  ? "text-tersano-teal"
-                  : "text-muted-foreground"
-              )}
-            >
-              <item.icon className={cn("h-5 w-5", isActive && "text-tersano-teal")} />
-              {item.name}
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+    {/* Mobile Bottom Navigation - only render on client to avoid hydration issues */}
+    {mounted && (
+      <nav className={cn(
+        "md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
+        (isDemoMode || isLive) ? "border-tersano-teal/40" : "border-border/50"
+      )}>
+        <div className="flex items-center justify-around h-16 px-4">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center gap-1 px-4 py-2 text-xs font-medium rounded-lg transition-all min-w-[64px]",
+                  isActive
+                    ? "text-tersano-teal"
+                    : "text-muted-foreground"
+                )}
+              >
+                <item.icon className={cn("h-5 w-5", isActive && "text-tersano-teal")} />
+                {item.name}
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    )}
     </>
   )
 }
