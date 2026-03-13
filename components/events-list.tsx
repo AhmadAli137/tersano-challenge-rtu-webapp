@@ -1,18 +1,13 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DeviceStatus } from "@/lib/types"
-import { useDemoMode } from "@/contexts/demo-mode"
 import { cn } from "@/lib/utils"
 import { format, formatDistanceToNow } from "date-fns"
-import { Activity, AlertTriangle, CheckCircle, Info, Power, RefreshCw, Wifi, WifiOff } from "lucide-react"
+import { Activity, AlertTriangle, CheckCircle, Info, Power, RefreshCw, Wifi, WifiOff, Clock } from "lucide-react"
 
 interface EventsListProps {
   events: DeviceStatus[]
-  title?: string
-  description?: string
   maxHeight?: string
 }
 
@@ -27,26 +22,55 @@ const eventIcons: Record<string, typeof Activity> = {
   default: Info,
 }
 
-const eventColors: Record<string, string> = {
-  boot: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  online: "bg-green-500/10 text-green-600 dark:text-green-400",
-  offline: "bg-red-500/10 text-red-600 dark:text-red-400",
-  error: "bg-red-500/10 text-red-600 dark:text-red-400",
-  warning: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-  calibrated: "bg-green-500/10 text-green-600 dark:text-green-400",
-  reset: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  default: "bg-muted text-muted-foreground",
-}
-
-const neonEventColors: Record<string, string> = {
-  boot: "bg-neon-purple/20 text-neon-purple",
-  online: "bg-neon-green/20 text-neon-green",
-  offline: "bg-neon-pink/20 text-neon-pink",
-  error: "bg-neon-pink/20 text-neon-pink",
-  warning: "bg-neon-orange/20 text-neon-orange",
-  calibrated: "bg-neon-cyan/20 text-neon-cyan",
-  reset: "bg-neon-orange/20 text-neon-orange",
-  default: "bg-neon-cyan/20 text-neon-cyan",
+const eventStyles: Record<string, { bg: string; border: string; icon: string; gradient: string }> = {
+  boot: { 
+    bg: "bg-neon-purple/5", 
+    border: "border-neon-purple/30", 
+    icon: "bg-neon-purple/20 text-neon-purple",
+    gradient: "from-neon-purple/10 via-transparent to-transparent"
+  },
+  online: { 
+    bg: "bg-neon-green/5", 
+    border: "border-neon-green/30", 
+    icon: "bg-neon-green/20 text-neon-green",
+    gradient: "from-neon-green/10 via-transparent to-transparent"
+  },
+  offline: { 
+    bg: "bg-neon-pink/5", 
+    border: "border-neon-pink/30", 
+    icon: "bg-neon-pink/20 text-neon-pink",
+    gradient: "from-neon-pink/10 via-transparent to-transparent"
+  },
+  error: { 
+    bg: "bg-neon-pink/5", 
+    border: "border-neon-pink/30", 
+    icon: "bg-neon-pink/20 text-neon-pink",
+    gradient: "from-neon-pink/10 via-transparent to-transparent"
+  },
+  warning: { 
+    bg: "bg-neon-orange/5", 
+    border: "border-neon-orange/30", 
+    icon: "bg-neon-orange/20 text-neon-orange",
+    gradient: "from-neon-orange/10 via-transparent to-transparent"
+  },
+  calibrated: { 
+    bg: "bg-tersano-teal/5", 
+    border: "border-tersano-teal/30", 
+    icon: "bg-tersano-teal/20 text-tersano-teal",
+    gradient: "from-tersano-teal/10 via-transparent to-transparent"
+  },
+  reset: { 
+    bg: "bg-neon-orange/5", 
+    border: "border-neon-orange/30", 
+    icon: "bg-neon-orange/20 text-neon-orange",
+    gradient: "from-neon-orange/10 via-transparent to-transparent"
+  },
+  default: { 
+    bg: "bg-tersano-teal/5", 
+    border: "border-tersano-teal/30", 
+    icon: "bg-tersano-teal/20 text-tersano-teal",
+    gradient: "from-tersano-teal/10 via-transparent to-transparent"
+  },
 }
 
 function getEventIcon(event: string) {
@@ -57,82 +81,93 @@ function getEventIcon(event: string) {
   return eventIcons.default
 }
 
-function getEventColor(event: string, isNeon = false) {
+function getEventStyles(event: string) {
   const normalizedEvent = event.toLowerCase()
-  const colors = isNeon ? neonEventColors : eventColors
-  for (const [key, color] of Object.entries(colors)) {
-    if (normalizedEvent.includes(key)) return color
+  for (const [key, styles] of Object.entries(eventStyles)) {
+    if (normalizedEvent.includes(key)) return styles
   }
-  return colors.default
+  return eventStyles.default
 }
 
 export function EventsList({
   events,
-  title = "Device Events",
-  description,
-  maxHeight = "400px",
+  maxHeight = "600px",
 }: EventsListProps) {
-  const { isDemoMode } = useDemoMode()
-  
   return (
-    <Card className="border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <Activity className={cn("h-3.5 w-3.5", isDemoMode ? "text-neon-pink" : "text-muted-foreground")} />
-          {title}
-        </CardTitle>
-        {description && <CardDescription className="text-xs">{description}</CardDescription>}
-      </CardHeader>
-      <CardContent>
-        <ScrollArea style={{ height: maxHeight }}>
-          {events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <Activity className="h-8 w-8 mb-2 opacity-50" />
-              <p className="text-sm">No events recorded</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {events.map((event) => {
-                const Icon = getEventIcon(event.event)
-                const colorClass = getEventColor(event.event, isDemoMode)
-                return (
-                  <div
-                    key={event.id}
-                    className="flex items-start gap-3 p-2.5 rounded-md border border-border/50 bg-card hover:bg-muted/30 transition-colors"
-                  >
-                    <div className={`rounded-md p-1.5 ${colorClass}`}>
-                      <Icon className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-sm">{event.event}</span>
-                        <Badge variant="outline" className="text-xs font-mono">
-                          {event.device_id}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                        <span>{format(new Date(event.created_at), "PPp")}</span>
-                        <span>·</span>
-                        <span>{formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}</span>
-                      </div>
-                      {event.uptime_ms !== null && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Uptime: {Math.floor(event.uptime_ms / 1000 / 60)}m {Math.floor((event.uptime_ms / 1000) % 60)}s
-                        </p>
-                      )}
-                      {event.metadata && Object.keys(event.metadata).length > 0 && (
-                        <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-x-auto font-mono">
-                          {JSON.stringify(event.metadata, null, 2)}
-                        </pre>
-                      )}
+    <ScrollArea style={{ height: maxHeight }} className="pr-4">
+      {events.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <div className="rounded-full bg-muted/50 p-4 mb-4">
+            <Activity className="h-8 w-8 opacity-50" />
+          </div>
+          <p className="text-sm font-medium">No events recorded</p>
+          <p className="text-xs mt-1">Events will appear here when devices report status changes</p>
+        </div>
+      ) : (
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-[19px] top-4 bottom-4 w-px bg-gradient-to-b from-tersano-teal/50 via-neon-purple/30 to-transparent" />
+          
+          <div className="space-y-3">
+            {events.map((event, index) => {
+              const Icon = getEventIcon(event.event)
+              const styles = getEventStyles(event.event)
+              return (
+                <div
+                  key={event.id}
+                  className={cn(
+                    "relative flex gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md",
+                    styles.bg,
+                    styles.border
+                  )}
+                >
+                  {/* Gradient overlay */}
+                  <div className={cn("absolute inset-0 rounded-xl bg-gradient-to-r opacity-50", styles.gradient)} />
+                  
+                  {/* Icon with timeline dot */}
+                  <div className="relative z-10 flex-shrink-0">
+                    <div className={cn("rounded-xl p-2.5", styles.icon)}>
+                      <Icon className="h-4 w-4" />
                     </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </ScrollArea>
-      </CardContent>
-    </Card>
+                  
+                  {/* Content */}
+                  <div className="relative z-10 flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-semibold text-sm">{event.event}</h3>
+                        <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                          {event.device_id}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        <span>{formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                      <span>{format(new Date(event.created_at), "MMM d, yyyy 'at' h:mm a")}</span>
+                      {event.uptime_ms !== null && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                          <span>Uptime: {Math.floor(event.uptime_ms / 1000 / 60)}m {Math.floor((event.uptime_ms / 1000) % 60)}s</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {event.metadata && Object.keys(event.metadata).length > 0 && (
+                      <pre className="mt-3 text-xs bg-background/50 backdrop-blur-sm p-3 rounded-lg overflow-x-auto font-mono border border-border/30">
+                        {JSON.stringify(event.metadata, null, 2)}
+                      </pre>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </ScrollArea>
   )
 }

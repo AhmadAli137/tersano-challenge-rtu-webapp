@@ -6,7 +6,7 @@ import { useEvents } from "@/hooks/use-events"
 import { useDemoMode } from "@/contexts/demo-mode"
 import { useDevice } from "@/contexts/device-context"
 import { Button } from "@/components/ui/button"
-import { RefreshCw } from "lucide-react"
+import { Activity, RefreshCw } from "lucide-react"
 
 export default function EventsPage() {
   const { selectedDevice } = useDevice()
@@ -21,31 +21,36 @@ export default function EventsPage() {
       <main className="container py-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pb-2 border-b border-border/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
             <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight">Device Events</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-neon-pink via-neon-purple to-tersano-teal bg-clip-text text-transparent">
+                  Device Events
+                </span>
+              </h1>
               <p className="text-sm text-muted-foreground">
-                Monitor device status and system events
+                Real-time status updates and system events
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-lg"
-              onClick={() => refresh()}
-              disabled={isLoading}
-            >
-              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            </Button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 border border-border/50">
+                <Activity className="h-4 w-4 text-tersano-teal" />
+                <span className="text-sm font-medium">{events.length} events</span>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full h-9 w-9"
+                onClick={() => refresh()}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
           </div>
 
           {/* Events List */}
-          <EventsList
-            events={events}
-            title={selectedDevice ? `Events for ${selectedDevice}` : "All Device Events"}
-            description="Real-time device status updates and system events"
-            maxHeight="600px"
-          />
+          <EventsList events={events} maxHeight="calc(100vh - 220px)" />
         </div>
       </main>
     </div>
