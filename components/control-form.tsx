@@ -32,9 +32,9 @@ const buzzerTones = [
 
 // Sampling rate options with RGB indicator colors
 const samplingRates = [
-  { label: "1 second", value: 1000, color: "#EC4899", colorName: "magenta", speed: "Fast" },
-  { label: "5 seconds", value: 5000, color: "#22C55E", colorName: "green", speed: "Default" },
-  { label: "10 seconds", value: 10000, color: "#3B82F6", colorName: "blue", speed: "Slow" },
+  { label: "5 seconds", value: 5000, color: "#EC4899", colorName: "magenta", speed: "Fast" },
+  { label: "5 minutes", value: 300000, color: "#22C55E", colorName: "green", speed: "Default" },
+  { label: "30 minutes", value: 1800000, color: "#3B82F6", colorName: "blue", speed: "Slow" },
 ]
 
 const getSamplingRateColor = (value: number) => {

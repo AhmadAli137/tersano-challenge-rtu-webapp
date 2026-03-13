@@ -21,7 +21,7 @@ function getTimeRangeDate(range: TimeRange): Date {
 export async function getTelemetryReadings(
   deviceId: string,
   timeRange: TimeRange = "1h",
-  limit: number = 100
+  limit: number = 5000
 ): Promise<TelemetryRow[]> {
   const supabase = await createClient()
   const since = getTimeRangeDate(timeRange)
@@ -137,19 +137,20 @@ export async function getDeviceIds(): Promise<string[]> {
   return [...new Set(data.map((row) => row.device_id))]
 }
 
-// Check if a device is "live" based on recent telemetry
-// A device is considered live if it has sent data within the threshold (default 10 seconds)
+// Check if a device is "live" based on recent heartbeat events
+// A device is considered live if it has sent a heartbeat within the threshold (default 60 seconds)
 export async function isDeviceLive(
   deviceId: string,
-  thresholdSeconds: number = 10
+  thresholdSeconds: number = 60
 ): Promise<boolean> {
   const supabase = await createClient()
   const threshold = new Date(Date.now() - thresholdSeconds * 1000)
 
   const { data, error } = await supabase
-    .from("telemetry")
+    .from("status")
     .select("created_at")
     .eq("device_id", deviceId)
+    .eq("event", "heartbeat")
     .gte("created_at", threshold.toISOString())
     .limit(1)
 
@@ -162,6 +163,7 @@ export async function isDeviceLive(
 }
 
 // Get device status including liveness
+// A device is considered "live" if it has sent a heartbeat event within the last 60 seconds
 export async function getDeviceStatus(deviceId: string): Promise<{
   isLive: boolean
   lastSeen: string | null
@@ -169,7 +171,18 @@ export async function getDeviceStatus(deviceId: string): Promise<{
 }> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
+  // Check last heartbeat event for liveness
+  const { data: statusData } = await supabase
+    .from("status")
+    .select("created_at")
+    .eq("device_id", deviceId)
+    .eq("event", "heartbeat")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single()
+
+  // Get latest telemetry for display
+  const { data: telemetryData } = await supabase
     .from("telemetry")
     .select("*")
     .eq("device_id", deviceId)
@@ -177,18 +190,15 @@ export async function getDeviceStatus(deviceId: string): Promise<{
     .limit(1)
     .single()
 
-  if (error || !data) {
-    return { isLive: false, lastSeen: null, latestTelemetry: null }
-  }
-
-  const lastSeenDate = new Date(data.created_at)
-  const tenSecondsAgo = new Date(Date.now() - 10 * 1000)
-  const isLive = lastSeenDate > tenSecondsAgo
+  const lastSeenDate = statusData ? new Date(statusData.created_at) : null
+  // 60 seconds threshold for heartbeat
+  const liveThreshold = new Date(Date.now() - 60 * 1000)
+  const isLive = lastSeenDate ? lastSeenDate > liveThreshold : false
 
   return {
     isLive,
-    lastSeen: data.created_at,
-    latestTelemetry: data as TelemetryRow,
+    lastSeen: statusData?.created_at ?? null,
+    latestTelemetry: telemetryData as TelemetryRow | null,
   }
 }
 
