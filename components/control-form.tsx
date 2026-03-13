@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
 import {
   Select,
   SelectContent,
@@ -13,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { Send, Timer, Volume2, Lightbulb, Play, Square } from "lucide-react"
+import { Send, Timer, Volume2, Lightbulb, Play } from "lucide-react"
 import { CommandPayload } from "@/lib/types"
 
 interface ControlFormProps {
@@ -42,14 +40,12 @@ const colorPresets = [
 
 // Buzzer tone presets
 const buzzerTones = [
-  { name: "Low Beep", frequency: 440, duration: 200 },
-  { name: "Medium Beep", frequency: 880, duration: 200 },
-  { name: "High Beep", frequency: 1760, duration: 200 },
+  { name: "Low", frequency: 440, duration: 200 },
+  { name: "Medium", frequency: 880, duration: 200 },
+  { name: "High", frequency: 1760, duration: 200 },
   { name: "Alert", frequency: 2000, duration: 500 },
   { name: "Warning", frequency: 1000, duration: 1000 },
   { name: "Success", frequency: 1500, duration: 300 },
-  { name: "Error", frequency: 300, duration: 800 },
-  { name: "Notification", frequency: 1200, duration: 150 },
 ]
 
 // Sampling rate options
@@ -65,41 +61,24 @@ const samplingRates = [
 ]
 
 export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormProps) {
-  const [selectedColor, setSelectedColor] = useState(colorPresets[7]) // Default to Cyan
-  const [customR, setCustomR] = useState(6)
-  const [customG, setCustomG] = useState(182)
-  const [customB, setCustomB] = useState(212)
-  const [selectedTone, setSelectedTone] = useState(buzzerTones[0])
+  const [selectedColor, setSelectedColor] = useState(colorPresets[7])
   const [samplingRate, setSamplingRate] = useState(samplingRates[0].value)
 
-  const handleColorSelect = (color: typeof colorPresets[0]) => {
+  const handleColorSelect = async (color: typeof colorPresets[0]) => {
     setSelectedColor(color)
-    setCustomR(color.rgb.r)
-    setCustomG(color.rgb.g)
-    setCustomB(color.rgb.b)
-  }
-
-  const handleColorSubmit = async () => {
     await onSendCommand({
       type: "set_rgb_led",
-      r: customR,
-      g: customG,
-      b: customB,
+      r: color.rgb.r,
+      g: color.rgb.g,
+      b: color.rgb.b,
     })
   }
 
   const handleBuzzerPlay = async (tone: typeof buzzerTones[0]) => {
-    setSelectedTone(tone)
     await onSendCommand({
       type: "play_buzzer",
       frequency: tone.frequency,
       duration: tone.duration,
-    })
-  }
-
-  const handleBuzzerStop = async () => {
-    await onSendCommand({
-      type: "stop_buzzer",
     })
   }
 
@@ -110,184 +89,24 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
     })
   }
 
-  const currentColor = `rgb(${customR}, ${customG}, ${customB})`
-
   return (
-    <div className="space-y-4">
-      {/* RGB LED Control */}
-      <Card className="border-tersano-teal/30 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-tersano-teal/5 to-transparent pointer-events-none" />
-        <CardHeader className="pb-3 relative">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg p-2 bg-tersano-teal/20">
-              <Lightbulb className="h-4 w-4 text-tersano-teal" />
-            </div>
-            <div>
-              <CardTitle className="text-sm font-medium">RGB LED Control</CardTitle>
-              <CardDescription className="text-xs">Select a color for the device LED</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4 relative">
-          {/* Color preview */}
-          <div className="flex items-center gap-4">
-            <div 
-              className="h-16 w-16 rounded-xl border-2 border-border/50 shadow-lg transition-colors duration-200"
-              style={{ backgroundColor: currentColor, boxShadow: `0 0 20px ${currentColor}40` }}
-            />
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium">{selectedColor.name}</p>
-              <p className="text-xs font-mono text-muted-foreground">
-                RGB({customR}, {customG}, {customB})
-              </p>
-            </div>
-          </div>
-
-          {/* Color palette */}
-          <div className="grid grid-cols-7 gap-2">
-            {colorPresets.map((color) => (
-              <button
-                key={color.name}
-                onClick={() => handleColorSelect(color)}
-                className={cn(
-                  "h-8 w-full rounded-lg border-2 transition-all duration-200 hover:scale-110",
-                  selectedColor.name === color.name 
-                    ? "border-white shadow-lg ring-2 ring-offset-2 ring-offset-background" 
-                    : "border-transparent hover:border-white/50"
-                )}
-                style={{ 
-                  backgroundColor: color.color,
-                  boxShadow: selectedColor.name === color.name ? `0 0 12px ${color.color}` : undefined
-                }}
-                title={color.name}
-              />
-            ))}
-          </div>
-
-          {/* RGB Sliders */}
-          <div className="space-y-3 pt-2">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-red-500 font-medium">Red</Label>
-                <span className="text-xs font-mono text-muted-foreground">{customR}</span>
-              </div>
-              <Slider
-                value={[customR]}
-                onValueChange={([value]) => setCustomR(value)}
-                min={0}
-                max={255}
-                step={1}
-                className="[&_[role=slider]]:bg-red-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-green-500 font-medium">Green</Label>
-                <span className="text-xs font-mono text-muted-foreground">{customG}</span>
-              </div>
-              <Slider
-                value={[customG]}
-                onValueChange={([value]) => setCustomG(value)}
-                min={0}
-                max={255}
-                step={1}
-                className="[&_[role=slider]]:bg-green-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-blue-500 font-medium">Blue</Label>
-                <span className="text-xs font-mono text-muted-foreground">{customB}</span>
-              </div>
-              <Slider
-                value={[customB]}
-                onValueChange={([value]) => setCustomB(value)}
-                min={0}
-                max={255}
-                step={1}
-                className="[&_[role=slider]]:bg-blue-500"
-              />
-            </div>
-          </div>
-
-          <Button
-            onClick={handleColorSubmit}
-            disabled={isLoading}
-            className="w-full bg-tersano-teal hover:bg-tersano-teal/90 text-white"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Set LED Color
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Buzzer Control */}
-      <Card className="border-neon-purple/30 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 to-transparent pointer-events-none" />
-        <CardHeader className="pb-3 relative">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg p-2 bg-neon-purple/20">
-              <Volume2 className="h-4 w-4 text-neon-purple" />
-            </div>
-            <div>
-              <CardTitle className="text-sm font-medium">Buzzer Control</CardTitle>
-              <CardDescription className="text-xs">Play different tones on the device</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4 relative">
-          {/* Tone buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            {buzzerTones.map((tone) => (
-              <Button
-                key={tone.name}
-                variant="outline"
-                size="sm"
-                onClick={() => handleBuzzerPlay(tone)}
-                disabled={isLoading}
-                className={cn(
-                  "justify-start gap-2 h-10 transition-all",
-                  selectedTone.name === tone.name && "border-neon-purple/50 bg-neon-purple/10 text-neon-purple"
-                )}
-              >
-                <Play className="h-3 w-3" />
-                <span className="text-xs">{tone.name}</span>
-                <span className="text-[10px] text-muted-foreground ml-auto">{tone.frequency}Hz</span>
-              </Button>
-            ))}
-          </div>
-
-          <Button
-            variant="destructive"
-            onClick={handleBuzzerStop}
-            disabled={isLoading}
-            className="w-full"
-          >
-            <Square className="h-4 w-4 mr-2" />
-            Stop Buzzer
-          </Button>
-        </CardContent>
-      </Card>
-
+    <div className="grid gap-6 lg:grid-cols-3">
       {/* Sampling Rate */}
-      <Card className="border-neon-orange/30 overflow-hidden">
+      <Card className="border-neon-orange/30 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-neon-orange/5 to-transparent pointer-events-none" />
-        <CardHeader className="pb-3 relative">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg p-2 bg-neon-orange/20">
-              <Timer className="h-4 w-4 text-neon-orange" />
+        <CardContent className="p-5 relative">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="rounded-xl p-2.5 bg-neon-orange/20">
+              <Timer className="h-5 w-5 text-neon-orange" />
             </div>
             <div>
-              <CardTitle className="text-sm font-medium">Sampling Rate</CardTitle>
-              <CardDescription className="text-xs">Configure telemetry frequency</CardDescription>
+              <h3 className="font-semibold text-sm">Sampling Rate</h3>
+              <p className="text-xs text-muted-foreground">Telemetry frequency</p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4 relative">
-          <div className="space-y-2">
-            <Label className="text-xs">Select Interval</Label>
+          <div className="flex gap-2">
             <Select value={samplingRate.toString()} onValueChange={(v) => setSamplingRate(Number(v))}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="flex-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -298,16 +117,88 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              onClick={handleSamplingSubmit}
+              disabled={isLoading}
+              size="icon"
+              className="bg-neon-orange hover:bg-neon-orange/90 text-white shrink-0"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          <Button
-            onClick={handleSamplingSubmit}
-            disabled={isLoading}
-            className="w-full bg-neon-orange hover:bg-neon-orange/90 text-white"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Set Sampling Rate
-          </Button>
+      {/* RGB LED Control */}
+      <Card className="border-tersano-teal/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-tersano-teal/5 to-transparent pointer-events-none" />
+        <CardContent className="p-5 relative">
+          <div className="flex items-center gap-3 mb-4">
+            <div 
+              className="rounded-xl p-2.5 transition-colors duration-200"
+              style={{ 
+                backgroundColor: `${selectedColor.color}30`,
+                boxShadow: `0 0 12px ${selectedColor.color}20`
+              }}
+            >
+              <Lightbulb className="h-5 w-5" style={{ color: selectedColor.color === "#1a1a1a" ? "#888" : selectedColor.color }} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm">RGB LED</h3>
+              <p className="text-xs text-muted-foreground">{selectedColor.name}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-7 gap-1.5">
+            {colorPresets.map((color) => (
+              <button
+                key={color.name}
+                onClick={() => handleColorSelect(color)}
+                disabled={isLoading}
+                className={cn(
+                  "aspect-square rounded-lg border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed",
+                  selectedColor.name === color.name 
+                    ? "border-white ring-2 ring-white/30" 
+                    : "border-transparent hover:border-white/50"
+                )}
+                style={{ 
+                  backgroundColor: color.color,
+                  boxShadow: selectedColor.name === color.name ? `0 0 10px ${color.color}` : undefined
+                }}
+                title={color.name}
+              />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Buzzer Control */}
+      <Card className="border-neon-purple/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 to-transparent pointer-events-none" />
+        <CardContent className="p-5 relative">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="rounded-xl p-2.5 bg-neon-purple/20">
+              <Volume2 className="h-5 w-5 text-neon-purple" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm">Buzzer Tones</h3>
+              <p className="text-xs text-muted-foreground">Play a sound</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {buzzerTones.map((tone) => (
+              <Button
+                key={tone.name}
+                variant="outline"
+                size="sm"
+                onClick={() => handleBuzzerPlay(tone)}
+                disabled={isLoading}
+                className="h-9 text-xs gap-1 hover:border-neon-purple/50 hover:bg-neon-purple/10 hover:text-neon-purple"
+              >
+                <Play className="h-3 w-3" />
+                {tone.name}
+              </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

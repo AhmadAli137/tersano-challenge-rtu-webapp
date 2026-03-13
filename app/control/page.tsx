@@ -56,27 +56,25 @@ export default function ControlPage() {
           </div>
 
           {/* Main Content */}
-          <div className="max-w-2xl mx-auto w-full">
-            {selectedDevice ? (
-              <ControlForm
-                deviceId={selectedDevice}
-                onSendCommand={handleSendCommand}
-                isLoading={isLoading}
-              />
-            ) : (
-              <Card className="border-dashed">
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="rounded-full bg-muted/50 p-4 mb-4">
-                    <Terminal className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">No device selected</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select a device from the dropdown above to send commands
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          {selectedDevice ? (
+            <ControlForm
+              deviceId={selectedDevice}
+              onSendCommand={handleSendCommand}
+              isLoading={isLoading}
+            />
+          ) : (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <div className="rounded-full bg-muted/50 p-4 mb-4">
+                  <Terminal className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground">No device selected</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Select a device from the dropdown above to send commands
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
