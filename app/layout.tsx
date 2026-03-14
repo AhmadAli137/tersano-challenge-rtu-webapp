@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DemoModeProvider } from '@/contexts/demo-mode'
 import { DeviceProvider } from '@/contexts/device-context'
+import { ControlProvider } from '@/contexts/control-context'
 import './globals.css'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -30,7 +31,9 @@ export default function RootLayout({
         >
           <DemoModeProvider>
             <DeviceProvider>
-              {children}
+              <ControlProvider>
+                {children}
+              </ControlProvider>
             </DeviceProvider>
           </DemoModeProvider>
         </ThemeProvider>
