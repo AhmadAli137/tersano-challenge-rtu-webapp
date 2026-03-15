@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { useDeviceIds, useDeviceStatus } from "@/hooks/use-telemetry"
+import { useDeviceIds, useDeviceStatus, useAllDevicesStatus } from "@/hooks/use-telemetry"
 import { useDemoMode } from "@/contexts/demo-mode"
 import { DeviceInfo } from "@/lib/types"
 
@@ -21,6 +21,7 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
   const [selectedDevice, setSelectedDevice] = useState<string>("")
   const { deviceIds: realDeviceIds, isLoading } = useDeviceIds()
   const { isLive: realIsLive, lastSeen: realLastSeen } = useDeviceStatus(selectedDevice || null)
+  const { devicesStatus } = useAllDevicesStatus()
   const { isDemoMode, demoDeviceIds } = useDemoMode()
 
   // Use demo data when in demo mode
@@ -42,12 +43,16 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
     }
   }, [deviceIds, selectedDevice])
 
-  const devices: DeviceInfo[] = deviceIds.map((id) => ({
-    id,
-    name: id,
-    isOnline: id === selectedDevice ? isLive : false,
-    lastSeen: id === selectedDevice ? lastSeen : null,
-  }))
+  const devices: DeviceInfo[] = deviceIds.map((id) => {
+    // Use allDevicesStatus for all devices, with fallback to selected device status
+    const deviceStatusInfo = devicesStatus[id]
+    return {
+      id,
+      name: id,
+      isOnline: isDemoMode ? true : (deviceStatusInfo?.isLive ?? false),
+      lastSeen: isDemoMode ? new Date().toISOString() : (deviceStatusInfo?.lastSeen ?? null),
+    }
+  })
 
   return (
     <DeviceContext.Provider
