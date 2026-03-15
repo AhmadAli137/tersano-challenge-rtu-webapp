@@ -14,7 +14,7 @@ import { Thermometer, Droplets, Gauge, Battery, Clock, Activity } from "lucide-r
 import { formatDistanceToNow } from "date-fns"
 
 export default function DashboardPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("1h")
+  const [timeRange, setTimeRange] = useState<TimeRange>("15m")
   const { selectedDevice } = useDevice()
   const { readings: realReadings, latestReading: realLatestReading } = useTelemetry(selectedDevice, timeRange)
   const { isDemoMode, demoReadings } = useDemoMode()
