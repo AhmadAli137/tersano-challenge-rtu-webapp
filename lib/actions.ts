@@ -278,35 +278,29 @@ export async function getPendingCommands(deviceId: string) {
   return data
 }
 
-// Get the latest control state for a device from device_commands
+// Get the latest control state for a device from the status table
+// The device reports its current sample_rate_ms and blink_on with each status event
 export async function getDeviceControlState(deviceId: string): Promise<{
   samplingRate: number | null
   isBlinking: boolean | null
 }> {
   const supabase = await createClient()
 
-  // Get latest sampling rate command
-  const { data: samplingData } = await supabase
-    .from("device_commands")
-    .select("command")
+  // Get the latest status event for this device which contains current settings
+  const { data, error } = await supabase
+    .from("status")
+    .select("sample_rate_ms, blink_on")
     .eq("device_id", deviceId)
-    .filter("command->type", "eq", "set_sampling_interval")
     .order("created_at", { ascending: false })
     .limit(1)
     .single()
 
-  // Get latest LED blink command
-  const { data: blinkData } = await supabase
-    .from("device_commands")
-    .select("command")
-    .eq("device_id", deviceId)
-    .filter("command->type", "eq", "toggle_led_blink")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single()
+  if (error || !data) {
+    return { samplingRate: null, isBlinking: null }
+  }
 
-  const samplingRate = samplingData?.command?.sampling_interval_ms ?? null
-  const isBlinking = blinkData?.command?.enabled ?? null
-
-  return { samplingRate, isBlinking }
+  return { 
+    samplingRate: data.sample_rate_ms ?? null, 
+    isBlinking: data.blink_on ?? null 
+  }
 }
