@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +12,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Timer, Volume2, Lightbulb, Play } from "lucide-react"
 import { CommandPayload } from "@/lib/types"
+import { useControl } from "@/contexts/control-context"
 
 interface ControlFormProps {
   deviceId: string
@@ -43,8 +43,7 @@ const getSamplingRateColor = (value: number) => {
 }
 
 export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormProps) {
-  const [samplingRate, setSamplingRate] = useState(samplingRates[1].value)
-  const [isBlinking, setIsBlinking] = useState(false)
+  const { samplingRate, setSamplingRate, isBlinking, setIsBlinking } = useControl()
 
   const handleSamplingChange = async (value: string) => {
     const newRate = Number(value)
