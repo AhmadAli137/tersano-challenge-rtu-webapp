@@ -43,7 +43,9 @@ const getSamplingRateColor = (value: number) => {
 }
 
 export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormProps) {
-  const { samplingRate, setSamplingRate, isBlinking, setIsBlinking } = useControl()
+  const { samplingRate, setSamplingRate, isBlinking, setIsBlinking, isLoadingState } = useControl()
+  
+  const isDisabled = isLoading || isLoadingState
 
   const handleSamplingChange = async (value: string) => {
     const newRate = Number(value)
@@ -103,7 +105,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
               }}
             />
           </div>
-          <Select value={samplingRate.toString()} onValueChange={handleSamplingChange} disabled={isLoading}>
+          <Select value={samplingRate.toString()} onValueChange={handleSamplingChange} disabled={isDisabled}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -145,7 +147,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
           </div>
           <Button
             onClick={handleBlinkToggle}
-            disabled={isLoading}
+            disabled={isDisabled}
             variant={isBlinking ? "default" : "outline"}
             className={cn(
               "w-full transition-all",
@@ -180,7 +182,7 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
                 variant="outline"
                 size="sm"
                 onClick={() => handleBuzzerPlay(tone)}
-                disabled={isLoading}
+                disabled={isDisabled}
                 className="h-9 text-xs gap-1 hover:border-neon-purple/50 hover:bg-neon-purple/10 hover:text-neon-purple"
               >
                 <Play className="h-3 w-3" />
