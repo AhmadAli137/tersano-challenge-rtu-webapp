@@ -137,6 +137,64 @@ export async function getDeviceIds(): Promise<string[]> {
   return [...new Set(data.map((row) => row.device_id))]
 }
 
+// Get liveness status for ALL devices at once
+export async function getAllDevicesStatus(): Promise<Record<string, { isLive: boolean; lastSeen: string | null }>> {
+  const supabase = await createClient()
+  const liveThreshold = new Date(Date.now() - 60 * 1000)
+
+  // Get all unique device IDs
+  const deviceIds = await getDeviceIds()
+  
+  if (deviceIds.length === 0) {
+    return {}
+  }
+
+  // Get latest heartbeat for each device
+  const { data: heartbeatData } = await supabase
+    .from("status")
+    .select("device_id, created_at")
+    .eq("event", "heartbeat")
+    .in("device_id", deviceIds)
+    .order("created_at", { ascending: false })
+
+  // Get latest telemetry for each device
+  const { data: telemetryData } = await supabase
+    .from("telemetry")
+    .select("device_id, created_at")
+    .in("device_id", deviceIds)
+    .order("created_at", { ascending: false })
+
+  // Build a map of device -> latest timestamp (from either heartbeat or telemetry)
+  const deviceStatus: Record<string, { isLive: boolean; lastSeen: string | null }> = {}
+
+  for (const deviceId of deviceIds) {
+    // Find latest heartbeat for this device
+    const latestHeartbeat = heartbeatData?.find(h => h.device_id === deviceId)
+    // Find latest telemetry for this device
+    const latestTelemetry = telemetryData?.find(t => t.device_id === deviceId)
+
+    const heartbeatTime = latestHeartbeat ? new Date(latestHeartbeat.created_at) : null
+    const telemetryTime = latestTelemetry ? new Date(latestTelemetry.created_at) : null
+
+    // Use whichever is more recent
+    let lastSeenDate: Date | null = null
+    if (heartbeatTime && telemetryTime) {
+      lastSeenDate = heartbeatTime > telemetryTime ? heartbeatTime : telemetryTime
+    } else {
+      lastSeenDate = heartbeatTime || telemetryTime
+    }
+
+    const isLive = lastSeenDate ? lastSeenDate > liveThreshold : false
+
+    deviceStatus[deviceId] = {
+      isLive,
+      lastSeen: lastSeenDate?.toISOString() ?? null,
+    }
+  }
+
+  return deviceStatus
+}
+
 // Check if a device is "live" based on recent heartbeat events
 // A device is considered live if it has sent a heartbeat within the threshold (default 60 seconds)
 export async function isDeviceLive(
@@ -218,4 +276,31 @@ export async function getPendingCommands(deviceId: string) {
   }
 
   return data
+}
+
+// Get the latest control state for a device from the status table
+// The device reports its current sample_rate_ms and blink_on with each status event
+export async function getDeviceControlState(deviceId: string): Promise<{
+  samplingRate: number | null
+  isBlinking: boolean | null
+}> {
+  const supabase = await createClient()
+
+  // Get the latest status event for this device which contains current settings
+  const { data, error } = await supabase
+    .from("status")
+    .select("sample_rate_ms, blink_on")
+    .eq("device_id", deviceId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single()
+
+  if (error || !data) {
+    return { samplingRate: null, isBlinking: null }
+  }
+
+  return { 
+    samplingRate: data.sample_rate_ms ?? null, 
+    isBlinking: data.blink_on ?? null 
+  }
 }
