@@ -44,32 +44,19 @@ export function TelemetryChartContent({
   }, [])
 
   // Calculate display time for each reading
-  // For cached data, use the actual capture time (not publish time)
+  // For cached data, try to calculate actual capture time (not publish time)
   const getDisplayTime = (reading: TelemetryRow): Date => {
     if (reading.was_cached && reading.captured_uptime_ms !== null && reading.published_uptime_ms !== null) {
-      // Calculate when the reading was actually captured
-      // capture_time = publish_time - (published_uptime - captured_uptime)
-      const publishTime = new Date(reading.created_at).getTime()
-      const uptimeDiff = reading.published_uptime_ms - reading.captured_uptime_ms
-      const captureTime = new Date(publishTime - uptimeDiff)
-      console.log("[v0] Cached reading time calc:", {
-        created_at: reading.created_at,
-        captured_uptime_ms: reading.captured_uptime_ms,
-        published_uptime_ms: reading.published_uptime_ms,
-        uptimeDiff,
-        uptimeDiffMinutes: uptimeDiff / 60000,
-        publishTime: new Date(publishTime).toISOString(),
-        captureTime: captureTime.toISOString(),
-      })
-      return captureTime
+      // Only calculate capture time if published_uptime > captured_uptime (no reboot occurred)
+      // If device rebooted (published_uptime < captured_uptime), uptime reset so we can't calculate
+      if (reading.published_uptime_ms > reading.captured_uptime_ms) {
+        const publishTime = new Date(reading.created_at).getTime()
+        const uptimeDiff = reading.published_uptime_ms - reading.captured_uptime_ms
+        return new Date(publishTime - uptimeDiff)
+      }
+      // Device rebooted between capture and publish - fallback to created_at
     }
     return new Date(reading.created_at)
-  }
-  
-  // Debug: log first few cached readings
-  const cachedReadings = data.filter(r => r.was_cached)
-  if (cachedReadings.length > 0) {
-    console.log("[v0] Cached readings found:", cachedReadings.length, cachedReadings.slice(0, 3))
   }
   
   // Build data with display times and sort by actual time
