@@ -13,7 +13,7 @@ export function useEvents(deviceId?: string, timeRange: TimeRange = "24h") {
     ["events", deviceId, timeRange],
     fetcher,
     {
-      refreshInterval: 10000,
+      refreshInterval: 5000,
       revalidateOnFocus: false,
     }
   )
