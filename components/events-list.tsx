@@ -53,7 +53,7 @@ const eventConfigs: Record<string, EventConfig> = {
   cloud_recovered: { icon: Cloud, category: "system", label: "Cloud Recovered" },
   data_sync: { icon: Database, category: "system", label: "Data Sync" },
   heartbeat: { icon: Heart, category: "heartbeat", label: "Heartbeat" },
-  command_applied: { icon: CheckCircle2, category: "command", label: "Command" },
+  command_applied: { icon: CheckCircle2, category: "command", label: "Command Applied" },
   command_failed: { icon: XCircle, category: "command", label: "Command Failed" },
 }
 
@@ -64,23 +64,14 @@ const warningTypeConfig: Record<string, { icon: typeof AlertTriangle; label: str
   signal: { icon: Signal, label: "Signal Warning" },
 }
 
-// Command types from device_status metadata.type field
+// Command type configs matching actual metadata.type values from device
+// Each command type has a dedicated icon and readable label
 const commandTypeConfig: Record<string, { icon: typeof Timer; label: string }> = {
-  set_sampling_interval: { icon: Gauge, label: "Sampling Interval" },
+  set_sampling_interval: { icon: Gauge, label: "Set Sampling Interval" },
   play_buzzer: { icon: Volume2, label: "Play Buzzer" },
   toggle_led_blink: { icon: Lightbulb, label: "Toggle LED Blink" },
   legacy_buzzer: { icon: Volume2, label: "Buzzer (Legacy)" },
   unknown: { icon: Info, label: "Unknown Command" },
-}
-
-// Extract command type from metadata - metadata.type contains the command type
-function getCommandType(metadata: Record<string, unknown> | null): string | null {
-  if (!metadata) return null
-  // The type field directly contains command type like "set_sampling_interval", "play_buzzer", etc.
-  if (metadata.type && typeof metadata.type === 'string') {
-    return metadata.type
-  }
-  return null
 }
 
 const categoryColors: Record<EventCategory, { bg: string; text: string; dot: string }> = {
@@ -127,9 +118,9 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               const isWarning = event.event === "warning"
               const meta = event.metadata as Record<string, unknown> | null
               
-              // Get command type from metadata.type field
-              const cmdType = isCommand ? getCommandType(meta) : null
-              const cmdConfig = cmdType ? commandTypeConfig[cmdType] : null
+              // For command events, get the specific command type from metadata.type
+              const commandType = isCommand && meta?.type ? String(meta.type) : null
+              const cmdConfig = commandType ? commandTypeConfig[commandType] : null
               
               // Get warning-specific info
               const warningType = isWarning && meta?.type ? String(meta.type) : null
@@ -140,21 +131,26 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               let label = config.label
               let detail = ""
               
+              // Command events: show specific command type with dedicated icon
               if (isCommand && cmdConfig) {
-                // Show specific command icon and label
                 Icon = cmdConfig.icon
                 label = cmdConfig.label
-                // Show failure reason if command failed
-                if (isFailed && meta?.reason) {
-                  detail = String(meta.reason).replace(/_/g, ' ')
-                }
-              } else if (warningConfig) {
+              } else if (isCommand && commandType) {
+                // Fallback for unknown command types - still show the type readable
+                label = commandType.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+              }
+              
+              // Warning events: show specific warning type
+              if (warningConfig) {
                 Icon = warningConfig.icon
                 label = warningConfig.label
                 if (meta?.level !== undefined) {
                   detail = `${meta.level}V`
                 }
-              } else if (event.event === "online" && meta) {
+              }
+              
+              // System event details from metadata
+              if (event.event === "online" && meta) {
                 if (meta.ip) detail = String(meta.ip)
                 if (meta.rssi) detail += detail ? ` (${meta.rssi}dBm)` : `${meta.rssi}dBm`
               } else if (event.event === "boot" && meta) {
@@ -163,6 +159,17 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               } else if (event.event === "calibrated" && meta?.sensors) {
                 const sensors = meta.sensors as string[]
                 detail = sensors.join(", ")
+              } else if (event.event === "heartbeat" && meta?.status) {
+                detail = String(meta.status)
+              } else if (event.event === "data_sync" && meta) {
+                if (meta.records) detail = `${meta.records} records`
+              } else if (event.event === "offline" && meta?.reason) {
+                detail = String(meta.reason).replace(/_/g, " ")
+              }
+              
+              // Command failure reason
+              if (isFailed && meta?.reason) {
+                detail = String(meta.reason).replace(/_/g, " ")
               }
 
               return (
