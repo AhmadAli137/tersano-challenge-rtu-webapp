@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Table,
   TableBody,
@@ -8,12 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { TelemetryRow } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { CheckCircle2, XCircle, Clock, Info } from "lucide-react"
+import { CheckCircle2, XCircle, Clock, Info, ChevronLeft, ChevronRight } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface ReadingsTableProps {
@@ -74,7 +76,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                 <TableHead className="text-xs">Humidity</TableHead>
                 <TableHead className="text-xs">Pressure</TableHead>
                 <TableHead className="text-xs">Battery</TableHead>
-                <TableHead className="text-xs">Status</TableHead>
+                <TableHead className="text-xs">Sensor</TableHead>
                 <TableHead className="text-xs">Source</TableHead>
               </TableRow>
             </TableHeader>
