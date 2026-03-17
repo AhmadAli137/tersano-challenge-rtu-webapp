@@ -32,7 +32,7 @@ interface EventsListProps {
 }
 
 // Event type categorization with better semantic meaning
-type EventCategory = "success" | "warning" | "error" | "info" | "system"
+type EventCategory = "success" | "warning" | "error" | "heartbeat" | "command" | "system"
 
 interface EventConfig {
   icon: typeof Activity
@@ -86,7 +86,7 @@ const eventConfigs: Record<string, EventConfig> = {
   },
   heartbeat: { 
     icon: Heart, 
-    category: "info", 
+    category: "heartbeat", 
     label: "Heartbeat",
     description: "Regular status check-in"
   },
@@ -104,13 +104,13 @@ const eventConfigs: Record<string, EventConfig> = {
   },
   config: { 
     icon: Settings, 
-    category: "info", 
+    category: "command", 
     label: "Configuration",
     description: "Settings updated"
   },
   sensor: { 
     icon: Cpu, 
-    category: "info", 
+    category: "system", 
     label: "Sensor",
     description: "Sensor event"
   },
@@ -131,6 +131,37 @@ const eventConfigs: Record<string, EventConfig> = {
     category: "warning", 
     label: "Timeout",
     description: "Operation timed out"
+  },
+  // Command-related events
+  sampling: { 
+    icon: Timer, 
+    category: "command", 
+    label: "Sampling Rate",
+    description: "Sampling rate changed"
+  },
+  led: { 
+    icon: Zap, 
+    category: "command", 
+    label: "LED Control",
+    description: "LED command sent"
+  },
+  blink: { 
+    icon: Zap, 
+    category: "command", 
+    label: "LED Blink",
+    description: "LED blink command"
+  },
+  buzzer: { 
+    icon: Bell, 
+    category: "command", 
+    label: "Buzzer",
+    description: "Buzzer command sent"
+  },
+  command: { 
+    icon: Radio, 
+    category: "command", 
+    label: "Command",
+    description: "Command sent to device"
   },
 }
 
@@ -166,7 +197,15 @@ const categoryStyles: Record<EventCategory, {
     badgeBg: "bg-destructive/15",
     badgeText: "text-destructive"
   },
-  info: { 
+  heartbeat: { 
+    bg: "bg-card hover:bg-neon-pink/5", 
+    border: "border-neon-pink/30",
+    iconBg: "bg-neon-pink/15",
+    iconColor: "text-neon-pink",
+    badgeBg: "bg-neon-pink/15",
+    badgeText: "text-neon-pink"
+  },
+  command: { 
     bg: "bg-card hover:bg-tersano-teal/5", 
     border: "border-tersano-teal/30",
     iconBg: "bg-tersano-teal/15",
