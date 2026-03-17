@@ -64,49 +64,21 @@ const warningTypeConfig: Record<string, { icon: typeof AlertTriangle; label: str
   signal: { icon: Signal, label: "Signal Warning" },
 }
 
-const commandTypeConfig: Record<string, { icon: typeof Timer; label: string; formatValue?: (v: unknown) => string }> = {
-  set_sampling_rate: { 
-    icon: Gauge, 
-    label: "Sampling Rate",
-    formatValue: (v) => `set to ${v}ms`
-  },
-  led_on: { icon: Lightbulb, label: "LED On" },
-  led_off: { icon: Lightbulb, label: "LED Off" },
-  led_blink: { 
-    icon: Lightbulb, 
-    label: "LED Blink",
-    formatValue: (v) => {
-      if (typeof v === 'object' && v) {
-        const obj = v as Record<string, unknown>
-        return obj.count ? `${obj.count}x` : ''
-      }
-      return ''
-    }
-  },
-  buzzer_on: { icon: Volume2, label: "Buzzer On" },
-  buzzer_off: { icon: Volume2, label: "Buzzer Off" },
-  buzzer_beep: { 
-    icon: Volume2, 
-    label: "Buzzer Beep",
-    formatValue: (v) => {
-      if (typeof v === 'object' && v) {
-        const obj = v as Record<string, unknown>
-        return obj.duration_ms ? `${obj.duration_ms}ms` : ''
-      }
-      return ''
-    }
-  },
+// Command types from device_status metadata.type field
+const commandTypeConfig: Record<string, { icon: typeof Timer; label: string }> = {
+  set_sampling_interval: { icon: Gauge, label: "Sampling Interval" },
+  play_buzzer: { icon: Volume2, label: "Play Buzzer" },
+  toggle_led_blink: { icon: Lightbulb, label: "Toggle LED Blink" },
+  legacy_buzzer: { icon: Volume2, label: "Buzzer (Legacy)" },
+  unknown: { icon: Info, label: "Unknown Command" },
 }
 
-function getCommandInfo(metadata: Record<string, unknown> | null): { type: string; value?: unknown } | null {
+// Extract command type from metadata - metadata.type contains the command type
+function getCommandType(metadata: Record<string, unknown> | null): string | null {
   if (!metadata) return null
-  if (metadata.command && typeof metadata.command === 'object') {
-    const cmd = metadata.command as Record<string, unknown>
-    if (cmd.type) return { type: String(cmd.type), value: cmd.value ?? cmd }
-  }
-  if (metadata.type) return { type: String(metadata.type), value: metadata.value ?? metadata }
-  for (const key of Object.keys(commandTypeConfig)) {
-    if (metadata[key] !== undefined) return { type: key, value: metadata[key] }
+  // The type field directly contains command type like "set_sampling_interval", "play_buzzer", etc.
+  if (metadata.type && typeof metadata.type === 'string') {
+    return metadata.type
   }
   return null
 }
@@ -155,9 +127,9 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               const isWarning = event.event === "warning"
               const meta = event.metadata as Record<string, unknown> | null
               
-              // Get command-specific info
-              const cmdInfo = isCommand ? getCommandInfo(meta) : null
-              const cmdConfig = cmdInfo?.type ? commandTypeConfig[cmdInfo.type] : null
+              // Get command type from metadata.type field
+              const cmdType = isCommand ? getCommandType(meta) : null
+              const cmdConfig = cmdType ? commandTypeConfig[cmdType] : null
               
               // Get warning-specific info
               const warningType = isWarning && meta?.type ? String(meta.type) : null
@@ -168,11 +140,13 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               let label = config.label
               let detail = ""
               
-              if (cmdConfig) {
+              if (isCommand && cmdConfig) {
+                // Show specific command icon and label
                 Icon = cmdConfig.icon
                 label = cmdConfig.label
-                if (cmdConfig.formatValue && cmdInfo?.value) {
-                  detail = cmdConfig.formatValue(cmdInfo.value)
+                // Show failure reason if command failed
+                if (isFailed && meta?.reason) {
+                  detail = String(meta.reason).replace(/_/g, ' ')
                 }
               } else if (warningConfig) {
                 Icon = warningConfig.icon
