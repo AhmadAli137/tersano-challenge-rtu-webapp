@@ -96,6 +96,8 @@ export default function DashboardPage() {
               value={uptimeStr}
               icon={Clock}
               neonColor="pink"
+              trendValue="Time since last reboot"
+              trend="neutral"
             />
             <StatCard
               title="Total Readings"
