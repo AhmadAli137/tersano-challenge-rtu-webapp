@@ -36,11 +36,11 @@ export function Header() {
 
   return (
     <>
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" suppressHydrationWarning>
-      <div className="container px-4 flex h-14 items-center justify-between" suppressHydrationWarning>
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md" suppressHydrationWarning>
+      <div className="container px-4 flex h-16 items-center justify-between" suppressHydrationWarning>
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="relative h-9 w-9 overflow-hidden rounded-lg shadow-sm border">
               <Image
                 src="/tersano-logo.png"
                 alt="Tersano"
@@ -48,9 +48,12 @@ export function Header() {
                 className="object-cover"
               />
             </div>
-            <span className="hidden sm:inline text-sm font-semibold text-foreground">Tersano RTU</span>
+            <div className="hidden sm:block">
+              <span className="text-sm font-bold text-foreground">Tersano</span>
+              <span className="text-sm font-medium text-tersano-teal ml-1">RTU</span>
+            </div>
           </Link>
-          <nav className="hidden md:flex items-center">
+          <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -58,10 +61,10 @@ export function Header() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                    "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all",
                     isActive
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-background text-tersano-teal shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -71,20 +74,23 @@ export function Header() {
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Device Selector with Live Status */}
           <Select value={selectedDevice} onValueChange={setSelectedDevice}>
-            <SelectTrigger className="w-[140px] md:w-[180px] h-8 rounded-md border-border text-xs md:text-sm font-mono">
+            <SelectTrigger className={cn(
+              "w-[150px] md:w-[200px] h-9 rounded-lg text-xs md:text-sm font-mono border shadow-sm",
+              (isDemoMode || isLive) && "border-tersano-teal/40"
+            )}>
               <div className="flex items-center gap-2">
                 {/* Live indicator */}
-                <span className="relative flex h-2 w-2">
+                <span className="relative flex h-2.5 w-2.5">
                   {(isDemoMode || isLive) ? (
                     <>
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-green"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tersano-teal opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tersano-teal"></span>
                     </>
                   ) : (
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground/40"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-muted-foreground/30"></span>
                   )}
                 </span>
                 <SelectValue placeholder="Select device" />
@@ -102,16 +108,16 @@ export function Header() {
           </Select>
 
           <Button
-            variant="ghost"
+            variant={isDemoMode ? "default" : "outline"}
             size="sm"
             onClick={toggleDemoMode}
             className={cn(
-              "h-8 gap-1.5 text-xs font-medium px-2.5",
-              isDemoMode && "text-neon-purple"
+              "h-9 gap-2 text-xs font-medium px-3 rounded-lg",
+              isDemoMode && "bg-neon-purple hover:bg-neon-purple/90 text-white"
             )}
           >
-            <FlaskConical className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{isDemoMode ? "Exit" : "Demo"}</span>
+            <FlaskConical className="h-4 w-4" />
+            <span className="hidden sm:inline">{isDemoMode ? "Exit Demo" : "Demo"}</span>
           </Button>
           <ThemeToggle />
         </div>
@@ -120,8 +126,8 @@ export function Header() {
 
     {/* Mobile Bottom Navigation - only render on client to avoid hydration issues */}
     {mounted && (
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-around h-14 px-4">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-card/90 backdrop-blur-md">
+        <div className="flex items-center justify-around h-16 px-4">
           {navigation.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -129,13 +135,13 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 px-3 py-1.5 text-xs font-medium transition-colors",
+                  "flex flex-col items-center gap-1 px-4 py-2 text-xs font-medium transition-all rounded-lg",
                   isActive
-                    ? "text-foreground"
+                    ? "text-tersano-teal bg-tersano-teal/10"
                     : "text-muted-foreground"
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className={cn("h-5 w-5", isActive && "text-tersano-teal")} />
                 {item.name}
               </Link>
             )

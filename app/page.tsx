@@ -39,13 +39,13 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">
-                Real-time environmental monitoring
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Real-time environmental monitoring for your RTU devices
               </p>
             </div>
             <TimeRangeSelect value={timeRange} onChange={setTimeRange} />

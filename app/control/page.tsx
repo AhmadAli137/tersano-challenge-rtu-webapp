@@ -40,13 +40,13 @@ export default function ControlPage() {
     <div className="min-h-screen bg-background">
       <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">Control Panel</h1>
-              <p className="text-sm text-muted-foreground">
-                Configure device settings and send commands
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Control Panel</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure device settings and send commands to your RTU
               </p>
             </div>
           </div>
@@ -59,13 +59,13 @@ export default function ControlPage() {
               isLoading={isLoading}
             />
           ) : (
-            <Card className="border-dashed border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <div className="rounded-md bg-muted p-3 mb-3">
-                  <Terminal className="h-5 w-5 text-muted-foreground" />
+            <Card className="border-dashed shadow-sm">
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <div className="rounded-lg bg-muted p-4 mb-4 border">
+                  <Terminal className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <p className="text-sm font-medium">No device selected</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-base font-medium">No device selected</p>
+                <p className="text-sm text-muted-foreground mt-1">
                   Select a device from the header to send commands
                 </p>
               </CardContent>

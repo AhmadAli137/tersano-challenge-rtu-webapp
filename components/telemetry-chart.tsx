@@ -32,14 +32,14 @@ export function TelemetryChart({
   unit = "",
 }: TelemetryChartProps) {
   return (
-    <Card className="border-border">
-      <CardHeader className="pb-2 pt-4 px-4">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-2 pt-5 px-5">
+        <CardTitle className="text-sm font-semibold">{title}</CardTitle>
         {description && (
-          <CardDescription className="text-xs">{description}</CardDescription>
+          <CardDescription className="text-xs text-muted-foreground">{description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-0 pb-3 px-4">
+      <CardContent className="pt-0 pb-4 px-5">
         <TelemetryChartContent
           data={data}
           dataKey={dataKey}
