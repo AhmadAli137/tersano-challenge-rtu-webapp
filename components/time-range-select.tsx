@@ -19,22 +19,22 @@ const options: { value: TimeRange; label: string }[] = [
 
 export function TimeRangeSelect({ value, onChange }: TimeRangeSelectProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Clock className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">History:</span>
+        <Clock className="h-4 w-4" />
+        <span className="font-medium">History</span>
       </div>
-      <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
+      <div className="flex items-center gap-1 p-1 rounded-lg border bg-card shadow-sm">
         {options.map((option) => (
           <Button
             key={option.value}
             variant="ghost"
             size="sm"
             className={cn(
-              "h-7 px-3 text-xs font-medium transition-all",
+              "h-8 px-3 text-xs font-medium rounded-md",
               value === option.value
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-tersano-teal text-white hover:bg-tersano-teal/90"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
             onClick={() => onChange(option.value)}
           >

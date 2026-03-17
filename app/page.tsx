@@ -36,20 +36,16 @@ export default function DashboardPage() {
     : "--"
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
+    <div className="min-h-screen bg-background">
       <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
-            <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-tersano-teal via-neon-purple to-neon-pink bg-clip-text text-transparent">
-                  Remote Telemetry Unit
-                </span>
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Real-time environmental monitoring
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Real-time environmental monitoring for your RTU devices
               </p>
             </div>
             <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
@@ -80,7 +76,7 @@ export default function DashboardPage() {
               value={latestReading?.pressure_hpa?.toFixed(0) ?? "--"}
               unit="hPa"
               icon={Gauge}
-              neonColor="orange"
+              neonColor="blue"
             />
             <StatCard
               title="Battery"
@@ -100,6 +96,8 @@ export default function DashboardPage() {
               value={uptimeStr}
               icon={Clock}
               neonColor="pink"
+              trendValue="Time since last reboot"
+              trend="neutral"
             />
             <StatCard
               title="Total Readings"
@@ -140,7 +138,7 @@ export default function DashboardPage() {
               dataKey="pressure_hpa"
               title="Pressure"
               description="Atmospheric pressure readings"
-              color="var(--neon-orange)"
+              color="var(--neon-blue)"
               unit=" hPa"
             />
             <TelemetryChart

@@ -1,17 +1,19 @@
 "use client"
 
 import useSWR from "swr"
-import { DeviceStatus } from "@/lib/types"
+import { DeviceStatus, TimeRange } from "@/lib/types"
 import { getDeviceEvents, getAllEvents } from "@/lib/actions"
 
-export function useEvents(deviceId?: string) {
-  const fetcher = () => deviceId ? getDeviceEvents(deviceId, 100) : getAllEvents(100)
+export function useEvents(deviceId?: string, timeRange: TimeRange = "24h") {
+  const fetcher = () => deviceId 
+    ? getDeviceEvents(deviceId, timeRange, 500) 
+    : getAllEvents(timeRange, 500)
   
   const { data, error, isLoading, mutate } = useSWR(
-    ["events", deviceId],
+    ["events", deviceId, timeRange],
     fetcher,
     {
-      refreshInterval: 10000,
+      refreshInterval: 5000,
       revalidateOnFocus: false,
     }
   )

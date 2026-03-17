@@ -1,10 +1,10 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { LucideIcon } from "lucide-react"
 
-type NeonColor = "cyan" | "purple" | "pink" | "green" | "orange"
+type NeonColor = "cyan" | "purple" | "pink" | "green" | "orange" | "blue"
 
 interface StatCardProps {
   title: string
@@ -18,12 +18,13 @@ interface StatCardProps {
   neonColor?: NeonColor
 }
 
-const colorClasses: Record<NeonColor, { bg: string; text: string; border: string; gradient: string }> = {
-  cyan: { bg: "bg-tersano-teal/10", text: "text-tersano-teal", border: "border-tersano-teal/30", gradient: "from-tersano-teal/5 to-transparent" },
-  purple: { bg: "bg-neon-purple/10", text: "text-neon-purple", border: "border-neon-purple/30", gradient: "from-neon-purple/5 to-transparent" },
-  pink: { bg: "bg-neon-pink/10", text: "text-neon-pink", border: "border-neon-pink/30", gradient: "from-neon-pink/5 to-transparent" },
-  green: { bg: "bg-neon-green/10", text: "text-neon-green", border: "border-neon-green/30", gradient: "from-neon-green/5 to-transparent" },
-  orange: { bg: "bg-neon-orange/10", text: "text-neon-orange", border: "border-neon-orange/30", gradient: "from-neon-orange/5 to-transparent" },
+const colorClasses: Record<NeonColor, { text: string; bg: string; border: string }> = {
+  cyan: { text: "text-tersano-teal", bg: "bg-tersano-teal/10", border: "border-tersano-teal/20" },
+  purple: { text: "text-neon-purple", bg: "bg-neon-purple/10", border: "border-neon-purple/20" },
+  pink: { text: "text-neon-pink", bg: "bg-neon-pink/10", border: "border-neon-pink/20" },
+  green: { text: "text-neon-green", bg: "bg-neon-green/10", border: "border-neon-green/20" },
+  orange: { text: "text-neon-orange", bg: "bg-neon-orange/10", border: "border-neon-orange/20" },
+  blue: { text: "text-neon-blue", bg: "bg-neon-blue/10", border: "border-neon-blue/20" },
 }
 
 export function StatCard({
@@ -40,46 +41,37 @@ export function StatCard({
   const classes = colorClasses[neonColor]
 
   return (
-    <Card className={cn(
-      "relative overflow-hidden transition-all duration-200 shadow-sm",
-      classes.border,
-      className
-    )}>
-      <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", classes.gradient)} />
-      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          {title}
-        </CardTitle>
-        <div className={cn("rounded-lg p-2", classes.bg, iconClassName)}>
-          <Icon className={cn("h-4 w-4", classes.text)} />
-        </div>
-      </CardHeader>
-      <CardContent className="relative pt-0">
-        <div className="flex items-baseline gap-1.5">
-          <span className={cn(
-            "text-3xl font-semibold tracking-tight font-mono tabular-nums",
-            classes.text
-          )}>{value}</span>
-          {unit && (
-            <span className="text-sm font-medium text-muted-foreground">
-              {unit}
-            </span>
-          )}
-        </div>
-        {trend && trendValue && (
-          <p
-            className={cn(
-              "mt-2 text-xs font-medium",
-              trend === "up" && "text-neon-green",
-              trend === "down" && "text-neon-pink",
-              trend === "neutral" && "text-muted-foreground"
+    <Card className={cn("border shadow-sm hover:shadow-md transition-shadow", className)}>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              {title}
+            </p>
+            <div className="flex items-baseline gap-1.5">
+              <span className={cn("text-2xl font-bold tabular-nums tracking-tight", classes.text)}>{value}</span>
+              {unit && (
+                <span className="text-sm font-medium text-muted-foreground">{unit}</span>
+              )}
+            </div>
+            {trendValue && (
+              <p className={cn(
+                "text-xs font-medium",
+                trend === "up" && "text-neon-green",
+                trend === "down" && "text-neon-orange",
+                trend === "neutral" && "text-muted-foreground",
+                !trend && "text-muted-foreground"
+              )}>
+                {trend === "up" && "↑ "}
+                {trend === "down" && "↓ "}
+                {trendValue}
+              </p>
             )}
-          >
-            {trend === "up" && "↑ "}
-            {trend === "down" && "↓ "}
-            {trendValue}
-          </p>
-        )}
+          </div>
+          <div className={cn("p-2.5 rounded-lg border", classes.bg, classes.border, iconClassName)}>
+            <Icon className={cn("h-5 w-5", classes.text)} />
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

@@ -19,10 +19,39 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
   const events: DeviceEvent[] = []
 
   // Generate 120 readings (last 2 hours at 1-minute intervals)
+  // Simulate an offline period from index 100-110 where data was cached
+  // These readings were captured during an offline period but published later when reconnected
+  const offlineStart = 100
+  const offlineEnd = 110
+  const reconnectIndex = 112 // When device came back online and synced cached data
+  
   for (let i = 0; i < 120; i++) {
-    const timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
     const baseTemp = 22 + Math.sin(i * 0.1) * 3
     const baseHumidity = 55 + Math.cos(i * 0.08) * 10
+    
+    // Simulate cached data during the offline period
+    const wasCached = i >= offlineStart && i <= offlineEnd
+    const capturedUptimeMs = i * 60000
+    
+    // For cached readings: they were captured at their normal time but published later
+    // created_at = the time they were published (all cached rows published around reconnect time)
+    // The uptime difference lets us calculate when they were actually captured
+    let timestamp: Date
+    let publishedUptimeMs: number
+    
+    if (wasCached) {
+      // All cached readings were published shortly after reconnect
+      const cachePosition = i - offlineStart
+      publishedUptimeMs = reconnectIndex * 60000 + cachePosition * 200 // staggered publish
+      // created_at is when it was published to Supabase
+      timestamp = new Date(now.getTime() - (119 - reconnectIndex) * 60 * 1000 + cachePosition * 200)
+    } else {
+      publishedUptimeMs = capturedUptimeMs
+      timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
+    }
+    
+    // Calculate actual capture time for demo
+    const captureTime = new Date(now.getTime() - (119 - i) * 60 * 1000)
     
     readings.push({
       id: `demo-reading-${i}`,
@@ -35,6 +64,13 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
       battery_v: Number((4.15 - i * 0.002 + (Math.random() - 0.5) * 0.03).toFixed(2)),
       sensor_ok: Math.random() > 0.02,
       created_at: timestamp.toISOString(),
+      captured_uptime_ms: capturedUptimeMs,
+      published_uptime_ms: publishedUptimeMs,
+      was_cached: wasCached,
+      // New reboot-aware fields - same boot_id means no reboot
+      captured_boot_id: 1,
+      published_boot_id: 1,
+      captured_unix_ms: captureTime.getTime(), // Actual capture wall-clock time
     })
   }
 
@@ -83,17 +119,25 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
       // Update data every 5 seconds in demo mode
       const interval = setInterval(() => {
         setDemoData((prev) => {
+          const uptimeMs = prev.readings.length * 60000
+          const nowMs = Date.now()
           const newReading: TelemetryRow = {
-            id: `demo-reading-${Date.now()}`,
+            id: `demo-reading-${nowMs}`,
             device_id: "tersano-rtu-demo",
             seq: prev.readings.length + 1,
-            uptime_ms: prev.readings.length * 60000,
+            uptime_ms: uptimeMs,
             temperature_c: Number((22 + Math.sin(prev.readings.length * 0.1) * 3 + (Math.random() - 0.5) * 2).toFixed(2)),
             humidity_pct: Number((55 + Math.cos(prev.readings.length * 0.08) * 10 + (Math.random() - 0.5) * 5).toFixed(2)),
             pressure_hpa: Number((1013 + Math.sin(prev.readings.length * 0.05) * 5 + (Math.random() - 0.5) * 2).toFixed(2)),
             battery_v: Number((4.15 - prev.readings.length * 0.002 + (Math.random() - 0.5) * 0.03).toFixed(2)),
             sensor_ok: true,
             created_at: new Date().toISOString(),
+            captured_uptime_ms: uptimeMs,
+            published_uptime_ms: uptimeMs,
+            was_cached: false,
+            captured_boot_id: 1,
+            published_boot_id: 1,
+            captured_unix_ms: nowMs,
           }
           
           return {

@@ -31,26 +31,15 @@ export function TelemetryChart({
   color = "var(--color-primary)",
   unit = "",
 }: TelemetryChartProps) {
-  // Get border color based on the dataKey
-  const getBorderColor = () => {
-    switch (dataKey) {
-      case "temperature_c": return "border-tersano-teal/30"
-      case "humidity_pct": return "border-neon-purple/30"
-      case "pressure_hpa": return "border-neon-orange/30"
-      case "battery_v": return "border-neon-green/30"
-      default: return "border-border/50"
-    }
-  }
-
   return (
-    <Card className={cn(getBorderColor())}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-2 pt-5 px-5">
+        <CardTitle className="text-sm font-semibold">{title}</CardTitle>
         {description && (
-          <CardDescription className="text-xs">{description}</CardDescription>
+          <CardDescription className="text-xs text-muted-foreground">{description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-0 pb-3">
+      <CardContent className="pt-0 pb-4 px-5">
         <TelemetryChartContent
           data={data}
           dataKey={dataKey}

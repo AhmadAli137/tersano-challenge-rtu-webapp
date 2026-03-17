@@ -9,6 +9,14 @@ export interface TelemetryRow {
   battery_v: number | null
   sensor_ok: boolean
   created_at: string
+  // Cached/backlog fields
+  captured_uptime_ms: number | null
+  published_uptime_ms: number | null
+  was_cached: boolean | null
+  // Reboot-aware lineage fields
+  captured_boot_id: number | null
+  published_boot_id: number | null
+  captured_unix_ms: number | null  // Actual wall-clock time when captured (if device has RTC)
 }
 
 export interface DeviceCommand {
