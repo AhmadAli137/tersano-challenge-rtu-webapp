@@ -2,42 +2,50 @@
 
 import { HeaderWrapper } from "@/components/header-wrapper"
 import { EventsList } from "@/components/events-list"
+import { CommandsList } from "@/components/commands-list"
 import { useEvents } from "@/hooks/use-events"
+import { useCommands } from "@/hooks/use-commands"
 import { useDemoMode } from "@/contexts/demo-mode"
 import { useDevice } from "@/contexts/device-context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { RefreshCw, CheckCircle2, AlertTriangle, XCircle, Info } from "lucide-react"
-import { useMemo } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RefreshCw, Heart, Terminal, CheckCircle2, Loader2 } from "lucide-react"
+import { useMemo, useState } from "react"
 
 export default function EventsPage() {
   const { selectedDevice } = useDevice()
-  const { events: realEvents, isLoading, refresh } = useEvents(selectedDevice || undefined)
+  const { events: realEvents, isLoading: eventsLoading, refresh: refreshEvents } = useEvents(selectedDevice || undefined)
+  const { commands: realCommands, isLoading: commandsLoading, refresh: refreshCommands } = useCommands(selectedDevice || undefined)
   const { isDemoMode, demoEvents } = useDemoMode()
+  const [activeTab, setActiveTab] = useState("heartbeats")
   
   const events = isDemoMode ? demoEvents : realEvents
+  const commands = isDemoMode ? [] : realCommands
 
-  // Compute event stats
+  const isLoading = eventsLoading || commandsLoading
+  
+  const refresh = () => {
+    refreshEvents()
+    refreshCommands()
+  }
+
+  // Compute stats
   const stats = useMemo(() => {
-    const success = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("online") || name.includes("connect") || name.includes("calibrat")
-    }).length
+    const heartbeats = events.filter(e => e.event.toLowerCase().includes("heartbeat")).length
+    const otherEvents = events.length - heartbeats
+    const processedCommands = commands.filter(c => c.processed).length
+    const pendingCommands = commands.length - processedCommands
     
-    const warnings = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("warning") || name.includes("reset") || name.includes("battery") || name.includes("timeout")
-    }).length
-    
-    const errors = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("error") || name.includes("offline") || name.includes("disconnect")
-    }).length
-    
-    const info = events.length - success - warnings - errors
-    
-    return { success, warnings, errors, info, total: events.length }
-  }, [events])
+    return { 
+      heartbeats, 
+      otherEvents, 
+      totalEvents: events.length,
+      processedCommands, 
+      pendingCommands, 
+      totalCommands: commands.length 
+    }
+  }, [events, commands])
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,16 +55,16 @@ export default function EventsPage() {
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Events</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Activity</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Real-time status updates and system events from your devices
+                Device heartbeats and command history
               </p>
             </div>
             <Button
               variant="outline"
               size="sm"
               className="h-9 gap-2 self-start sm:self-auto"
-              onClick={() => refresh()}
+              onClick={refresh}
               disabled={isLoading}
             >
               <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
@@ -64,59 +72,87 @@ export default function EventsPage() {
             </Button>
           </div>
 
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Card className="shadow-sm border-neon-green/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-green/10">
-                  <CheckCircle2 className="h-5 w-5 text-neon-green" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-neon-green">{stats.success}</p>
-                  <p className="text-xs text-muted-foreground">Success</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-sm border-neon-orange/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-orange/10">
-                  <AlertTriangle className="h-5 w-5 text-neon-orange" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-neon-orange">{stats.warnings}</p>
-                  <p className="text-xs text-muted-foreground">Warnings</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-sm border-destructive/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <XCircle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">{stats.errors}</p>
-                  <p className="text-xs text-muted-foreground">Errors</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-sm border-tersano-teal/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-tersano-teal/10">
-                  <Info className="h-5 w-5 text-tersano-teal" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-tersano-teal">{stats.info}</p>
-                  <p className="text-xs text-muted-foreground">Info</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-4 h-12">
+              <TabsTrigger value="heartbeats" className="gap-2 data-[state=active]:bg-tersano-teal data-[state=active]:text-white">
+                <Heart className="h-4 w-4" />
+                <span>Heartbeats</span>
+                <span className="ml-1 text-xs bg-background/20 px-1.5 py-0.5 rounded-full">
+                  {stats.totalEvents}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="commands" className="gap-2 data-[state=active]:bg-neon-purple data-[state=active]:text-white">
+                <Terminal className="h-4 w-4" />
+                <span>Commands</span>
+                <span className="ml-1 text-xs bg-background/20 px-1.5 py-0.5 rounded-full">
+                  {stats.totalCommands}
+                </span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Events List */}
-          <EventsList events={events} maxHeight="calc(100vh - 340px)" />
+            <TabsContent value="heartbeats" className="mt-0">
+              {/* Heartbeat Stats */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <Card className="shadow-sm border-tersano-teal/20">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-tersano-teal/10">
+                      <Heart className="h-5 w-5 text-tersano-teal" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-tersano-teal">{stats.heartbeats}</p>
+                      <p className="text-xs text-muted-foreground">Heartbeats</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="shadow-sm border-neon-purple/20">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-neon-purple/10">
+                      <CheckCircle2 className="h-5 w-5 text-neon-purple" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-neon-purple">{stats.otherEvents}</p>
+                      <p className="text-xs text-muted-foreground">Other Events</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <EventsList events={events} maxHeight="calc(100vh - 400px)" />
+            </TabsContent>
+
+            <TabsContent value="commands" className="mt-0">
+              {/* Command Stats */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <Card className="shadow-sm border-neon-green/20">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-neon-green/10">
+                      <CheckCircle2 className="h-5 w-5 text-neon-green" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-neon-green">{stats.processedCommands}</p>
+                      <p className="text-xs text-muted-foreground">Processed</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="shadow-sm border-neon-orange/20">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-neon-orange/10">
+                      <Loader2 className="h-5 w-5 text-neon-orange" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-neon-orange">{stats.pendingCommands}</p>
+                      <p className="text-xs text-muted-foreground">Pending</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <CommandsList commands={commands} maxHeight="calc(100vh - 400px)" />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

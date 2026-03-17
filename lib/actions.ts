@@ -278,6 +278,44 @@ export async function getPendingCommands(deviceId: string) {
   return data
 }
 
+// Get all device commands (for command history)
+export async function getDeviceCommands(
+  deviceId?: string,
+  limit: number = 100
+): Promise<{
+  id: string
+  device_id: string
+  command: CommandPayload
+  processed: boolean
+  created_at: string
+}[]> {
+  const supabase = await createClient()
+
+  let query = supabase
+    .from("device_commands")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit)
+
+  if (deviceId) {
+    query = query.eq("device_id", deviceId)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error fetching device commands:", error)
+    return []
+  }
+
+  return data ?? []
+}
+
+// Get all commands across all devices
+export async function getAllCommands(limit: number = 100) {
+  return getDeviceCommands(undefined, limit)
+}
+
 // Get the latest control state for a device from the status table
 // The device reports its current sample_rate_ms and blink_on with each status event
 export async function getDeviceControlState(deviceId: string): Promise<{
