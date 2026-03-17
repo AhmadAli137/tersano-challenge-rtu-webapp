@@ -23,10 +23,17 @@ interface ReadingsTableProps {
   title?: string
   description?: string
   showLegend?: boolean
+  pageSize?: number
 }
 
-export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true }: ReadingsTableProps) {
+export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true, pageSize = 10 }: ReadingsTableProps) {
+  const [currentPage, setCurrentPage] = useState(0)
   const hasCachedData = readings.some(r => r.was_cached === true)
+  
+  const totalPages = Math.ceil(readings.length / pageSize)
+  const startIndex = currentPage * pageSize
+  const endIndex = startIndex + pageSize
+  const paginatedReadings = readings.slice(startIndex, endIndex)
   
   return (
     <Card className="border-border">
@@ -81,14 +88,14 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
               </TableRow>
             </TableHeader>
             <TableBody>
-              {readings.length === 0 ? (
+              {paginatedReadings.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     No readings available
                   </TableCell>
                 </TableRow>
               ) : (
-                readings.map((reading) => {
+                paginatedReadings.map((reading) => {
                   const isCached = reading.was_cached === true
                   return (
                   <TableRow 
@@ -175,6 +182,38 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
           </Table>
         </div>
       </CardContent>
+      {totalPages > 1 && (
+        <CardFooter className="flex items-center justify-between py-3 px-4 border-t">
+          <p className="text-xs text-muted-foreground">
+            Showing {startIndex + 1}-{Math.min(endIndex, readings.length)} of {readings.length} readings
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+              disabled={currentPage === 0}
+              className="h-7 px-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Previous</span>
+            </Button>
+            <span className="text-xs text-muted-foreground min-w-[60px] text-center">
+              Page {currentPage + 1} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={currentPage >= totalPages - 1}
+              className="h-7 px-2"
+            >
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Next</span>
+            </Button>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   )
 }
