@@ -155,7 +155,7 @@ export default function DashboardPage() {
           <ReadingsTable
             readings={[...readings].reverse()}
             title="Recent Readings"
-            description={`Latest telemetry data from ${selectedDevice || "device"}`}
+            description={`Telemetry from ${selectedDevice || "device"} in the last ${timeRange === "15m" ? "15 minutes" : timeRange === "1h" ? "hour" : timeRange === "6h" ? "6 hours" : "24 hours"}`}
           />
         </div>
       </main>
