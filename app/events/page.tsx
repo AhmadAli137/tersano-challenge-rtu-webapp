@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 type EventFilter = "all" | "system" | "heartbeat" | "command"
 
 export default function EventsPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("24h")
+  const [timeRange, setTimeRange] = useState<TimeRange>("15m")
   const [activeFilter, setActiveFilter] = useState<EventFilter>("all")
   const { selectedDevice } = useDevice()
   const { events: realEvents, isLoading, refresh } = useEvents(selectedDevice || undefined, timeRange)
