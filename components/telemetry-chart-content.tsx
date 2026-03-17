@@ -18,6 +18,7 @@ interface TelemetryChartContentProps {
   dataKey: keyof Pick<TelemetryRow, "temperature_c" | "humidity_pct" | "pressure_hpa" | "battery_v">
   color: string
   unit: string
+  showCachedLegend?: boolean
 }
 
 export function TelemetryChartContent({
@@ -25,6 +26,7 @@ export function TelemetryChartContent({
   dataKey,
   color,
   unit,
+  showCachedLegend = true,
 }: TelemetryChartContentProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [chartWidth, setChartWidth] = useState(0)
@@ -49,8 +51,8 @@ export function TelemetryChartContent({
     index,
   }))
   
-  // Get indices of cached data points for reference dots
-  const cachedIndices = chartData.filter(d => d.isCached).map(d => d.index)
+  // Check if there are cached data points
+  const hasCachedData = chartData.some(d => d.isCached)
 
   // Calculate min/max with padding to make trends more visible
   const values = chartData.map(d => d.value as number).filter(v => v !== null && v !== undefined)
@@ -62,7 +64,20 @@ export function TelemetryChartContent({
   const yMax = Math.ceil((maxValue + padding) * 10) / 10
 
   return (
-    <div ref={containerRef} className="w-full h-[180px]">
+    <div ref={containerRef} className="w-full">
+      {showCachedLegend && hasCachedData && (
+        <div className="flex items-center gap-4 mb-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-0.5 rounded" style={{ backgroundColor: color }} />
+            <span className="text-muted-foreground">Live data</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-neon-orange border border-white" />
+            <span className="text-muted-foreground">Cached (from backlog)</span>
+          </div>
+        </div>
+      )}
+      <div className="h-[180px]">
       {chartWidth > 0 ? (
         <AreaChart
           width={chartWidth}
@@ -140,6 +155,7 @@ export function TelemetryChartContent({
       ) : (
         <div className="h-full w-full animate-pulse bg-muted/30 rounded" />
       )}
+      </div>
     </div>
   )
 }

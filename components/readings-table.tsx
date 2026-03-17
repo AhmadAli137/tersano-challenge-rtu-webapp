@@ -13,21 +13,55 @@ import { Badge } from "@/components/ui/badge"
 import { TelemetryRow } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { CheckCircle2, XCircle, Clock } from "lucide-react"
+import { CheckCircle2, XCircle, Clock, Info } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface ReadingsTableProps {
   readings: TelemetryRow[]
   title?: string
   description?: string
+  showLegend?: boolean
 }
 
-export function ReadingsTable({ readings, title = "Recent Readings", description }: ReadingsTableProps) {
+export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true }: ReadingsTableProps) {
+  const hasCachedData = readings.some(r => r.was_cached === true)
+  
   return (
     <Card className="border-border">
       <CardHeader className="pb-3 pt-4 px-4">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {description && <CardDescription className="text-xs">{description}</CardDescription>}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            {description && <CardDescription className="text-xs">{description}</CardDescription>}
+          </div>
+          {showLegend && (
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <Badge variant="outline" className="text-[10px] bg-neon-green/10 text-neon-green border-neon-green/30 py-0">
+                  Live
+                </Badge>
+                <span className="text-muted-foreground">Real-time</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Badge variant="outline" className="text-[10px] bg-neon-orange/10 text-neon-orange border-neon-orange/30 py-0 gap-0.5">
+                  <Clock className="h-2.5 w-2.5" />
+                  Cached
+                </Badge>
+                <span className="text-muted-foreground">From backlog</span>
+              </div>
+            </div>
+          )}
+        </div>
+        {hasCachedData && (
+          <div className="mt-3 flex items-start gap-2 p-2.5 rounded-md bg-neon-orange/5 border border-neon-orange/20">
+            <Info className="h-4 w-4 text-neon-orange flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <span className="font-medium text-neon-orange">Cached data detected.</span>{" "}
+              Some readings were captured while the device was offline and published when connectivity was restored. 
+              These rows show the original capture time but were received later during backlog sync.
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

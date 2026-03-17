@@ -19,10 +19,20 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
   const events: DeviceEvent[] = []
 
   // Generate 120 readings (last 2 hours at 1-minute intervals)
+  // Simulate an offline period from index 40-60 where data was cached
+  const offlineStart = 40
+  const offlineEnd = 60
+  
   for (let i = 0; i < 120; i++) {
     const timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
     const baseTemp = 22 + Math.sin(i * 0.1) * 3
     const baseHumidity = 55 + Math.cos(i * 0.08) * 10
+    
+    // Simulate cached data during the offline period
+    const wasCached = i >= offlineStart && i <= offlineEnd
+    const capturedUptimeMs = i * 60000
+    // If cached, it was published later when device came back online (around index 65)
+    const publishedUptimeMs = wasCached ? (65 * 60000) + ((i - offlineStart) * 500) : capturedUptimeMs
     
     readings.push({
       id: `demo-reading-${i}`,
@@ -35,6 +45,9 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
       battery_v: Number((4.15 - i * 0.002 + (Math.random() - 0.5) * 0.03).toFixed(2)),
       sensor_ok: Math.random() > 0.02,
       created_at: timestamp.toISOString(),
+      captured_uptime_ms: capturedUptimeMs,
+      published_uptime_ms: publishedUptimeMs,
+      was_cached: wasCached,
     })
   }
 
@@ -83,17 +96,21 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
       // Update data every 5 seconds in demo mode
       const interval = setInterval(() => {
         setDemoData((prev) => {
+          const uptimeMs = prev.readings.length * 60000
           const newReading: TelemetryRow = {
             id: `demo-reading-${Date.now()}`,
             device_id: "tersano-rtu-demo",
             seq: prev.readings.length + 1,
-            uptime_ms: prev.readings.length * 60000,
+            uptime_ms: uptimeMs,
             temperature_c: Number((22 + Math.sin(prev.readings.length * 0.1) * 3 + (Math.random() - 0.5) * 2).toFixed(2)),
             humidity_pct: Number((55 + Math.cos(prev.readings.length * 0.08) * 10 + (Math.random() - 0.5) * 5).toFixed(2)),
             pressure_hpa: Number((1013 + Math.sin(prev.readings.length * 0.05) * 5 + (Math.random() - 0.5) * 2).toFixed(2)),
             battery_v: Number((4.15 - prev.readings.length * 0.002 + (Math.random() - 0.5) * 0.03).toFixed(2)),
             sensor_ok: true,
             created_at: new Date().toISOString(),
+            captured_uptime_ms: uptimeMs,
+            published_uptime_ms: uptimeMs,
+            was_cached: false,
           }
           
           return {
