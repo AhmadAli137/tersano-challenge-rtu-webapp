@@ -43,15 +43,13 @@ export function TelemetryChartContent({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // Split data into live and cached values for dual-line rendering
+  // Build chart data with cached flag
   const chartData = data.map((reading, index) => {
     const value = reading[dataKey] ?? 0
     const isCached = reading.was_cached === true
     return {
       time: format(new Date(reading.created_at), "h:mm:ss a"),
       value,
-      liveValue: isCached ? null : value,
-      cachedValue: isCached ? value : null,
       fullTime: reading.created_at,
       isCached,
       index,
@@ -61,22 +59,31 @@ export function TelemetryChartContent({
   // Check if there are cached data points
   const hasCachedData = chartData.some(d => d.isCached)
   
-  // For smooth transitions between live/cached, we need to connect the segments
-  // by duplicating boundary points
-  const processedData = chartData.map((point, i) => {
+  // Build separate series for live and cached segments
+  // Each segment needs to include boundary points to connect properly
+  const liveData = chartData.map((point, i) => {
     const prev = chartData[i - 1]
     const next = chartData[i + 1]
-    
-    // If this is a boundary point (transition between cached and live), include value in both
-    const isTransitionFromCached = prev && prev.isCached && !point.isCached
-    const isTransitionToCached = next && next.isCached && !point.isCached
-    const isTransitionFromLive = prev && !prev.isCached && point.isCached
-    const isTransitionToLive = next && !next.isCached && point.isCached
-    
+    // Include this point if it's live, or if it's a boundary point next to a live segment
+    const isLive = !point.isCached
+    const isBoundaryFromLive = point.isCached && prev && !prev.isCached
+    const isBoundaryToLive = point.isCached && next && !next.isCached
     return {
       ...point,
-      liveValue: point.isCached ? (isTransitionFromLive || isTransitionToLive ? point.value : null) : point.value,
-      cachedValue: point.isCached ? point.value : (isTransitionFromCached || isTransitionToCached ? point.value : null),
+      value: isLive || isBoundaryFromLive || isBoundaryToLive ? point.value : null,
+    }
+  })
+  
+  const cachedData = chartData.map((point, i) => {
+    const prev = chartData[i - 1]
+    const next = chartData[i + 1]
+    // Include this point if it's cached, or if it's a boundary point next to a cached segment
+    const isCached = point.isCached
+    const isBoundaryFromCached = !point.isCached && prev && prev.isCached
+    const isBoundaryToCached = !point.isCached && next && next.isCached
+    return {
+      ...point,
+      value: isCached || isBoundaryFromCached || isBoundaryToCached ? point.value : null,
     }
   })
 
@@ -108,7 +115,7 @@ export function TelemetryChartContent({
         <AreaChart
           width={chartWidth}
           height={180}
-          data={processedData}
+          data={chartData}
           margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
           <defs>
@@ -138,14 +145,15 @@ export function TelemetryChartContent({
           <Tooltip
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
-                const isCached = payload[0].payload.isCached
+                const pointData = payload[0].payload
+                const isCached = pointData.isCached
                 return (
                   <div className="rounded-lg border bg-background p-2 shadow-md">
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(payload[0].payload.fullTime), "PPpp")}
+                      {format(new Date(pointData.fullTime), "PPpp")}
                     </p>
                     <p className="text-sm font-medium">
-                      {payload[0].value}{unit}
+                      {pointData.value}{unit}
                     </p>
                     {isCached && (
                       <p className="text-xs text-cached font-medium mt-1">
@@ -160,21 +168,25 @@ export function TelemetryChartContent({
           />
           <Area
             type="monotone"
-            dataKey="liveValue"
+            dataKey="value"
+            data={liveData}
             stroke={color}
             strokeWidth={2}
             fill={`url(#gradient-${dataKey})`}
             dot={false}
             connectNulls={false}
+            isAnimationActive={false}
           />
           <Area
             type="monotone"
-            dataKey="cachedValue"
+            dataKey="value"
+            data={cachedData}
             stroke="var(--cached)"
             strokeWidth={2}
             fill={`url(#gradient-cached-${dataKey})`}
             dot={false}
             connectNulls={false}
+            isAnimationActive={false}
           />
         </AreaChart>
       ) : (
