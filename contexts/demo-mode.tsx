@@ -19,9 +19,9 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
   const events: DeviceEvent[] = []
 
   // Generate 120 readings (last 2 hours at 1-minute intervals)
-  // Simulate an offline period from index 40-60 where data was cached
-  const offlineStart = 40
-  const offlineEnd = 60
+  // Simulate an offline period from index 100-110 where data was cached (recent ~10-20 min ago)
+  const offlineStart = 100
+  const offlineEnd = 110
   
   for (let i = 0; i < 120; i++) {
     const timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)

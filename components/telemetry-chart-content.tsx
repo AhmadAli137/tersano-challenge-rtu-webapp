@@ -61,6 +61,13 @@ export function TelemetryChartContent({
   // Check if there are cached data points
   const hasCachedData = chartData.some(d => d.isCached)
   
+  console.log("[v0] Chart data cached check:", { 
+    totalPoints: chartData.length, 
+    cachedPoints: chartData.filter(d => d.isCached).length,
+    hasCachedData,
+    sampleCached: chartData.filter(d => d.isCached).slice(0, 2)
+  })
+  
   // For smooth transitions between live/cached, we need to connect the segments
   // by duplicating boundary points
   const processedData = chartData.map((point, i) => {
