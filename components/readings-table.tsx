@@ -26,7 +26,7 @@ interface ReadingsTableProps {
   pageSize?: number
 }
 
-export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true, pageSize = 10 }: ReadingsTableProps) {
+export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true, pageSize = 20 }: ReadingsTableProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const hasCachedData = readings.some(r => r.was_cached === true)
   
