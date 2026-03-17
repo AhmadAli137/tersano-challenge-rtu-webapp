@@ -43,13 +43,31 @@ export function TelemetryChartContent({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // Build chart data with cached flag
-  const chartData = data.map((reading, index) => {
+  // Sort data by created_at to ensure chronological order
+  const sortedData = [...data].sort((a, b) => 
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  )
+  
+  // Build chart data with separate liveValue and cachedValue keys
+  // Include boundary points in both series for smooth transitions
+  const chartData = sortedData.map((reading, index) => {
     const value = reading[dataKey] ?? 0
     const isCached = reading.was_cached === true
+    const prev = sortedData[index - 1]
+    const next = sortedData[index + 1]
+    
+    // Determine if this point should appear in live or cached series
+    const isLive = !isCached
+    const isBoundaryFromLive = isCached && prev && prev.was_cached !== true
+    const isBoundaryToLive = isCached && next && next.was_cached !== true
+    const isBoundaryFromCached = !isCached && prev && prev.was_cached === true
+    const isBoundaryToCached = !isCached && next && next.was_cached === true
+    
     return {
       time: format(new Date(reading.created_at), "h:mm:ss a"),
       value,
+      liveValue: isLive || isBoundaryFromCached || isBoundaryToCached ? value : null,
+      cachedValue: isCached || isBoundaryFromLive || isBoundaryToLive ? value : null,
       fullTime: reading.created_at,
       isCached,
       index,
@@ -58,34 +76,6 @@ export function TelemetryChartContent({
   
   // Check if there are cached data points
   const hasCachedData = chartData.some(d => d.isCached)
-  
-  // Build separate series for live and cached segments
-  // Each segment needs to include boundary points to connect properly
-  const liveData = chartData.map((point, i) => {
-    const prev = chartData[i - 1]
-    const next = chartData[i + 1]
-    // Include this point if it's live, or if it's a boundary point next to a live segment
-    const isLive = !point.isCached
-    const isBoundaryFromLive = point.isCached && prev && !prev.isCached
-    const isBoundaryToLive = point.isCached && next && !next.isCached
-    return {
-      ...point,
-      value: isLive || isBoundaryFromLive || isBoundaryToLive ? point.value : null,
-    }
-  })
-  
-  const cachedData = chartData.map((point, i) => {
-    const prev = chartData[i - 1]
-    const next = chartData[i + 1]
-    // Include this point if it's cached, or if it's a boundary point next to a cached segment
-    const isCached = point.isCached
-    const isBoundaryFromCached = !point.isCached && prev && prev.isCached
-    const isBoundaryToCached = !point.isCached && next && next.isCached
-    return {
-      ...point,
-      value: isCached || isBoundaryFromCached || isBoundaryToCached ? point.value : null,
-    }
-  })
 
   // Calculate min/max with padding to make trends more visible
   const values = chartData.map(d => d.value as number).filter(v => v !== null && v !== undefined)
@@ -168,8 +158,7 @@ export function TelemetryChartContent({
           />
           <Area
             type="monotone"
-            dataKey="value"
-            data={liveData}
+            dataKey="liveValue"
             stroke={color}
             strokeWidth={2}
             fill={`url(#gradient-${dataKey})`}
@@ -179,8 +168,7 @@ export function TelemetryChartContent({
           />
           <Area
             type="monotone"
-            dataKey="value"
-            data={cachedData}
+            dataKey="cachedValue"
             stroke="var(--cached)"
             strokeWidth={2}
             fill={`url(#gradient-cached-${dataKey})`}
