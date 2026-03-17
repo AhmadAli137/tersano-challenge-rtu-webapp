@@ -42,6 +42,7 @@
   --neon-pink: oklch(0.52 0.14 330);
   --neon-green: oklch(0.50 0.16 145);
   --neon-orange: oklch(0.58 0.16 50);
+  --neon-blue: oklch(0.55 0.14 250);
   /* Cached data indicator - distinct yellow/amber */
   --cached: oklch(0.72 0.15 85);
   --sidebar: oklch(0.42 0.13 180);
@@ -91,6 +92,7 @@
   --neon-pink: oklch(0.62 0.14 330);
   --neon-green: oklch(0.62 0.16 145);
   --neon-orange: oklch(0.66 0.16 50);
+  --neon-blue: oklch(0.62 0.14 250);
   /* Cached data indicator - distinct yellow/amber */
   --cached: oklch(0.78 0.15 85);
   --sidebar: oklch(0.16 0.03 190);
@@ -137,6 +139,7 @@
   --color-neon-pink: var(--neon-pink);
   --color-neon-green: var(--neon-green);
   --color-neon-orange: var(--neon-orange);
+  --color-neon-blue: var(--neon-blue);
   --color-tersano-teal: var(--tersano-teal);
   --color-tersano-teal-light: var(--tersano-teal-light);
   --color-cached: var(--cached);

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { LucideIcon } from "lucide-react"
 
-type NeonColor = "cyan" | "purple" | "pink" | "green" | "orange"
+type NeonColor = "cyan" | "purple" | "pink" | "green" | "orange" | "blue"
 
 interface StatCardProps {
   title: string
@@ -24,6 +24,7 @@ const colorClasses: Record<NeonColor, { text: string; bg: string; border: string
   pink: { text: "text-neon-pink", bg: "bg-neon-pink/10", border: "border-neon-pink/20" },
   green: { text: "text-neon-green", bg: "bg-neon-green/10", border: "border-neon-green/20" },
   orange: { text: "text-neon-orange", bg: "bg-neon-orange/10", border: "border-neon-orange/20" },
+  blue: { text: "text-neon-blue", bg: "bg-neon-blue/10", border: "border-neon-blue/20" },
 }
 
 export function StatCard({

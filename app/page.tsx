@@ -76,7 +76,7 @@ export default function DashboardPage() {
               value={latestReading?.pressure_hpa?.toFixed(0) ?? "--"}
               unit="hPa"
               icon={Gauge}
-              neonColor="orange"
+              neonColor="blue"
             />
             <StatCard
               title="Battery"
@@ -136,7 +136,7 @@ export default function DashboardPage() {
               dataKey="pressure_hpa"
               title="Pressure"
               description="Atmospheric pressure readings"
-              color="var(--neon-orange)"
+              color="var(--neon-blue)"
               unit=" hPa"
             />
             <TelemetryChart
