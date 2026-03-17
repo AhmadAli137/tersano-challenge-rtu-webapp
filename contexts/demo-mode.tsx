@@ -19,20 +19,36 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
   const events: DeviceEvent[] = []
 
   // Generate 120 readings (last 2 hours at 1-minute intervals)
-  // Simulate an offline period from index 100-110 where data was cached (recent ~10-20 min ago)
+  // Simulate an offline period from index 100-110 where data was cached
+  // These readings were captured during an offline period but published later when reconnected
   const offlineStart = 100
   const offlineEnd = 110
+  const reconnectIndex = 112 // When device came back online and synced cached data
   
   for (let i = 0; i < 120; i++) {
-    const timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
     const baseTemp = 22 + Math.sin(i * 0.1) * 3
     const baseHumidity = 55 + Math.cos(i * 0.08) * 10
     
     // Simulate cached data during the offline period
     const wasCached = i >= offlineStart && i <= offlineEnd
     const capturedUptimeMs = i * 60000
-    // If cached, it was published later when device came back online (around index 65)
-    const publishedUptimeMs = wasCached ? (65 * 60000) + ((i - offlineStart) * 500) : capturedUptimeMs
+    
+    // For cached readings: they were captured at their normal time but published later
+    // created_at = the time they were published (all cached rows published around reconnect time)
+    // The uptime difference lets us calculate when they were actually captured
+    let timestamp: Date
+    let publishedUptimeMs: number
+    
+    if (wasCached) {
+      // All cached readings were published shortly after reconnect
+      const cachePosition = i - offlineStart
+      publishedUptimeMs = reconnectIndex * 60000 + cachePosition * 200 // staggered publish
+      // created_at is when it was published to Supabase
+      timestamp = new Date(now.getTime() - (119 - reconnectIndex) * 60 * 1000 + cachePosition * 200)
+    } else {
+      publishedUptimeMs = capturedUptimeMs
+      timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
+    }
     
     readings.push({
       id: `demo-reading-${i}`,

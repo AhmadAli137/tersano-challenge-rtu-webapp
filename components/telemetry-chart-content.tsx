@@ -43,32 +43,50 @@ export function TelemetryChartContent({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // Sort data by created_at to ensure chronological order
-  const sortedData = [...data].sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  )
+  // Calculate display time for each reading
+  // For cached data, use the actual capture time (not publish time)
+  const getDisplayTime = (reading: TelemetryRow): Date => {
+    if (reading.was_cached && reading.captured_uptime_ms !== null && reading.published_uptime_ms !== null) {
+      // Calculate when the reading was actually captured
+      // capture_time = publish_time - (published_uptime - captured_uptime)
+      const publishTime = new Date(reading.created_at).getTime()
+      const uptimeDiff = reading.published_uptime_ms - reading.captured_uptime_ms
+      return new Date(publishTime - uptimeDiff)
+    }
+    return new Date(reading.created_at)
+  }
+  
+  // Build data with display times and sort by actual time
+  const dataWithTimes = data.map(reading => ({
+    reading,
+    displayTime: getDisplayTime(reading),
+  }))
+  
+  // Sort by display time (capture time for cached, created_at for live)
+  dataWithTimes.sort((a, b) => a.displayTime.getTime() - b.displayTime.getTime())
   
   // Build chart data with separate liveValue and cachedValue keys
   // Include boundary points in both series for smooth transitions
-  const chartData = sortedData.map((reading, index) => {
+  const chartData = dataWithTimes.map(({ reading, displayTime }, index) => {
     const value = reading[dataKey] ?? 0
     const isCached = reading.was_cached === true
-    const prev = sortedData[index - 1]
-    const next = sortedData[index + 1]
+    const prev = dataWithTimes[index - 1]
+    const next = dataWithTimes[index + 1]
     
     // Determine if this point should appear in live or cached series
     const isLive = !isCached
-    const isBoundaryFromLive = isCached && prev && prev.was_cached !== true
-    const isBoundaryToLive = isCached && next && next.was_cached !== true
-    const isBoundaryFromCached = !isCached && prev && prev.was_cached === true
-    const isBoundaryToCached = !isCached && next && next.was_cached === true
+    const isBoundaryFromLive = isCached && prev && prev.reading.was_cached !== true
+    const isBoundaryToLive = isCached && next && next.reading.was_cached !== true
+    const isBoundaryFromCached = !isCached && prev && prev.reading.was_cached === true
+    const isBoundaryToCached = !isCached && next && next.reading.was_cached === true
     
     return {
-      time: format(new Date(reading.created_at), "h:mm:ss a"),
+      time: format(displayTime, "h:mm:ss a"),
       value,
       liveValue: isLive || isBoundaryFromCached || isBoundaryToCached ? value : null,
       cachedValue: isCached || isBoundaryFromLive || isBoundaryToLive ? value : null,
-      fullTime: reading.created_at,
+      fullTime: displayTime.toISOString(),
+      originalTime: reading.created_at,
       isCached,
       index,
     }
@@ -140,15 +158,20 @@ export function TelemetryChartContent({
                 return (
                   <div className="rounded-lg border bg-background p-2 shadow-md">
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(pointData.fullTime), "PPpp")}
+                      Captured: {format(new Date(pointData.fullTime), "PPpp")}
                     </p>
                     <p className="text-sm font-medium">
                       {pointData.value}{unit}
                     </p>
                     {isCached && (
-                      <p className="text-xs text-cached font-medium mt-1">
-                        Cached from backlog
-                      </p>
+                      <>
+                        <p className="text-xs text-cached font-medium mt-1">
+                          Cached from backlog
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Published: {format(new Date(pointData.originalTime), "PPpp")}
+                        </p>
+                      </>
                     )}
                   </div>
                 )
