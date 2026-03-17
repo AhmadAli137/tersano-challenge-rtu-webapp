@@ -22,7 +22,11 @@ import {
   Database,
   XCircle,
   Lightbulb,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle,
+  Battery,
+  Thermometer,
+  Signal
 } from "lucide-react"
 
 interface EventsListProps {
@@ -44,12 +48,20 @@ const eventConfigs: Record<string, EventConfig> = {
   calibrated: { icon: CheckCircle2, category: "system", label: "Calibrated" },
   online: { icon: Wifi, category: "system", label: "Online" },
   offline: { icon: WifiOff, category: "system", label: "Offline" },
+  warning: { icon: AlertTriangle, category: "system", label: "Warning" },
   cloud_degraded: { icon: CloudOff, category: "system", label: "Cloud Degraded" },
   cloud_recovered: { icon: Cloud, category: "system", label: "Cloud Recovered" },
   data_sync: { icon: Database, category: "system", label: "Data Sync" },
   heartbeat: { icon: Heart, category: "heartbeat", label: "Heartbeat" },
   command_applied: { icon: CheckCircle2, category: "command", label: "Command" },
   command_failed: { icon: XCircle, category: "command", label: "Command Failed" },
+}
+
+// Warning type icons for specific warning metadata
+const warningTypeConfig: Record<string, { icon: typeof AlertTriangle; label: string }> = {
+  low_battery: { icon: Battery, label: "Low Battery" },
+  temperature: { icon: Thermometer, label: "Temperature Warning" },
+  signal: { icon: Signal, label: "Signal Warning" },
 }
 
 const commandTypeConfig: Record<string, { icon: typeof Timer; label: string; formatValue?: (v: unknown) => string }> = {
@@ -140,15 +152,44 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
               const colors = categoryColors[config.category]
               const isCommand = config.category === "command"
               const isFailed = event.event === "command_failed"
+              const isWarning = event.event === "warning"
+              const meta = event.metadata as Record<string, unknown> | null
               
-              const cmdInfo = isCommand ? getCommandInfo(event.metadata as Record<string, unknown>) : null
+              // Get command-specific info
+              const cmdInfo = isCommand ? getCommandInfo(meta) : null
               const cmdConfig = cmdInfo?.type ? commandTypeConfig[cmdInfo.type] : null
               
-              const Icon = cmdConfig?.icon || config.icon
-              const label = cmdConfig?.label || config.label
-              const valueStr = cmdConfig?.formatValue && cmdInfo?.value 
-                ? cmdConfig.formatValue(cmdInfo.value) 
-                : null
+              // Get warning-specific info
+              const warningType = isWarning && meta?.type ? String(meta.type) : null
+              const warningConfig = warningType ? warningTypeConfig[warningType] : null
+              
+              // Determine icon and label based on event type
+              let Icon = config.icon
+              let label = config.label
+              let detail = ""
+              
+              if (cmdConfig) {
+                Icon = cmdConfig.icon
+                label = cmdConfig.label
+                if (cmdConfig.formatValue && cmdInfo?.value) {
+                  detail = cmdConfig.formatValue(cmdInfo.value)
+                }
+              } else if (warningConfig) {
+                Icon = warningConfig.icon
+                label = warningConfig.label
+                if (meta?.level !== undefined) {
+                  detail = `${meta.level}V`
+                }
+              } else if (event.event === "online" && meta) {
+                if (meta.ip) detail = String(meta.ip)
+                if (meta.rssi) detail += detail ? ` (${meta.rssi}dBm)` : `${meta.rssi}dBm`
+              } else if (event.event === "boot" && meta) {
+                if (meta.firmware) detail = `v${meta.firmware}`
+                if (meta.reason) detail += detail ? ` - ${meta.reason}` : String(meta.reason)
+              } else if (event.event === "calibrated" && meta?.sensors) {
+                const sensors = meta.sensors as string[]
+                detail = sensors.join(", ")
+              }
 
               return (
                 <div key={event.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
@@ -157,11 +198,13 @@ export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm truncate">
-                        {label}
-                        {valueStr && <span className="font-normal text-muted-foreground ml-1">{valueStr}</span>}
-                      </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-sm">{label}</span>
+                      {detail && (
+                        <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                          {detail}
+                        </span>
+                      )}
                       {isCommand && (
                         <span className={cn(
                           "text-[10px] font-semibold px-1.5 py-0.5 rounded",
