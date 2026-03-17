@@ -74,39 +74,25 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-4 lg:grid-cols-3">
       {/* Sampling Rate */}
-      <Card className="border-border/50 relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-gradient-to-br to-transparent pointer-events-none transition-colors duration-300" 
-          style={{ backgroundColor: `${getSamplingRateColor(samplingRate).color}08` }}
-        />
-        <CardContent className="p-5 relative">
-          <div className="flex items-center gap-3 mb-4">
-            <div 
-              className="rounded-xl p-2.5 transition-all duration-300"
-              style={{ 
-                backgroundColor: `${getSamplingRateColor(samplingRate).color}20`,
-                boxShadow: `0 0 12px ${getSamplingRateColor(samplingRate).color}30`
-              }}
-            >
-              <Timer className="h-5 w-5 transition-colors duration-300" style={{ color: getSamplingRateColor(samplingRate).color }} />
+      <Card className="border-border">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-md bg-muted">
+              <Timer className="h-4 w-4 text-muted-foreground" />
             </div>
-            <div>
-              <h3 className="font-semibold text-sm">Sampling Rate</h3>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium">Sampling Rate</h3>
               <p className="text-xs text-muted-foreground">{getSamplingRateColor(samplingRate).speed}</p>
             </div>
-            {/* RGB Indicator */}
             <div 
-              className="ml-auto h-3 w-3 rounded-full transition-all duration-300"
-              style={{ 
-                backgroundColor: getSamplingRateColor(samplingRate).color,
-                boxShadow: `0 0 8px ${getSamplingRateColor(samplingRate).color}`
-              }}
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: getSamplingRateColor(samplingRate).color }}
             />
           </div>
           <Select value={samplingRate.toString()} onValueChange={handleSamplingChange} disabled={isDisabled}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -127,22 +113,21 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
       </Card>
 
       {/* RGB LED Blink Control */}
-      <Card className="border-tersano-teal/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-tersano-teal/5 to-transparent pointer-events-none" />
-        <CardContent className="p-5 relative">
-          <div className="flex items-center gap-3 mb-4">
+      <Card className="border-border">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className={cn(
-              "rounded-xl p-2.5 transition-all duration-200",
-              isBlinking ? "bg-tersano-teal/30 animate-pulse" : "bg-tersano-teal/20"
+              "p-2 rounded-md",
+              isBlinking ? "bg-tersano-teal/10" : "bg-muted"
             )}>
               <Lightbulb className={cn(
-                "h-5 w-5 transition-colors",
-                isBlinking ? "text-tersano-teal" : "text-tersano-teal/70"
+                "h-4 w-4",
+                isBlinking ? "text-tersano-teal" : "text-muted-foreground"
               )} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">RGB LED</h3>
-              <p className="text-xs text-muted-foreground">{isBlinking ? "Blinking" : "Steady"}</p>
+              <h3 className="text-sm font-medium">RGB LED</h3>
+              <p className="text-xs text-muted-foreground">{isBlinking ? "Blinking" : "Off"}</p>
             </div>
           </div>
           <Button
@@ -150,29 +135,26 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
             disabled={isDisabled}
             variant={isBlinking ? "default" : "outline"}
             className={cn(
-              "w-full transition-all",
-              isBlinking 
-                ? "bg-tersano-teal hover:bg-tersano-teal/90 text-white" 
-                : "hover:border-tersano-teal/50 hover:bg-tersano-teal/10 hover:text-tersano-teal"
+              "w-full h-9",
+              isBlinking && "bg-tersano-teal hover:bg-tersano-teal/90"
             )}
           >
-            <Lightbulb className={cn("h-4 w-4 mr-2", isBlinking && "animate-pulse")} />
-            {isBlinking ? "Stop Blinking" : "Start Blinking"}
+            <Lightbulb className="h-4 w-4 mr-2" />
+            {isBlinking ? "Stop" : "Start Blink"}
           </Button>
         </CardContent>
       </Card>
 
       {/* Buzzer Control */}
-      <Card className="border-neon-purple/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 to-transparent pointer-events-none" />
-        <CardContent className="p-5 relative">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-xl p-2.5 bg-neon-purple/20">
-              <Volume2 className="h-5 w-5 text-neon-purple" />
+      <Card className="border-border">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-md bg-muted">
+              <Volume2 className="h-4 w-4 text-muted-foreground" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">Buzzer Tones</h3>
-              <p className="text-xs text-muted-foreground">Play a sound</p>
+              <h3 className="text-sm font-medium">Buzzer</h3>
+              <p className="text-xs text-muted-foreground">Play a tone</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
@@ -183,9 +165,8 @@ export function ControlForm({ deviceId, onSendCommand, isLoading }: ControlFormP
                 size="sm"
                 onClick={() => handleBuzzerPlay(tone)}
                 disabled={isDisabled}
-                className="h-9 text-xs gap-1 hover:border-neon-purple/50 hover:bg-neon-purple/10 hover:text-neon-purple"
+                className="h-8 text-xs"
               >
-                <Play className="h-3 w-3" />
                 {tone.name}
               </Button>
             ))}

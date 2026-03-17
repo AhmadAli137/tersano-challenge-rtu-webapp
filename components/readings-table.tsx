@@ -23,8 +23,8 @@ interface ReadingsTableProps {
 
 export function ReadingsTable({ readings, title = "Recent Readings", description }: ReadingsTableProps) {
   return (
-    <Card className="border-border/50">
-      <CardHeader className="pb-3">
+    <Card className="border-border">
+      <CardHeader className="pb-3 pt-4 px-4">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
@@ -56,41 +56,26 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                       {format(new Date(reading.created_at), "h:mm:ss a")}
                     </TableCell>
                     <TableCell className="font-mono text-xs">{reading.seq}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-mono text-xs">
                       {reading.temperature_c !== null ? (
-                        <span className="font-medium font-mono text-tersano-teal">
-                          {reading.temperature_c.toFixed(1)}°C
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">--</span>
-                      )}
+                        `${reading.temperature_c.toFixed(1)}°C`
+                      ) : "--"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-mono text-xs">
                       {reading.humidity_pct !== null ? (
-                        <span className="font-medium font-mono text-neon-purple">
-                          {reading.humidity_pct.toFixed(1)}%
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">--</span>
-                      )}
+                        `${reading.humidity_pct.toFixed(1)}%`
+                      ) : "--"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-mono text-xs">
                       {reading.pressure_hpa !== null ? (
-                        <span className="font-medium font-mono text-neon-orange">
-                          {reading.pressure_hpa.toFixed(0)} hPa
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">--</span>
-                      )}
+                        `${reading.pressure_hpa.toFixed(0)} hPa`
+                      ) : "--"}
                     </TableCell>
                     <TableCell>
                       {reading.battery_v !== null ? (
                         <Badge 
-                          variant={reading.battery_v > 3.3 ? "default" : "destructive"} 
-                          className={cn(
-                            "font-mono",
-                            reading.battery_v > 3.3 && "bg-neon-green/20 text-neon-green border-neon-green/30"
-                          )}
+                          variant={reading.battery_v > 3.3 ? "secondary" : "destructive"} 
+                          className="font-mono text-xs"
                         >
                           {reading.battery_v.toFixed(2)}V
                         </Badge>

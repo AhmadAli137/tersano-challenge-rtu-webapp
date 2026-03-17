@@ -36,18 +36,14 @@ export default function DashboardPage() {
     : "--"
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
+    <div className="min-h-screen bg-background">
       <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
-            <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-tersano-teal via-neon-purple to-neon-pink bg-clip-text text-transparent">
-                  Remote Telemetry Unit
-                </span>
-              </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
               <p className="text-sm text-muted-foreground">
                 Real-time environmental monitoring
               </p>

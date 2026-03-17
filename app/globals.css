@@ -5,95 +5,98 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.985 0.005 175);
-  --foreground: oklch(0.15 0.02 175);
+  /* Clean, professional light theme */
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.145 0.005 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 175);
+  --card-foreground: oklch(0.145 0.005 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 175);
-  --primary: oklch(0.55 0.14 175);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.96 0.01 175);
-  --secondary-foreground: oklch(0.2 0.02 175);
-  --muted: oklch(0.96 0.008 175);
-  --muted-foreground: oklch(0.45 0.02 175);
-  --accent: oklch(0.55 0.14 175);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.92 0.01 175);
-  --input: oklch(0.92 0.01 175);
-  --ring: oklch(0.55 0.14 175);
-  --chart-1: oklch(0.55 0.14 175);
-  --chart-2: oklch(0.55 0.12 220);
-  --chart-3: oklch(0.6 0.14 45);
-  --chart-4: oklch(0.55 0.15 145);
-  --chart-5: oklch(0.55 0.12 280);
-  --radius: 0.75rem;
-  --success: oklch(0.55 0.15 145);
-  --warning: oklch(0.65 0.15 70);
-  --tersano-teal: oklch(0.55 0.14 175);
-  --tersano-teal-light: oklch(0.7 0.12 175);
-  --neon-cyan: oklch(0.6 0.14 175);
-  --neon-purple: oklch(0.55 0.12 220);
-  --neon-pink: oklch(0.55 0.15 330);
-  --neon-green: oklch(0.55 0.15 145);
-  --neon-orange: oklch(0.6 0.14 45);
-  --sidebar: oklch(0.985 0.005 175);
-  --sidebar-foreground: oklch(0.15 0.02 175);
-  --sidebar-primary: oklch(0.55 0.14 175);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.96 0.01 175);
-  --sidebar-accent-foreground: oklch(0.2 0.02 175);
-  --sidebar-border: oklch(0.92 0.01 175);
-  --sidebar-ring: oklch(0.55 0.14 175);
+  --popover-foreground: oklch(0.145 0.005 250);
+  --primary: oklch(0.48 0.13 175);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0.003 250);
+  --secondary-foreground: oklch(0.205 0.01 250);
+  --muted: oklch(0.965 0.003 250);
+  --muted-foreground: oklch(0.465 0.01 250);
+  --accent: oklch(0.965 0.003 250);
+  --accent-foreground: oklch(0.205 0.01 250);
+  --destructive: oklch(0.577 0.245 27);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0.004 250);
+  --input: oklch(0.922 0.004 250);
+  --ring: oklch(0.48 0.13 175);
+  --chart-1: oklch(0.48 0.13 175);
+  --chart-2: oklch(0.55 0.12 280);
+  --chart-3: oklch(0.65 0.16 45);
+  --chart-4: oklch(0.58 0.16 145);
+  --chart-5: oklch(0.55 0.15 330);
+  --radius: 0.5rem;
+  --success: oklch(0.58 0.16 145);
+  --warning: oklch(0.75 0.18 70);
+  /* Tersano brand - refined teal */
+  --tersano-teal: oklch(0.48 0.13 175);
+  --tersano-teal-light: oklch(0.65 0.11 175);
+  /* Subtle accent colors */
+  --neon-cyan: oklch(0.55 0.13 195);
+  --neon-purple: oklch(0.55 0.13 280);
+  --neon-pink: oklch(0.6 0.15 330);
+  --neon-green: oklch(0.58 0.16 145);
+  --neon-orange: oklch(0.65 0.16 45);
+  --sidebar: oklch(0.985 0.003 250);
+  --sidebar-foreground: oklch(0.145 0.005 250);
+  --sidebar-primary: oklch(0.48 0.13 175);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.965 0.003 250);
+  --sidebar-accent-foreground: oklch(0.205 0.01 250);
+  --sidebar-border: oklch(0.922 0.004 250);
+  --sidebar-ring: oklch(0.48 0.13 175);
 }
 
 .dark {
-  /* Dark neon cyberpunk theme with Tersano teal accent */
-  --background: oklch(0.08 0.015 250);
-  --foreground: oklch(0.93 0.01 195);
-  --card: oklch(0.11 0.02 250);
-  --card-foreground: oklch(0.93 0.01 195);
-  --popover: oklch(0.11 0.02 250);
-  --popover-foreground: oklch(0.93 0.01 195);
-  --primary: oklch(0.75 0.18 175);
-  --primary-foreground: oklch(0.08 0.015 250);
-  --secondary: oklch(0.15 0.02 250);
-  --secondary-foreground: oklch(0.93 0.01 195);
-  --muted: oklch(0.15 0.02 250);
-  --muted-foreground: oklch(0.55 0.02 195);
-  --accent: oklch(0.15 0.025 250);
-  --accent-foreground: oklch(0.93 0.01 195);
+  /* Professional dark theme inspired by Vercel */
+  --background: oklch(0.09 0.005 250);
+  --foreground: oklch(0.95 0.005 250);
+  --card: oklch(0.12 0.005 250);
+  --card-foreground: oklch(0.95 0.005 250);
+  --popover: oklch(0.12 0.005 250);
+  --popover-foreground: oklch(0.95 0.005 250);
+  --primary: oklch(0.65 0.15 175);
+  --primary-foreground: oklch(0.09 0.005 250);
+  --secondary: oklch(0.18 0.005 250);
+  --secondary-foreground: oklch(0.95 0.005 250);
+  --muted: oklch(0.18 0.005 250);
+  --muted-foreground: oklch(0.55 0.01 250);
+  --accent: oklch(0.18 0.01 250);
+  --accent-foreground: oklch(0.95 0.005 250);
   --destructive: oklch(0.65 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.2 0.03 250);
-  --input: oklch(0.2 0.03 250);
-  --ring: oklch(0.7 0.16 175);
-  --chart-1: oklch(0.75 0.18 175);
-  --chart-2: oklch(0.7 0.18 280);
-  --chart-3: oklch(0.75 0.18 45);
-  --chart-4: oklch(0.75 0.18 145);
-  --chart-5: oklch(0.7 0.18 330);
-  --success: oklch(0.75 0.18 145);
+  --border: oklch(0.22 0.005 250);
+  --input: oklch(0.22 0.005 250);
+  --ring: oklch(0.65 0.15 175);
+  --chart-1: oklch(0.65 0.15 175);
+  --chart-2: oklch(0.65 0.15 280);
+  --chart-3: oklch(0.72 0.16 45);
+  --chart-4: oklch(0.68 0.16 145);
+  --chart-5: oklch(0.65 0.16 330);
+  --success: oklch(0.68 0.16 145);
   --warning: oklch(0.78 0.18 70);
-  /* Tersano teal as primary neon accent */
-  --tersano-teal: oklch(0.75 0.18 175);
-  --tersano-teal-light: oklch(0.85 0.14 175);
-  /* Vibrant neon colors */
-  --neon-cyan: oklch(0.78 0.2 195);
-  --neon-purple: oklch(0.7 0.2 280);
-  --neon-pink: oklch(0.72 0.22 330);
-  --neon-green: oklch(0.78 0.22 145);
-  --neon-orange: oklch(0.78 0.2 45);
-  --sidebar: oklch(0.08 0.015 250);
-  --sidebar-foreground: oklch(0.93 0.01 195);
-  --sidebar-primary: oklch(0.75 0.18 175);
-  --sidebar-primary-foreground: oklch(0.08 0.015 250);
-  --sidebar-accent: oklch(0.15 0.025 250);
-  --sidebar-accent-foreground: oklch(0.93 0.01 195);
-  --sidebar-border: oklch(0.2 0.03 250);
-  --sidebar-ring: oklch(0.7 0.16 175);
+  /* Tersano teal - refined for dark mode */
+  --tersano-teal: oklch(0.65 0.15 175);
+  --tersano-teal-light: oklch(0.75 0.12 175);
+  /* Refined accent colors for dark mode */
+  --neon-cyan: oklch(0.68 0.14 195);
+  --neon-purple: oklch(0.65 0.15 280);
+  --neon-pink: oklch(0.68 0.16 330);
+  --neon-green: oklch(0.68 0.16 145);
+  --neon-orange: oklch(0.72 0.16 45);
+  --sidebar: oklch(0.09 0.005 250);
+  --sidebar-foreground: oklch(0.95 0.005 250);
+  --sidebar-primary: oklch(0.65 0.15 175);
+  --sidebar-primary-foreground: oklch(0.09 0.005 250);
+  --sidebar-accent: oklch(0.18 0.01 250);
+  --sidebar-accent-foreground: oklch(0.95 0.005 250);
+  --sidebar-border: oklch(0.22 0.005 250);
+  --sidebar-ring: oklch(0.65 0.15 175);
 }
 
 @theme inline {
@@ -159,30 +162,4 @@
   }
 }
 
-@layer utilities {
-  .glow-cyan {
-    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-cyan) 40%, transparent);
-  }
-  .glow-purple {
-    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-purple) 40%, transparent);
-  }
-  .glow-pink {
-    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-pink) 40%, transparent);
-  }
-  .glow-green {
-    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-green) 40%, transparent);
-  }
-  .glow-orange {
-    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-orange) 40%, transparent);
-  }
-  .text-glow-cyan {
-    text-shadow: 0 0 8px color-mix(in oklch, var(--neon-cyan) 40%, transparent);
-  }
-  .text-glow-green {
-    text-shadow: 0 0 8px color-mix(in oklch, var(--neon-green) 40%, transparent);
-  }
-  .border-glow-cyan {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 6px color-mix(in oklch, var(--neon-cyan) 20%, transparent);
-  }
-}
+

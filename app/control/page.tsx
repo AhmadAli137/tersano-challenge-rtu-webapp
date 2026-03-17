@@ -37,18 +37,14 @@ export default function ControlPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
+    <div className="min-h-screen bg-background">
       <HeaderWrapper />
       <main className="container px-4 py-6 md:py-8 pb-24 md:pb-8">
         <div className="flex flex-col gap-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/50">
-            <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-tersano-teal via-neon-purple to-neon-orange bg-clip-text text-transparent">
-                  Control Panel
-                </span>
-              </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight">Control Panel</h1>
               <p className="text-sm text-muted-foreground">
                 Configure device settings and send commands
               </p>
@@ -63,14 +59,14 @@ export default function ControlPage() {
               isLoading={isLoading}
             />
           ) : (
-            <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <div className="rounded-full bg-muted/50 p-4 mb-4">
-                  <Terminal className="h-8 w-8 text-muted-foreground" />
+            <Card className="border-dashed border-border">
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <div className="rounded-md bg-muted p-3 mb-3">
+                  <Terminal className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-sm font-medium text-muted-foreground">No device selected</p>
+                <p className="text-sm font-medium">No device selected</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Select a device from the dropdown above to send commands
+                  Select a device from the header to send commands
                 </p>
               </CardContent>
             </Card>
