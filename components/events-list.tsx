@@ -12,7 +12,7 @@ import {
   CheckCircle2, 
   Info, 
   Power, 
-  RotateCcw, 
+  Play, 
   Wifi, 
   WifiOff, 
   Clock,
@@ -20,10 +20,12 @@ import {
   Heart,
   Settings,
   Bell,
-  Shield,
+  Cloud,
+  CloudOff,
   Timer,
   Radio,
-  Cpu
+  Database,
+  XCircle
 } from "lucide-react"
 
 interface EventsListProps {
@@ -42,128 +44,76 @@ interface EventConfig {
 }
 
 const eventConfigs: Record<string, EventConfig> = {
-  // System events (purple) - boot, online, offline, warnings, errors, calibrated, etc.
+  // ===== SYSTEM EVENTS (purple) =====
   boot: { 
     icon: Power, 
     category: "system", 
     label: "Device Boot",
-    description: "Device powered on and initialized"
+    description: "Device booted and RTU startup began"
+  },
+  rtu_started: { 
+    icon: Play, 
+    category: "system", 
+    label: "RTU Started",
+    description: "RTU initialization completed and background tasks started"
+  },
+  calibrated: { 
+    icon: CheckCircle2, 
+    category: "system", 
+    label: "Calibrated",
+    description: "First valid sensor sample observed, sensor ready"
   },
   online: { 
     icon: Wifi, 
     category: "system", 
     label: "Online",
-    description: "Device connected to network"
+    description: "Wi-Fi connected and IP acquired"
   },
   offline: { 
     icon: WifiOff, 
     category: "system", 
     label: "Offline",
-    description: "Device disconnected from network"
+    description: "Wi-Fi disconnected"
   },
-  error: { 
-    icon: AlertTriangle, 
+  cloud_degraded: { 
+    icon: CloudOff, 
     category: "system", 
-    label: "Error",
-    description: "An error occurred"
+    label: "Cloud Degraded",
+    description: "Cloud path degraded due to publish failures"
   },
-  warning: { 
-    icon: Bell, 
+  cloud_recovered: { 
+    icon: Cloud, 
     category: "system", 
-    label: "Warning",
-    description: "Attention required"
+    label: "Cloud Recovered",
+    description: "Cloud path recovered from degraded to healthy"
   },
-  calibrat: { 
-    icon: Settings, 
+  data_sync: { 
+    icon: Database, 
     category: "system", 
-    label: "Calibrated",
-    description: "Sensor calibration complete"
+    label: "Data Sync",
+    description: "Backlog replay summary during catch-up"
   },
-  reset: { 
-    icon: RotateCcw, 
-    category: "system", 
-    label: "Reset",
-    description: "Device was reset"
-  },
-  connect: { 
-    icon: Radio, 
-    category: "system", 
-    label: "Connected",
-    description: "Connection established"
-  },
-  disconnect: { 
-    icon: WifiOff, 
-    category: "system", 
-    label: "Disconnected",
-    description: "Connection lost"
-  },
-  sensor: { 
-    icon: Cpu, 
-    category: "system", 
-    label: "Sensor",
-    description: "Sensor event"
-  },
-  battery: { 
-    icon: Zap, 
-    category: "system", 
-    label: "Battery",
-    description: "Battery status update"
-  },
-  security: { 
-    icon: Shield, 
-    category: "system", 
-    label: "Security",
-    description: "Security event"
-  },
-  timeout: { 
-    icon: Timer, 
-    category: "system", 
-    label: "Timeout",
-    description: "Operation timed out"
-  },
-  // Heartbeat events (pink)
+  
+  // ===== HEARTBEAT EVENTS (pink) =====
   heartbeat: { 
     icon: Heart, 
     category: "heartbeat", 
     label: "Heartbeat",
-    description: "Regular status check-in"
+    description: "Periodic device health status check-in"
   },
-  // Command events (teal)
-  config: { 
-    icon: Settings, 
+  
+  // ===== COMMAND EVENTS (teal) =====
+  command_applied: { 
+    icon: CheckCircle2, 
     category: "command", 
-    label: "Configuration",
-    description: "Settings updated"
+    label: "Command Applied",
+    description: "Command accepted and successfully applied"
   },
-  sampling: { 
-    icon: Timer, 
+  command_failed: { 
+    icon: XCircle, 
     category: "command", 
-    label: "Sampling Rate",
-    description: "Sampling rate changed"
-  },
-  led: { 
-    icon: Zap, 
-    category: "command", 
-    label: "LED Control",
-    description: "LED command sent"
-  },
-  blink: { 
-    icon: Zap, 
-    category: "command", 
-    label: "LED Blink",
-    description: "LED blink command"
-  },
-  buzzer: { 
-    icon: Bell, 
-    category: "command", 
-    label: "Buzzer",
-    description: "Buzzer command sent"
-  },
-  command: { 
-    icon: Radio, 
-    category: "command", 
-    label: "Command",
-    description: "Command sent to device"
+    label: "Command Failed",
+    description: "Command received but rejected or failed"
   },
 }
 

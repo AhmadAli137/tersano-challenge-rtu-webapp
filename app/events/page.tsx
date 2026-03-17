@@ -20,17 +20,15 @@ export default function EventsPage() {
   // Compute stats by 3 categories: System, Heartbeat, Command
   const stats = useMemo(() => {
     const heartbeats = events.filter(e => 
-      e.event.toLowerCase().includes("heartbeat")
+      e.event.toLowerCase() === "heartbeat"
     ).length
     
     const commands = events.filter(e => {
       const name = e.event.toLowerCase()
-      return name.includes("command") || name.includes("sampling") || 
-             name.includes("led") || name.includes("blink") || 
-             name.includes("buzzer") || name.includes("config")
+      return name === "command_applied" || name === "command_failed"
     }).length
     
-    // System = everything else (boot, online, offline, warning, error, calibrated, etc.)
+    // System = everything else (boot, rtu_started, calibrated, online, offline, cloud_degraded, cloud_recovered, data_sync)
     const system = events.length - heartbeats - commands
     
     return { system, heartbeats, commands, total: events.length }
