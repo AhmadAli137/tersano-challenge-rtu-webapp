@@ -31,8 +31,8 @@ interface EventsListProps {
   maxHeight?: string
 }
 
-// Event type categorization with better semantic meaning
-type EventCategory = "success" | "warning" | "error" | "heartbeat" | "command" | "system"
+// 3 main categories: System (purple), Heartbeat (pink), Command (teal)
+type EventCategory = "system" | "heartbeat" | "command"
 
 interface EventConfig {
   icon: typeof Activity
@@ -42,6 +42,7 @@ interface EventConfig {
 }
 
 const eventConfigs: Record<string, EventConfig> = {
+  // System events (purple) - boot, online, offline, warnings, errors, calibrated, etc.
   boot: { 
     icon: Power, 
     category: "system", 
@@ -50,63 +51,51 @@ const eventConfigs: Record<string, EventConfig> = {
   },
   online: { 
     icon: Wifi, 
-    category: "success", 
+    category: "system", 
     label: "Online",
     description: "Device connected to network"
   },
   offline: { 
     icon: WifiOff, 
-    category: "error", 
+    category: "system", 
     label: "Offline",
     description: "Device disconnected from network"
   },
   error: { 
     icon: AlertTriangle, 
-    category: "error", 
+    category: "system", 
     label: "Error",
     description: "An error occurred"
   },
   warning: { 
     icon: Bell, 
-    category: "warning", 
+    category: "system", 
     label: "Warning",
     description: "Attention required"
   },
   calibrat: { 
     icon: Settings, 
-    category: "success", 
+    category: "system", 
     label: "Calibrated",
     description: "Sensor calibration complete"
   },
   reset: { 
     icon: RotateCcw, 
-    category: "warning", 
+    category: "system", 
     label: "Reset",
     description: "Device was reset"
   },
-  heartbeat: { 
-    icon: Heart, 
-    category: "heartbeat", 
-    label: "Heartbeat",
-    description: "Regular status check-in"
-  },
   connect: { 
     icon: Radio, 
-    category: "success", 
+    category: "system", 
     label: "Connected",
     description: "Connection established"
   },
   disconnect: { 
     icon: WifiOff, 
-    category: "error", 
+    category: "system", 
     label: "Disconnected",
     description: "Connection lost"
-  },
-  config: { 
-    icon: Settings, 
-    category: "command", 
-    label: "Configuration",
-    description: "Settings updated"
   },
   sensor: { 
     icon: Cpu, 
@@ -116,23 +105,36 @@ const eventConfigs: Record<string, EventConfig> = {
   },
   battery: { 
     icon: Zap, 
-    category: "warning", 
+    category: "system", 
     label: "Battery",
     description: "Battery status update"
   },
   security: { 
     icon: Shield, 
-    category: "warning", 
+    category: "system", 
     label: "Security",
     description: "Security event"
   },
   timeout: { 
     icon: Timer, 
-    category: "warning", 
+    category: "system", 
     label: "Timeout",
     description: "Operation timed out"
   },
-  // Command-related events
+  // Heartbeat events (pink)
+  heartbeat: { 
+    icon: Heart, 
+    category: "heartbeat", 
+    label: "Heartbeat",
+    description: "Regular status check-in"
+  },
+  // Command events (teal)
+  config: { 
+    icon: Settings, 
+    category: "command", 
+    label: "Configuration",
+    description: "Settings updated"
+  },
   sampling: { 
     icon: Timer, 
     category: "command", 
@@ -173,29 +175,13 @@ const categoryStyles: Record<EventCategory, {
   badgeBg: string
   badgeText: string
 }> = {
-  success: { 
-    bg: "bg-card hover:bg-neon-green/5", 
-    border: "border-neon-green/30",
-    iconBg: "bg-neon-green/15",
-    iconColor: "text-neon-green",
-    badgeBg: "bg-neon-green/15",
-    badgeText: "text-neon-green"
-  },
-  warning: { 
-    bg: "bg-card hover:bg-neon-orange/5", 
-    border: "border-neon-orange/30",
-    iconBg: "bg-neon-orange/15",
-    iconColor: "text-neon-orange",
-    badgeBg: "bg-neon-orange/15",
-    badgeText: "text-neon-orange"
-  },
-  error: { 
-    bg: "bg-card hover:bg-destructive/5", 
-    border: "border-destructive/30",
-    iconBg: "bg-destructive/15",
-    iconColor: "text-destructive",
-    badgeBg: "bg-destructive/15",
-    badgeText: "text-destructive"
+  system: { 
+    bg: "bg-card hover:bg-neon-purple/5", 
+    border: "border-neon-purple/30",
+    iconBg: "bg-neon-purple/15",
+    iconColor: "text-neon-purple",
+    badgeBg: "bg-neon-purple/15",
+    badgeText: "text-neon-purple"
   },
   heartbeat: { 
     bg: "bg-card hover:bg-neon-pink/5", 
@@ -212,14 +198,6 @@ const categoryStyles: Record<EventCategory, {
     iconColor: "text-tersano-teal",
     badgeBg: "bg-tersano-teal/15",
     badgeText: "text-tersano-teal"
-  },
-  system: { 
-    bg: "bg-card hover:bg-neon-purple/5", 
-    border: "border-neon-purple/30",
-    iconBg: "bg-neon-purple/15",
-    iconColor: "text-neon-purple",
-    badgeBg: "bg-neon-purple/15",
-    badgeText: "text-neon-purple"
   },
 }
 

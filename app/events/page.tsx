@@ -7,7 +7,7 @@ import { useDemoMode } from "@/contexts/demo-mode"
 import { useDevice } from "@/contexts/device-context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { RefreshCw, Wifi, AlertTriangle, Power, Settings } from "lucide-react"
+import { RefreshCw, Power, Heart, Terminal } from "lucide-react"
 import { useMemo } from "react"
 
 export default function EventsPage() {
@@ -17,26 +17,23 @@ export default function EventsPage() {
   
   const events = isDemoMode ? demoEvents : realEvents
 
-  // Compute stats by category based on actual event types: boot, online, warning, calibrated
+  // Compute stats by 3 categories: System, Heartbeat, Command
   const stats = useMemo(() => {
-    const online = events.filter(e => {
+    const heartbeats = events.filter(e => 
+      e.event.toLowerCase().includes("heartbeat")
+    ).length
+    
+    const commands = events.filter(e => {
       const name = e.event.toLowerCase()
-      return name.includes("online") || name.includes("connect")
-    }).length
-    const warnings = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("warning") || name.includes("error") || name.includes("offline")
-    }).length
-    const system = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("boot") || name.includes("reset")
-    }).length
-    const calibrated = events.filter(e => {
-      const name = e.event.toLowerCase()
-      return name.includes("calibrat")
+      return name.includes("command") || name.includes("sampling") || 
+             name.includes("led") || name.includes("blink") || 
+             name.includes("buzzer") || name.includes("config")
     }).length
     
-    return { online, warnings, system, calibrated, total: events.length }
+    // System = everything else (boot, online, offline, warning, error, calibrated, etc.)
+    const system = events.length - heartbeats - commands
+    
+    return { system, heartbeats, commands, total: events.length }
   }, [events])
 
   return (
@@ -64,32 +61,8 @@ export default function EventsPage() {
             </Button>
           </div>
 
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Card className="shadow-sm border-neon-green/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-green/10">
-                  <Wifi className="h-5 w-5 text-neon-green" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-neon-green">{stats.online}</p>
-                  <p className="text-xs text-muted-foreground">Online</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-sm border-neon-orange/20">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-orange/10">
-                  <AlertTriangle className="h-5 w-5 text-neon-orange" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-neon-orange">{stats.warnings}</p>
-                  <p className="text-xs text-muted-foreground">Warnings</p>
-                </div>
-              </CardContent>
-            </Card>
-            
+          {/* Stats Summary - 3 categories */}
+          <div className="grid grid-cols-3 gap-3">
             <Card className="shadow-sm border-neon-purple/20">
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-neon-purple/10">
@@ -102,14 +75,26 @@ export default function EventsPage() {
               </CardContent>
             </Card>
             
+            <Card className="shadow-sm border-neon-pink/20">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-neon-pink/10">
+                  <Heart className="h-5 w-5 text-neon-pink" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-neon-pink">{stats.heartbeats}</p>
+                  <p className="text-xs text-muted-foreground">Heartbeats</p>
+                </div>
+              </CardContent>
+            </Card>
+            
             <Card className="shadow-sm border-tersano-teal/20">
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-tersano-teal/10">
-                  <Settings className="h-5 w-5 text-tersano-teal" />
+                  <Terminal className="h-5 w-5 text-tersano-teal" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-tersano-teal">{stats.calibrated}</p>
-                  <p className="text-xs text-muted-foreground">Calibrated</p>
+                  <p className="text-2xl font-bold text-tersano-teal">{stats.commands}</p>
+                  <p className="text-xs text-muted-foreground">Commands</p>
                 </div>
               </CardContent>
             </Card>
