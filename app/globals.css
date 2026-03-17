@@ -5,98 +5,98 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Professional light theme with Tersano teal accent */
-  --background: oklch(0.98 0.005 180);
-  --foreground: oklch(0.18 0.02 200);
+  /* Clean light theme with Tersano teal - structured and professional */
+  --background: oklch(0.96 0.01 180);
+  --foreground: oklch(0.15 0.02 200);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 200);
+  --card-foreground: oklch(0.15 0.02 200);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 200);
-  --primary: oklch(0.45 0.12 180);
+  --popover-foreground: oklch(0.15 0.02 200);
+  --primary: oklch(0.42 0.13 180);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.95 0.015 180);
-  --secondary-foreground: oklch(0.25 0.02 200);
-  --muted: oklch(0.94 0.01 180);
-  --muted-foreground: oklch(0.45 0.02 200);
-  --accent: oklch(0.92 0.025 180);
-  --accent-foreground: oklch(0.25 0.02 200);
-  --destructive: oklch(0.55 0.22 25);
+  --secondary: oklch(0.92 0.02 180);
+  --secondary-foreground: oklch(0.20 0.02 200);
+  --muted: oklch(0.92 0.015 180);
+  --muted-foreground: oklch(0.40 0.02 200);
+  --accent: oklch(0.88 0.03 180);
+  --accent-foreground: oklch(0.20 0.02 200);
+  --destructive: oklch(0.50 0.20 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.88 0.02 180);
-  --input: oklch(0.88 0.02 180);
-  --ring: oklch(0.45 0.12 180);
-  --chart-1: oklch(0.45 0.12 180);
-  --chart-2: oklch(0.52 0.14 280);
-  --chart-3: oklch(0.60 0.16 50);
-  --chart-4: oklch(0.55 0.16 145);
-  --chart-5: oklch(0.52 0.14 330);
+  --border: oklch(0.85 0.025 180);
+  --input: oklch(0.90 0.02 180);
+  --ring: oklch(0.42 0.13 180);
+  --chart-1: oklch(0.42 0.13 180);
+  --chart-2: oklch(0.50 0.14 280);
+  --chart-3: oklch(0.58 0.16 50);
+  --chart-4: oklch(0.52 0.16 145);
+  --chart-5: oklch(0.50 0.14 330);
   --radius: 0.625rem;
-  --success: oklch(0.55 0.16 145);
-  --warning: oklch(0.70 0.16 65);
-  /* Tersano brand teal */
-  --tersano-teal: oklch(0.45 0.12 180);
-  --tersano-teal-light: oklch(0.60 0.10 180);
-  /* Accent colors */
-  --neon-cyan: oklch(0.50 0.12 195);
-  --neon-purple: oklch(0.52 0.14 280);
-  --neon-pink: oklch(0.55 0.14 330);
-  --neon-green: oklch(0.55 0.16 145);
-  --neon-orange: oklch(0.60 0.16 50);
-  --sidebar: oklch(0.97 0.01 180);
-  --sidebar-foreground: oklch(0.18 0.02 200);
-  --sidebar-primary: oklch(0.45 0.12 180);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.92 0.02 180);
-  --sidebar-accent-foreground: oklch(0.25 0.02 200);
-  --sidebar-border: oklch(0.88 0.02 180);
-  --sidebar-ring: oklch(0.45 0.12 180);
+  --success: oklch(0.50 0.16 145);
+  --warning: oklch(0.65 0.16 65);
+  /* Tersano brand teal - rich and identifiable */
+  --tersano-teal: oklch(0.42 0.13 180);
+  --tersano-teal-light: oklch(0.55 0.11 180);
+  /* Accent colors - slightly muted for light mode */
+  --neon-cyan: oklch(0.48 0.12 195);
+  --neon-purple: oklch(0.50 0.14 280);
+  --neon-pink: oklch(0.52 0.14 330);
+  --neon-green: oklch(0.50 0.16 145);
+  --neon-orange: oklch(0.58 0.16 50);
+  --sidebar: oklch(0.42 0.13 180);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.98 0 0);
+  --sidebar-primary-foreground: oklch(0.42 0.13 180);
+  --sidebar-accent: oklch(0.38 0.12 180);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.38 0.10 180);
+  --sidebar-ring: oklch(0.60 0.10 180);
 }
 
 .dark {
-  /* Professional dark theme with Tersano teal accent */
-  --background: oklch(0.12 0.02 200);
-  --foreground: oklch(0.92 0.01 180);
-  --card: oklch(0.15 0.02 200);
-  --card-foreground: oklch(0.92 0.01 180);
-  --popover: oklch(0.15 0.02 200);
-  --popover-foreground: oklch(0.92 0.01 180);
-  --primary: oklch(0.60 0.14 180);
-  --primary-foreground: oklch(0.12 0.02 200);
-  --secondary: oklch(0.20 0.02 200);
-  --secondary-foreground: oklch(0.92 0.01 180);
-  --muted: oklch(0.20 0.02 200);
-  --muted-foreground: oklch(0.58 0.02 180);
-  --accent: oklch(0.22 0.025 200);
-  --accent-foreground: oklch(0.92 0.01 180);
-  --destructive: oklch(0.60 0.22 25);
+  /* Tersano-themed dark mode - deep teal undertones */
+  --background: oklch(0.14 0.025 190);
+  --foreground: oklch(0.94 0.01 180);
+  --card: oklch(0.18 0.025 190);
+  --card-foreground: oklch(0.94 0.01 180);
+  --popover: oklch(0.18 0.025 190);
+  --popover-foreground: oklch(0.94 0.01 180);
+  --primary: oklch(0.58 0.13 180);
+  --primary-foreground: oklch(0.10 0.02 190);
+  --secondary: oklch(0.22 0.025 190);
+  --secondary-foreground: oklch(0.94 0.01 180);
+  --muted: oklch(0.22 0.025 190);
+  --muted-foreground: oklch(0.60 0.02 180);
+  --accent: oklch(0.25 0.03 190);
+  --accent-foreground: oklch(0.94 0.01 180);
+  --destructive: oklch(0.58 0.20 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.25 0.025 200);
-  --input: oklch(0.25 0.025 200);
-  --ring: oklch(0.60 0.14 180);
-  --chart-1: oklch(0.60 0.14 180);
-  --chart-2: oklch(0.62 0.14 280);
-  --chart-3: oklch(0.68 0.16 50);
-  --chart-4: oklch(0.65 0.16 145);
-  --chart-5: oklch(0.62 0.14 330);
-  --success: oklch(0.65 0.16 145);
-  --warning: oklch(0.72 0.16 65);
-  /* Tersano teal for dark mode */
-  --tersano-teal: oklch(0.60 0.14 180);
-  --tersano-teal-light: oklch(0.70 0.12 180);
-  /* Accent colors for dark mode */
-  --neon-cyan: oklch(0.62 0.12 195);
-  --neon-purple: oklch(0.62 0.14 280);
-  --neon-pink: oklch(0.65 0.14 330);
-  --neon-green: oklch(0.65 0.16 145);
-  --neon-orange: oklch(0.68 0.16 50);
-  --sidebar: oklch(0.12 0.02 200);
-  --sidebar-foreground: oklch(0.92 0.01 180);
-  --sidebar-primary: oklch(0.60 0.14 180);
-  --sidebar-primary-foreground: oklch(0.12 0.02 200);
-  --sidebar-accent: oklch(0.22 0.025 200);
-  --sidebar-accent-foreground: oklch(0.92 0.01 180);
-  --sidebar-border: oklch(0.25 0.025 200);
-  --sidebar-ring: oklch(0.60 0.14 180);
+  --border: oklch(0.28 0.03 190);
+  --input: oklch(0.22 0.025 190);
+  --ring: oklch(0.58 0.13 180);
+  --chart-1: oklch(0.58 0.13 180);
+  --chart-2: oklch(0.60 0.14 280);
+  --chart-3: oklch(0.66 0.16 50);
+  --chart-4: oklch(0.62 0.16 145);
+  --chart-5: oklch(0.60 0.14 330);
+  --success: oklch(0.62 0.16 145);
+  --warning: oklch(0.70 0.16 65);
+  /* Tersano teal for dark mode - brighter for visibility */
+  --tersano-teal: oklch(0.58 0.13 180);
+  --tersano-teal-light: oklch(0.68 0.11 180);
+  /* Accent colors for dark mode - vibrant */
+  --neon-cyan: oklch(0.60 0.12 195);
+  --neon-purple: oklch(0.60 0.14 280);
+  --neon-pink: oklch(0.62 0.14 330);
+  --neon-green: oklch(0.62 0.16 145);
+  --neon-orange: oklch(0.66 0.16 50);
+  --sidebar: oklch(0.16 0.03 190);
+  --sidebar-foreground: oklch(0.94 0.01 180);
+  --sidebar-primary: oklch(0.58 0.13 180);
+  --sidebar-primary-foreground: oklch(0.10 0.02 190);
+  --sidebar-accent: oklch(0.22 0.03 190);
+  --sidebar-accent-foreground: oklch(0.94 0.01 180);
+  --sidebar-border: oklch(0.28 0.03 190);
+  --sidebar-ring: oklch(0.58 0.13 180);
 }
 
 @theme inline {

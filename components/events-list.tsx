@@ -20,12 +20,14 @@ import {
   Heart,
   Settings,
   Bell,
+  Volume2,
   Cloud,
   CloudOff,
   Timer,
-  Radio,
+  Gauge,
   Database,
-  XCircle
+  XCircle,
+  Lightbulb
 } from "lucide-react"
 
 interface EventsListProps {
@@ -117,6 +119,45 @@ const eventConfigs: Record<string, EventConfig> = {
   },
 }
 
+// Command type icons and labels for descriptive display
+const commandTypeConfig: Record<string, { icon: typeof Timer; label: string; description: string }> = {
+  set_sampling_rate: { 
+    icon: Gauge, 
+    label: "Sampling Rate Changed",
+    description: "Device sampling interval updated"
+  },
+  led_on: { 
+    icon: Lightbulb, 
+    label: "LED Turned On",
+    description: "LED indicator activated"
+  },
+  led_off: { 
+    icon: Lightbulb, 
+    label: "LED Turned Off",
+    description: "LED indicator deactivated"
+  },
+  led_blink: { 
+    icon: Lightbulb, 
+    label: "LED Blink",
+    description: "LED set to blink pattern"
+  },
+  buzzer_on: { 
+    icon: Volume2, 
+    label: "Buzzer Activated",
+    description: "Buzzer turned on"
+  },
+  buzzer_off: { 
+    icon: Volume2, 
+    label: "Buzzer Deactivated",
+    description: "Buzzer turned off"
+  },
+  buzzer_beep: { 
+    icon: Volume2, 
+    label: "Buzzer Beep",
+    description: "Single buzzer beep triggered"
+  },
+}
+
 const categoryStyles: Record<EventCategory, { 
   bg: string
   border: string
@@ -199,7 +240,23 @@ export function EventsList({
             {events.map((event) => {
               const config = getEventConfig(event.event)
               const styles = categoryStyles[config.category]
-              const Icon = config.icon
+              
+              // For command events, get specific command info from metadata
+              const isCommand = config.category === "command"
+              const commandType = isCommand && event.metadata?.command?.type 
+                ? String(event.metadata.command.type) 
+                : null
+              const commandConfig = commandType ? commandTypeConfig[commandType] : null
+              
+              // Use command-specific icon and label if available
+              const Icon = commandConfig?.icon || config.icon
+              const displayLabel = commandConfig?.label || config.label
+              const displayDescription = commandConfig?.description || config.description
+              
+              // Get command value for display (e.g., sampling rate value)
+              const commandValue = isCommand && event.metadata?.command?.value !== undefined
+                ? event.metadata.command.value
+                : null
               
               return (
                 <div
@@ -218,14 +275,33 @@ export function EventsList({
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-sm">{config.label}</h3>
+                      <h3 className="font-semibold text-sm">{displayLabel}</h3>
                       <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5 font-medium", styles.badgeBg, styles.badgeText)}>
                         {config.category.toUpperCase()}
                       </Badge>
+                      {/* Show success/failed status for commands */}
+                      {isCommand && (
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px] px-1.5 py-0 h-5 font-medium",
+                            event.event === "command_applied" 
+                              ? "bg-neon-green/15 text-neon-green border-neon-green/30" 
+                              : "bg-destructive/15 text-destructive border-destructive/30"
+                          )}
+                        >
+                          {event.event === "command_applied" ? "SUCCESS" : "FAILED"}
+                        </Badge>
+                      )}
                     </div>
                     
                     <p className="text-xs text-muted-foreground mb-2">
-                      {config.description}
+                      {displayDescription}
+                      {commandValue !== null && (
+                        <span className="ml-1 font-semibold text-foreground">
+                          {commandType === "set_sampling_rate" ? `${commandValue}ms` : String(commandValue)}
+                        </span>
+                      )}
                     </p>
                     
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
