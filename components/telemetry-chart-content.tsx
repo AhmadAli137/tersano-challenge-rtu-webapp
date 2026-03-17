@@ -44,17 +44,40 @@ export function TelemetryChartContent({
   }, [])
 
   // Calculate display time for each reading
-  // For cached data, try to calculate actual capture time (not publish time)
+  // For cached data, determine actual capture time using available fields
   const getDisplayTime = (reading: TelemetryRow): Date => {
-    if (reading.was_cached && reading.captured_uptime_ms !== null && reading.published_uptime_ms !== null) {
-      // Only calculate capture time if published_uptime > captured_uptime (no reboot occurred)
-      // If device rebooted (published_uptime < captured_uptime), uptime reset so we can't calculate
-      if (reading.published_uptime_ms > reading.captured_uptime_ms) {
+    if (reading.was_cached) {
+      // Priority 1: Use captured_unix_ms if available (actual wall-clock time from device RTC)
+      if (reading.captured_unix_ms !== null) {
+        return new Date(reading.captured_unix_ms)
+      }
+      
+      // Priority 2: Use uptime math if boot IDs match (no reboot occurred)
+      if (
+        reading.captured_boot_id !== null &&
+        reading.published_boot_id !== null &&
+        reading.captured_boot_id === reading.published_boot_id &&
+        reading.captured_uptime_ms !== null &&
+        reading.published_uptime_ms !== null
+      ) {
         const publishTime = new Date(reading.created_at).getTime()
         const uptimeDiff = reading.published_uptime_ms - reading.captured_uptime_ms
         return new Date(publishTime - uptimeDiff)
       }
-      // Device rebooted between capture and publish - fallback to created_at
+      
+      // Priority 3 (legacy fallback): If no boot IDs but uptime math is valid
+      if (
+        reading.captured_boot_id === null &&
+        reading.captured_uptime_ms !== null &&
+        reading.published_uptime_ms !== null &&
+        reading.published_uptime_ms > reading.captured_uptime_ms
+      ) {
+        const publishTime = new Date(reading.created_at).getTime()
+        const uptimeDiff = reading.published_uptime_ms - reading.captured_uptime_ms
+        return new Date(publishTime - uptimeDiff)
+      }
+      
+      // Fallback: Can't determine capture time, use publish time
     }
     return new Date(reading.created_at)
   }

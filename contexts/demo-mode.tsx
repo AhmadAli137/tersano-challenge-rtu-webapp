@@ -50,6 +50,9 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
       timestamp = new Date(now.getTime() - (119 - i) * 60 * 1000)
     }
     
+    // Calculate actual capture time for demo
+    const captureTime = new Date(now.getTime() - (119 - i) * 60 * 1000)
+    
     readings.push({
       id: `demo-reading-${i}`,
       device_id: "tersano-rtu-demo",
@@ -64,6 +67,10 @@ function generateDemoData(): { readings: TelemetryRow[]; events: DeviceEvent[] }
       captured_uptime_ms: capturedUptimeMs,
       published_uptime_ms: publishedUptimeMs,
       was_cached: wasCached,
+      // New reboot-aware fields - same boot_id means no reboot
+      captured_boot_id: 1,
+      published_boot_id: 1,
+      captured_unix_ms: captureTime.getTime(), // Actual capture wall-clock time
     })
   }
 
@@ -113,8 +120,9 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
       const interval = setInterval(() => {
         setDemoData((prev) => {
           const uptimeMs = prev.readings.length * 60000
+          const nowMs = Date.now()
           const newReading: TelemetryRow = {
-            id: `demo-reading-${Date.now()}`,
+            id: `demo-reading-${nowMs}`,
             device_id: "tersano-rtu-demo",
             seq: prev.readings.length + 1,
             uptime_ms: uptimeMs,
@@ -127,6 +135,9 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
             captured_uptime_ms: uptimeMs,
             published_uptime_ms: uptimeMs,
             was_cached: false,
+            captured_boot_id: 1,
+            published_boot_id: 1,
+            captured_unix_ms: nowMs,
           }
           
           return {
