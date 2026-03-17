@@ -7,7 +7,7 @@ import { useDemoMode } from "@/contexts/demo-mode"
 import { useDevice } from "@/contexts/device-context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { RefreshCw, Heart, Terminal, Power, Activity } from "lucide-react"
+import { RefreshCw, Wifi, AlertTriangle, Power, Settings } from "lucide-react"
 import { useMemo } from "react"
 
 export default function EventsPage() {
@@ -17,20 +17,26 @@ export default function EventsPage() {
   
   const events = isDemoMode ? demoEvents : realEvents
 
-  // Compute stats by category
+  // Compute stats by category based on actual event types: boot, online, warning, calibrated
   const stats = useMemo(() => {
-    const heartbeats = events.filter(e => e.event.toLowerCase().includes("heartbeat")).length
-    const commands = events.filter(e => {
+    const online = events.filter(e => {
       const name = e.event.toLowerCase()
-      return name.includes("command") || name.includes("sampling") || name.includes("led") || name.includes("blink") || name.includes("buzzer") || name.includes("config")
+      return name.includes("online") || name.includes("connect")
+    }).length
+    const warnings = events.filter(e => {
+      const name = e.event.toLowerCase()
+      return name.includes("warning") || name.includes("error") || name.includes("offline")
     }).length
     const system = events.filter(e => {
       const name = e.event.toLowerCase()
-      return name.includes("boot") || name.includes("sensor")
+      return name.includes("boot") || name.includes("reset")
     }).length
-    const other = events.length - heartbeats - commands - system
+    const calibrated = events.filter(e => {
+      const name = e.event.toLowerCase()
+      return name.includes("calibrat")
+    }).length
     
-    return { heartbeats, commands, system, other, total: events.length }
+    return { online, warnings, system, calibrated, total: events.length }
   }, [events])
 
   return (
@@ -60,26 +66,26 @@ export default function EventsPage() {
 
           {/* Stats Summary */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Card className="shadow-sm border-neon-pink/20">
+            <Card className="shadow-sm border-neon-green/20">
               <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-pink/10">
-                  <Heart className="h-5 w-5 text-neon-pink" />
+                <div className="p-2 rounded-lg bg-neon-green/10">
+                  <Wifi className="h-5 w-5 text-neon-green" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-neon-pink">{stats.heartbeats}</p>
-                  <p className="text-xs text-muted-foreground">Heartbeats</p>
+                  <p className="text-2xl font-bold text-neon-green">{stats.online}</p>
+                  <p className="text-xs text-muted-foreground">Online</p>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="shadow-sm border-tersano-teal/20">
+            <Card className="shadow-sm border-neon-orange/20">
               <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-tersano-teal/10">
-                  <Terminal className="h-5 w-5 text-tersano-teal" />
+                <div className="p-2 rounded-lg bg-neon-orange/10">
+                  <AlertTriangle className="h-5 w-5 text-neon-orange" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-tersano-teal">{stats.commands}</p>
-                  <p className="text-xs text-muted-foreground">Commands</p>
+                  <p className="text-2xl font-bold text-neon-orange">{stats.warnings}</p>
+                  <p className="text-xs text-muted-foreground">Warnings</p>
                 </div>
               </CardContent>
             </Card>
@@ -96,14 +102,14 @@ export default function EventsPage() {
               </CardContent>
             </Card>
             
-            <Card className="shadow-sm border-muted-foreground/20">
+            <Card className="shadow-sm border-tersano-teal/20">
               <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-muted">
-                  <Activity className="h-5 w-5 text-muted-foreground" />
+                <div className="p-2 rounded-lg bg-tersano-teal/10">
+                  <Settings className="h-5 w-5 text-tersano-teal" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.other}</p>
-                  <p className="text-xs text-muted-foreground">Other</p>
+                  <p className="text-2xl font-bold text-tersano-teal">{stats.calibrated}</p>
+                  <p className="text-xs text-muted-foreground">Calibrated</p>
                 </div>
               </CardContent>
             </Card>

@@ -228,10 +228,10 @@ function getEventConfig(eventName: string): EventConfig {
   for (const [key, config] of Object.entries(eventConfigs)) {
     if (normalized.includes(key)) return config
   }
-  // Default fallback
+  // Default fallback - use system category
   return { 
     icon: Info, 
-    category: "info", 
+    category: "system", 
     label: eventName,
     description: "Device event"
   }
