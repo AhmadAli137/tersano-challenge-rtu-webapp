@@ -12,6 +12,13 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { TelemetryRow } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -26,14 +33,23 @@ interface ReadingsTableProps {
   pageSize?: number
 }
 
-export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true, pageSize = 20 }: ReadingsTableProps) {
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100]
+
+export function ReadingsTable({ readings, title = "Recent Readings", description, showLegend = true, pageSize: defaultPageSize = 20 }: ReadingsTableProps) {
   const [currentPage, setCurrentPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(defaultPageSize)
   const hasCachedData = readings.some(r => r.was_cached === true)
   
-  const totalPages = Math.ceil(readings.length / pageSize)
-  const startIndex = currentPage * pageSize
-  const endIndex = startIndex + pageSize
+  const totalPages = Math.ceil(readings.length / rowsPerPage)
+  const startIndex = currentPage * rowsPerPage
+  const endIndex = startIndex + rowsPerPage
   const paginatedReadings = readings.slice(startIndex, endIndex)
+  
+  // Reset to first page when rows per page changes
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(Number(value))
+    setCurrentPage(0)
+  }
   
   return (
     <Card className="border-border">
@@ -182,11 +198,26 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
           </Table>
         </div>
       </CardContent>
-      {totalPages > 1 && (
+      {readings.length > 0 && (
         <CardFooter className="flex items-center justify-between py-3 px-4 border-t">
-          <p className="text-xs text-muted-foreground">
-            Showing {startIndex + 1}-{Math.min(endIndex, readings.length)} of {readings.length} readings
-          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Rows per page:</span>
+            <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+              <SelectTrigger className="h-7 w-[70px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <SelectItem key={size} value={String(size)} className="text-xs">
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-xs text-muted-foreground ml-2">
+              {startIndex + 1}-{Math.min(endIndex, readings.length)} of {readings.length}
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -199,7 +230,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
               <span className="sr-only">Previous</span>
             </Button>
             <span className="text-xs text-muted-foreground min-w-[60px] text-center">
-              Page {currentPage + 1} of {totalPages}
+              {currentPage + 1} / {totalPages}
             </span>
             <Button
               variant="outline"
