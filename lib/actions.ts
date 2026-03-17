@@ -64,14 +64,17 @@ export async function getLatestTelemetry(deviceId: string): Promise<TelemetryRow
 
 export async function getDeviceEvents(
   deviceId: string,
-  limit: number = 50
+  timeRange: TimeRange = "24h",
+  limit: number = 500
 ): Promise<DeviceStatus[]> {
   const supabase = await createClient()
+  const since = getTimeRangeDate(timeRange)
 
   const { data, error } = await supabase
     .from("status")
     .select("*")
     .eq("device_id", deviceId)
+    .gte("created_at", since.toISOString())
     .order("created_at", { ascending: false })
     .limit(limit)
 
@@ -83,12 +86,17 @@ export async function getDeviceEvents(
   return data as DeviceStatus[]
 }
 
-export async function getAllEvents(limit: number = 100): Promise<DeviceStatus[]> {
+export async function getAllEvents(
+  timeRange: TimeRange = "24h",
+  limit: number = 500
+): Promise<DeviceStatus[]> {
   const supabase = await createClient()
+  const since = getTimeRangeDate(timeRange)
 
   const { data, error } = await supabase
     .from("status")
     .select("*")
+    .gte("created_at", since.toISOString())
     .order("created_at", { ascending: false })
     .limit(limit)
 
