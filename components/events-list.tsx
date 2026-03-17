@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 import { format, formatDistanceToNow } from "date-fns"
 import { 
   Activity, 
-  AlertTriangle, 
   CheckCircle2, 
   Info, 
   Power, 
@@ -16,10 +15,7 @@ import {
   Wifi, 
   WifiOff, 
   Clock,
-  Zap,
   Heart,
-  Settings,
-  Bell,
   Volume2,
   Cloud,
   CloudOff,
@@ -42,120 +38,36 @@ interface EventConfig {
   icon: typeof Activity
   category: EventCategory
   label: string
-  description: string
 }
 
 const eventConfigs: Record<string, EventConfig> = {
-  // ===== SYSTEM EVENTS (purple) =====
-  boot: { 
-    icon: Power, 
-    category: "system", 
-    label: "Device Boot",
-    description: "Device booted and RTU startup began"
-  },
-  rtu_started: { 
-    icon: Play, 
-    category: "system", 
-    label: "RTU Started",
-    description: "RTU initialization completed and background tasks started"
-  },
-  calibrated: { 
-    icon: CheckCircle2, 
-    category: "system", 
-    label: "Calibrated",
-    description: "First valid sensor sample observed, sensor ready"
-  },
-  online: { 
-    icon: Wifi, 
-    category: "system", 
-    label: "Online",
-    description: "Wi-Fi connected and IP acquired"
-  },
-  offline: { 
-    icon: WifiOff, 
-    category: "system", 
-    label: "Offline",
-    description: "Wi-Fi disconnected"
-  },
-  cloud_degraded: { 
-    icon: CloudOff, 
-    category: "system", 
-    label: "Cloud Degraded",
-    description: "Cloud path degraded due to publish failures"
-  },
-  cloud_recovered: { 
-    icon: Cloud, 
-    category: "system", 
-    label: "Cloud Recovered",
-    description: "Cloud path recovered from degraded to healthy"
-  },
-  data_sync: { 
-    icon: Database, 
-    category: "system", 
-    label: "Data Sync",
-    description: "Backlog replay summary during catch-up"
-  },
-  
-  // ===== HEARTBEAT EVENTS (pink) =====
-  heartbeat: { 
-    icon: Heart, 
-    category: "heartbeat", 
-    label: "Heartbeat",
-    description: "Periodic device health status check-in"
-  },
-  
-  // ===== COMMAND EVENTS (teal) =====
-  command_applied: { 
-    icon: CheckCircle2, 
-    category: "command", 
-    label: "Command Applied",
-    description: "Command accepted and successfully applied"
-  },
-  command_failed: { 
-    icon: XCircle, 
-    category: "command", 
-    label: "Command Failed",
-    description: "Command received but rejected or failed"
-  },
+  // System events
+  boot: { icon: Power, category: "system", label: "Device Boot" },
+  rtu_started: { icon: Play, category: "system", label: "RTU Started" },
+  calibrated: { icon: CheckCircle2, category: "system", label: "Calibrated" },
+  online: { icon: Wifi, category: "system", label: "Online" },
+  offline: { icon: WifiOff, category: "system", label: "Offline" },
+  cloud_degraded: { icon: CloudOff, category: "system", label: "Cloud Degraded" },
+  cloud_recovered: { icon: Cloud, category: "system", label: "Cloud Recovered" },
+  data_sync: { icon: Database, category: "system", label: "Data Sync" },
+  // Heartbeat
+  heartbeat: { icon: Heart, category: "heartbeat", label: "Heartbeat" },
+  // Commands - these get overridden by specific command type
+  command_applied: { icon: CheckCircle2, category: "command", label: "Command Applied" },
+  command_failed: { icon: XCircle, category: "command", label: "Command Failed" },
 }
 
-// Command type icons and labels for descriptive display
-const commandTypeConfig: Record<string, { icon: typeof Timer; label: string; description: string }> = {
-  set_sampling_rate: { 
-    icon: Gauge, 
-    label: "Sampling Rate Changed",
-    description: "Device sampling interval updated"
-  },
-  led_on: { 
-    icon: Lightbulb, 
-    label: "LED Turned On",
-    description: "LED indicator activated"
-  },
-  led_off: { 
-    icon: Lightbulb, 
-    label: "LED Turned Off",
-    description: "LED indicator deactivated"
-  },
-  led_blink: { 
-    icon: Lightbulb, 
-    label: "LED Blink",
-    description: "LED set to blink pattern"
-  },
-  buzzer_on: { 
-    icon: Volume2, 
-    label: "Buzzer Activated",
-    description: "Buzzer turned on"
-  },
-  buzzer_off: { 
-    icon: Volume2, 
-    label: "Buzzer Deactivated",
-    description: "Buzzer turned off"
-  },
-  buzzer_beep: { 
-    icon: Volume2, 
-    label: "Buzzer Beep",
-    description: "Single buzzer beep triggered"
-  },
+// Command type display config
+const commandTypeDisplay: Record<string, { icon: typeof Timer; label: string }> = {
+  set_sampling_interval: { icon: Gauge, label: "Sampling Rate" },
+  set_sampling_rate: { icon: Gauge, label: "Sampling Rate" },
+  set_buzzer: { icon: Volume2, label: "Buzzer" },
+  buzzer_on: { icon: Volume2, label: "Buzzer On" },
+  buzzer_off: { icon: Volume2, label: "Buzzer Off" },
+  buzzer_beep: { icon: Volume2, label: "Buzzer Beep" },
+  led_on: { icon: Lightbulb, label: "LED On" },
+  led_off: { icon: Lightbulb, label: "LED Off" },
+  led_blink: { icon: Lightbulb, label: "LED Blink" },
 }
 
 const categoryStyles: Record<EventCategory, { 
@@ -163,32 +75,28 @@ const categoryStyles: Record<EventCategory, {
   border: string
   iconBg: string
   iconColor: string
-  badgeBg: string
-  badgeText: string
+  dot: string
 }> = {
   system: { 
-    bg: "bg-card hover:bg-neon-purple/5", 
-    border: "border-neon-purple/30",
-    iconBg: "bg-neon-purple/15",
+    bg: "hover:bg-neon-purple/5", 
+    border: "border-l-neon-purple",
+    iconBg: "bg-neon-purple/10",
     iconColor: "text-neon-purple",
-    badgeBg: "bg-neon-purple/15",
-    badgeText: "text-neon-purple"
+    dot: "bg-neon-purple"
   },
   heartbeat: { 
-    bg: "bg-card hover:bg-neon-pink/5", 
-    border: "border-neon-pink/30",
-    iconBg: "bg-neon-pink/15",
+    bg: "hover:bg-neon-pink/5", 
+    border: "border-l-neon-pink",
+    iconBg: "bg-neon-pink/10",
     iconColor: "text-neon-pink",
-    badgeBg: "bg-neon-pink/15",
-    badgeText: "text-neon-pink"
+    dot: "bg-neon-pink"
   },
   command: { 
-    bg: "bg-card hover:bg-tersano-teal/5", 
-    border: "border-tersano-teal/30",
-    iconBg: "bg-tersano-teal/15",
+    bg: "hover:bg-tersano-teal/5", 
+    border: "border-l-tersano-teal",
+    iconBg: "bg-tersano-teal/10",
     iconColor: "text-tersano-teal",
-    badgeBg: "bg-tersano-teal/15",
-    badgeText: "text-tersano-teal"
+    dot: "bg-tersano-teal"
   },
 }
 
@@ -197,13 +105,61 @@ function getEventConfig(eventName: string): EventConfig {
   for (const [key, config] of Object.entries(eventConfigs)) {
     if (normalized.includes(key)) return config
   }
-  // Default fallback - use system category
-  return { 
-    icon: Info, 
-    category: "system", 
-    label: eventName,
-    description: "Device event"
+  return { icon: Info, category: "system", label: eventName }
+}
+
+// Extract command details from metadata
+function getCommandDetails(event: DeviceStatus): { 
+  icon: typeof Timer
+  label: string
+  value?: string
+  success: boolean
+} | null {
+  if (!event.event.toLowerCase().includes("command")) return null
+  
+  const success = event.event === "command_applied"
+  const metadata = event.metadata as Record<string, unknown> | null
+  
+  // Try different metadata structures
+  const cmd = metadata?.cmd || metadata?.command || metadata
+  const cmdType = (cmd as Record<string, unknown>)?.type as string | undefined
+  
+  if (cmdType && commandTypeDisplay[cmdType]) {
+    const display = commandTypeDisplay[cmdType]
+    let value: string | undefined
+    
+    // Extract value based on command type
+    if (cmdType.includes("sampling")) {
+      const interval = (cmd as Record<string, unknown>)?.sampling_interval_ms || 
+                       (cmd as Record<string, unknown>)?.value
+      if (interval) value = `${interval}ms`
+    } else if (cmdType.includes("buzzer")) {
+      const buzzerOn = (cmd as Record<string, unknown>)?.buzzer_on
+      if (buzzerOn !== undefined) value = buzzerOn ? "On" : "Off"
+    }
+    
+    return { icon: display.icon, label: display.label, value, success }
   }
+  
+  // Fallback - try to detect command type from other fields
+  if (metadata?.sampling_interval_ms !== undefined) {
+    return { 
+      icon: Gauge, 
+      label: "Sampling Rate", 
+      value: `${metadata.sampling_interval_ms}ms`,
+      success 
+    }
+  }
+  if (metadata?.buzzer_on !== undefined) {
+    return { 
+      icon: Volume2, 
+      label: "Buzzer", 
+      value: metadata.buzzer_on ? "On" : "Off",
+      success 
+    }
+  }
+  
+  return { icon: CheckCircle2, label: "Command", success }
 }
 
 function formatUptime(ms: number): string {
@@ -214,124 +170,83 @@ function formatUptime(ms: number): string {
   
   if (days > 0) return `${days}d ${hours % 24}h`
   if (hours > 0) return `${hours}h ${minutes % 60}m`
-  if (minutes > 0) return `${minutes}m ${seconds % 60}s`
+  if (minutes > 0) return `${minutes}m`
   return `${seconds}s`
 }
 
-export function EventsList({
-  events,
-  maxHeight = "600px",
-}: EventsListProps) {
+export function EventsList({ events, maxHeight = "600px" }: EventsListProps) {
   return (
-    <Card className="shadow-sm">
-      <ScrollArea style={{ height: maxHeight }} className="p-4">
+    <Card className="shadow-sm overflow-hidden">
+      <ScrollArea style={{ height: maxHeight }}>
         {events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <div className="rounded-xl bg-muted p-5 mb-4">
-              <Activity className="h-10 w-10 opacity-40" />
-            </div>
-            <p className="text-base font-medium">No events recorded</p>
-            <p className="text-sm mt-2 text-center max-w-sm">
-              Events will appear here when your devices report status changes, errors, or other activities.
-            </p>
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+            <Activity className="h-8 w-8 opacity-30 mb-3" />
+            <p className="text-sm font-medium">No events found</p>
+            <p className="text-xs mt-1">Events will appear here when devices report activity</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="divide-y">
             {events.map((event) => {
               const config = getEventConfig(event.event)
               const styles = categoryStyles[config.category]
+              const commandDetails = getCommandDetails(event)
               
-              // For command events, get specific command info from metadata
-              const isCommand = config.category === "command"
-              const commandType = isCommand && event.metadata?.command?.type 
-                ? String(event.metadata.command.type) 
-                : null
-              const commandConfig = commandType ? commandTypeConfig[commandType] : null
-              
-              // Use command-specific icon and label if available
-              const Icon = commandConfig?.icon || config.icon
-              const displayLabel = commandConfig?.label || config.label
-              const displayDescription = commandConfig?.description || config.description
-              
-              // Get command value for display (e.g., sampling rate value)
-              const commandValue = isCommand && event.metadata?.command?.value !== undefined
-                ? event.metadata.command.value
-                : null
+              // Use command-specific display if available
+              const Icon = commandDetails?.icon || config.icon
+              const displayLabel = commandDetails?.label || config.label
               
               return (
                 <div
                   key={event.id}
                   className={cn(
-                    "flex items-start gap-4 p-4 rounded-lg border transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-3 border-l-3 transition-colors",
                     styles.bg,
                     styles.border
                   )}
                 >
                   {/* Icon */}
-                  <div className={cn("rounded-lg p-2.5 flex-shrink-0", styles.iconBg)}>
-                    <Icon className={cn("h-5 w-5", styles.iconColor)} />
+                  <div className={cn("rounded-md p-2 flex-shrink-0", styles.iconBg)}>
+                    <Icon className={cn("h-4 w-4", styles.iconColor)} />
                   </div>
                   
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-sm">{displayLabel}</h3>
-                      <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5 font-medium", styles.badgeBg, styles.badgeText)}>
-                        {config.category.toUpperCase()}
-                      </Badge>
-                      {/* Show success/failed status for commands */}
-                      {isCommand && (
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{displayLabel}</span>
+                      {commandDetails?.value && (
+                        <Badge variant="secondary" className="text-[10px] h-5 font-mono">
+                          {commandDetails.value}
+                        </Badge>
+                      )}
+                      {commandDetails && (
                         <Badge 
                           variant="outline" 
                           className={cn(
-                            "text-[10px] px-1.5 py-0 h-5 font-medium",
-                            event.event === "command_applied" 
-                              ? "bg-neon-green/15 text-neon-green border-neon-green/30" 
-                              : "bg-destructive/15 text-destructive border-destructive/30"
+                            "text-[10px] h-5",
+                            commandDetails.success 
+                              ? "bg-neon-green/10 text-neon-green border-neon-green/30" 
+                              : "bg-destructive/10 text-destructive border-destructive/30"
                           )}
                         >
-                          {event.event === "command_applied" ? "SUCCESS" : "FAILED"}
+                          {commandDetails.success ? "Applied" : "Failed"}
                         </Badge>
                       )}
                     </div>
-                    
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {displayDescription}
-                      {commandValue !== null && (
-                        <span className="ml-1 font-semibold text-foreground">
-                          {commandType === "set_sampling_rate" ? `${commandValue}ms` : String(commandValue)}
-                        </span>
-                      )}
-                    </p>
-                    
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                      <span className="font-mono bg-muted px-1.5 py-0.5 rounded">{event.device_id}</span>
+                    <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
+                      <span className="font-mono">{event.device_id}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}
                       </span>
                       {event.uptime_ms !== null && (
-                        <span className="flex items-center gap-1">
-                          <Timer className="h-3 w-3" />
-                          Uptime: {formatUptime(event.uptime_ms)}
-                        </span>
+                        <span>Uptime: {formatUptime(event.uptime_ms)}</span>
                       )}
                     </div>
-                    
-                    <p className="text-[10px] text-muted-foreground/70 mt-1">
-                      {format(new Date(event.created_at), "EEEE, MMMM d, yyyy 'at' h:mm:ss a")}
-                    </p>
-                    
-                    {event.metadata && Object.keys(event.metadata).length > 0 && (
-                      <details className="mt-3 group">
-                        <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                          View metadata
-                        </summary>
-                        <pre className="mt-2 text-xs bg-muted/50 p-3 rounded-md overflow-x-auto font-mono border">
-                          {JSON.stringify(event.metadata, null, 2)}
-                        </pre>
-                      </details>
-                    )}
+                  </div>
+                  
+                  {/* Timestamp */}
+                  <div className="text-[10px] text-muted-foreground/60 text-right hidden sm:block">
+                    {format(new Date(event.created_at), "MMM d, h:mm a")}
                   </div>
                 </div>
               )
