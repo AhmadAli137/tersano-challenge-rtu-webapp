@@ -46,6 +46,15 @@ export function TelemetryChartContent({
     fullTime: reading.created_at,
   }))
 
+  // Calculate min/max with padding to make trends more visible
+  const values = chartData.map(d => d.value as number).filter(v => v !== null && v !== undefined)
+  const minValue = values.length > 0 ? Math.min(...values) : 0
+  const maxValue = values.length > 0 ? Math.max(...values) : 100
+  const range = maxValue - minValue
+  const padding = range > 0 ? range * 0.15 : 1 // 15% padding or 1 unit if no range
+  const yMin = Math.floor((minValue - padding) * 10) / 10
+  const yMax = Math.ceil((maxValue + padding) * 10) / 10
+
   return (
     <div ref={containerRef} className="w-full h-[180px]">
       {chartWidth > 0 ? (
@@ -69,6 +78,7 @@ export function TelemetryChartContent({
             axisLine={false}
           />
           <YAxis
+            domain={[yMin, yMax]}
             tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
             tickLine={false}
             axisLine={false}
