@@ -153,7 +153,7 @@ export default function DashboardPage() {
 
           {/* Readings Table */}
           <ReadingsTable
-            readings={[...readings].reverse().slice(0, 20)}
+            readings={[...readings].reverse()}
             title="Recent Readings"
             description={`Latest telemetry data from ${selectedDevice || "device"}`}
           />
