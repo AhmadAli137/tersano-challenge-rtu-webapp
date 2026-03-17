@@ -42,6 +42,8 @@
   --neon-pink: oklch(0.52 0.14 330);
   --neon-green: oklch(0.50 0.16 145);
   --neon-orange: oklch(0.58 0.16 50);
+  /* Cached data indicator - distinct yellow/amber */
+  --cached: oklch(0.72 0.15 85);
   --sidebar: oklch(0.42 0.13 180);
   --sidebar-foreground: oklch(0.98 0 0);
   --sidebar-primary: oklch(0.98 0 0);
@@ -89,6 +91,8 @@
   --neon-pink: oklch(0.62 0.14 330);
   --neon-green: oklch(0.62 0.16 145);
   --neon-orange: oklch(0.66 0.16 50);
+  /* Cached data indicator - distinct yellow/amber */
+  --cached: oklch(0.78 0.15 85);
   --sidebar: oklch(0.16 0.03 190);
   --sidebar-foreground: oklch(0.94 0.01 180);
   --sidebar-primary: oklch(0.58 0.13 180);
@@ -135,6 +139,7 @@
   --color-neon-orange: var(--neon-orange);
   --color-tersano-teal: var(--tersano-teal);
   --color-tersano-teal-light: var(--tersano-teal-light);
+  --color-cached: var(--cached);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

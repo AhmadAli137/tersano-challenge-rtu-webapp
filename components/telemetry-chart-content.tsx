@@ -98,7 +98,7 @@ export function TelemetryChartContent({
             <span className="text-muted-foreground">Live</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-0.5 rounded bg-neon-orange" />
+            <div className="w-4 h-0.5 rounded bg-cached" />
             <span className="text-muted-foreground">Cached (offline backlog)</span>
           </div>
         </div>
@@ -117,8 +117,8 @@ export function TelemetryChartContent({
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
             <linearGradient id={`gradient-cached-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--neon-orange)" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="var(--neon-orange)" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--cached)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--cached)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
@@ -148,7 +148,7 @@ export function TelemetryChartContent({
                       {payload[0].value}{unit}
                     </p>
                     {isCached && (
-                      <p className="text-xs text-neon-orange font-medium mt-1">
+                      <p className="text-xs text-cached font-medium mt-1">
                         Cached from backlog
                       </p>
                     )}
@@ -170,7 +170,7 @@ export function TelemetryChartContent({
           <Area
             type="monotone"
             dataKey="cachedValue"
-            stroke="var(--neon-orange)"
+            stroke="var(--cached)"
             strokeWidth={2}
             fill={`url(#gradient-cached-${dataKey})`}
             dot={false}

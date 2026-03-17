@@ -43,7 +43,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                 <span className="text-muted-foreground">Real-time</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Badge variant="outline" className="text-[10px] bg-neon-orange/10 text-neon-orange border-neon-orange/30 py-0 gap-0.5">
+                <Badge variant="outline" className="text-[10px] bg-cached/10 text-cached border-cached/30 py-0 gap-0.5">
                   <Clock className="h-2.5 w-2.5" />
                   Cached
                 </Badge>
@@ -53,10 +53,10 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
           )}
         </div>
         {hasCachedData && (
-          <div className="mt-3 flex items-start gap-2 p-2.5 rounded-md bg-neon-orange/5 border border-neon-orange/20">
-            <Info className="h-4 w-4 text-neon-orange flex-shrink-0 mt-0.5" />
+          <div className="mt-3 flex items-start gap-2 p-2.5 rounded-md bg-cached/5 border border-cached/20">
+            <Info className="h-4 w-4 text-cached flex-shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground leading-relaxed">
-              <span className="font-medium text-neon-orange">Cached data detected.</span>{" "}
+              <span className="font-medium text-cached">Cached data detected.</span>{" "}
               Some readings were captured while the device was offline and published when connectivity was restored. 
               These rows show the original capture time but were received later during backlog sync.
             </p>
@@ -91,10 +91,10 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                   return (
                   <TableRow 
                     key={reading.id}
-                    className={cn(isCached && "bg-neon-orange/5")}
+                    className={cn(isCached && "bg-cached/5")}
                   >
                     <TableCell className="font-mono text-xs">
-                      <span className={cn(isCached && "text-neon-orange")}>
+                      <span className={cn(isCached && "text-cached")}>
                         {format(new Date(reading.created_at), "h:mm:ss a")}
                       </span>
                     </TableCell>
@@ -138,7 +138,7 @@ export function ReadingsTable({ readings, title = "Recent Readings", description
                         <Tooltip>
                           <TooltipTrigger asChild>
                             {isCached ? (
-                              <Badge variant="outline" className="text-[10px] bg-neon-orange/10 text-neon-orange border-neon-orange/30 gap-1">
+                              <Badge variant="outline" className="text-[10px] bg-cached/10 text-cached border-cached/30 gap-1">
                                 <Clock className="h-3 w-3" />
                                 Cached
                               </Badge>
