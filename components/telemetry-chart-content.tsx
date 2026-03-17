@@ -66,15 +66,9 @@ export function TelemetryChartContent({
   return (
     <div ref={containerRef} className="w-full">
       {showCachedLegend && hasCachedData && (
-        <div className="flex items-center gap-4 mb-2 text-xs">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-0.5 rounded" style={{ backgroundColor: color }} />
-            <span className="text-muted-foreground">Live data</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-neon-orange border border-white" />
-            <span className="text-muted-foreground">Cached (from backlog)</span>
-          </div>
+        <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-md bg-neon-orange/10 border border-neon-orange/20 text-xs">
+          <span className="text-neon-orange font-medium">Contains cached data</span>
+          <span className="text-muted-foreground">- Some readings were captured offline and synced later</span>
         </div>
       )}
       <div className="h-[180px]">
@@ -134,22 +128,7 @@ export function TelemetryChartContent({
             stroke={color}
             strokeWidth={2}
             fill={`url(#gradient-${dataKey})`}
-            dot={({ cx, cy, payload }) => {
-              if (payload.isCached) {
-                return (
-                  <circle
-                    key={`cached-${payload.index}`}
-                    cx={cx}
-                    cy={cy}
-                    r={4}
-                    fill="var(--neon-orange)"
-                    stroke="white"
-                    strokeWidth={1.5}
-                  />
-                )
-              }
-              return <circle key={`normal-${payload.index}`} cx={cx} cy={cy} r={0} />
-            }}
+            dot={false}
           />
         </AreaChart>
       ) : (
