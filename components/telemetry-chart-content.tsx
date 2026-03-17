@@ -8,6 +8,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  ReferenceDot,
 } from "recharts"
 import { TelemetryRow } from "@/lib/types"
 import { format } from "date-fns"
@@ -40,11 +41,16 @@ export function TelemetryChartContent({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  const chartData = data.map((reading) => ({
+  const chartData = data.map((reading, index) => ({
     time: format(new Date(reading.created_at), "h:mm:ss a"),
     value: reading[dataKey] ?? 0,
     fullTime: reading.created_at,
+    isCached: reading.was_cached === true,
+    index,
   }))
+  
+  // Get indices of cached data points for reference dots
+  const cachedIndices = chartData.filter(d => d.isCached).map(d => d.index)
 
   // Calculate min/max with padding to make trends more visible
   const values = chartData.map(d => d.value as number).filter(v => v !== null && v !== undefined)
@@ -87,6 +93,7 @@ export function TelemetryChartContent({
           <Tooltip
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
+                const isCached = payload[0].payload.isCached
                 return (
                   <div className="rounded-lg border bg-background p-2 shadow-md">
                     <p className="text-xs text-muted-foreground">
@@ -95,6 +102,11 @@ export function TelemetryChartContent({
                     <p className="text-sm font-medium">
                       {payload[0].value}{unit}
                     </p>
+                    {isCached && (
+                      <p className="text-xs text-neon-orange font-medium mt-1">
+                        Cached from backlog
+                      </p>
+                    )}
                   </div>
                 )
               }
@@ -107,6 +119,22 @@ export function TelemetryChartContent({
             stroke={color}
             strokeWidth={2}
             fill={`url(#gradient-${dataKey})`}
+            dot={({ cx, cy, payload }) => {
+              if (payload.isCached) {
+                return (
+                  <circle
+                    key={`cached-${payload.index}`}
+                    cx={cx}
+                    cy={cy}
+                    r={4}
+                    fill="var(--neon-orange)"
+                    stroke="white"
+                    strokeWidth={1.5}
+                  />
+                )
+              }
+              return <circle key={`normal-${payload.index}`} cx={cx} cy={cy} r={0} />
+            }}
           />
         </AreaChart>
       ) : (

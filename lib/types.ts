@@ -9,6 +9,10 @@ export interface TelemetryRow {
   battery_v: number | null
   sensor_ok: boolean
   created_at: string
+  // Cached/backlog fields
+  captured_uptime_ms: number | null
+  published_uptime_ms: number | null
+  was_cached: boolean | null
 }
 
 export interface DeviceCommand {
