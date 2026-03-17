@@ -43,16 +43,42 @@ export function TelemetryChartContent({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  const chartData = data.map((reading, index) => ({
-    time: format(new Date(reading.created_at), "h:mm:ss a"),
-    value: reading[dataKey] ?? 0,
-    fullTime: reading.created_at,
-    isCached: reading.was_cached === true,
-    index,
-  }))
+  // Split data into live and cached values for dual-line rendering
+  const chartData = data.map((reading, index) => {
+    const value = reading[dataKey] ?? 0
+    const isCached = reading.was_cached === true
+    return {
+      time: format(new Date(reading.created_at), "h:mm:ss a"),
+      value,
+      liveValue: isCached ? null : value,
+      cachedValue: isCached ? value : null,
+      fullTime: reading.created_at,
+      isCached,
+      index,
+    }
+  })
   
   // Check if there are cached data points
   const hasCachedData = chartData.some(d => d.isCached)
+  
+  // For smooth transitions between live/cached, we need to connect the segments
+  // by duplicating boundary points
+  const processedData = chartData.map((point, i) => {
+    const prev = chartData[i - 1]
+    const next = chartData[i + 1]
+    
+    // If this is a boundary point (transition between cached and live), include value in both
+    const isTransitionFromCached = prev && prev.isCached && !point.isCached
+    const isTransitionToCached = next && next.isCached && !point.isCached
+    const isTransitionFromLive = prev && !prev.isCached && point.isCached
+    const isTransitionToLive = next && !next.isCached && point.isCached
+    
+    return {
+      ...point,
+      liveValue: point.isCached ? (isTransitionFromLive || isTransitionToLive ? point.value : null) : point.value,
+      cachedValue: point.isCached ? point.value : (isTransitionFromCached || isTransitionToCached ? point.value : null),
+    }
+  })
 
   // Calculate min/max with padding to make trends more visible
   const values = chartData.map(d => d.value as number).filter(v => v !== null && v !== undefined)
@@ -66,9 +92,15 @@ export function TelemetryChartContent({
   return (
     <div ref={containerRef} className="w-full">
       {showCachedLegend && hasCachedData && (
-        <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-md bg-neon-orange/10 border border-neon-orange/20 text-xs">
-          <span className="text-neon-orange font-medium">Contains cached data</span>
-          <span className="text-muted-foreground">- Some readings were captured offline and synced later</span>
+        <div className="flex items-center gap-4 mb-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-0.5 rounded" style={{ backgroundColor: color }} />
+            <span className="text-muted-foreground">Live</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-0.5 rounded bg-neon-orange" />
+            <span className="text-muted-foreground">Cached (offline backlog)</span>
+          </div>
         </div>
       )}
       <div className="h-[180px]">
@@ -76,13 +108,17 @@ export function TelemetryChartContent({
         <AreaChart
           width={chartWidth}
           height={180}
-          data={chartData}
+          data={processedData}
           margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
           <defs>
             <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.3} />
               <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id={`gradient-cached-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--neon-orange)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--neon-orange)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
@@ -124,11 +160,21 @@ export function TelemetryChartContent({
           />
           <Area
             type="monotone"
-            dataKey="value"
+            dataKey="liveValue"
             stroke={color}
             strokeWidth={2}
             fill={`url(#gradient-${dataKey})`}
             dot={false}
+            connectNulls={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="cachedValue"
+            stroke="var(--neon-orange)"
+            strokeWidth={2}
+            fill={`url(#gradient-cached-${dataKey})`}
+            dot={false}
+            connectNulls={false}
           />
         </AreaChart>
       ) : (
