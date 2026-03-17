@@ -106,8 +106,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Source Sans 3', 'Source Sans 3 Fallback', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', monospace;
+  --font-sans: 'Inter', 'Inter Fallback', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

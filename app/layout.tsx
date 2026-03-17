@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Source_Sans_3, IBM_Plex_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DemoModeProvider } from '@/contexts/demo-mode'
@@ -7,15 +7,13 @@ import { DeviceProvider } from '@/contexts/device-context'
 import { ControlProvider } from '@/contexts/control-context'
 import './globals.css'
 
-const sourceSans = Source_Sans_3({ 
+const inter = Inter({ 
   subsets: ["latin"], 
-  variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700"]
+  variable: "--font-sans"
 });
-const ibmPlexMono = IBM_Plex_Mono({ 
+const jetbrainsMono = JetBrains_Mono({ 
   subsets: ["latin"], 
-  variable: "--font-mono",
-  weight: ["400", "500"]
+  variable: "--font-mono"
 });
 
 export const metadata: Metadata = {
@@ -30,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sourceSans.variable} ${ibmPlexMono.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
